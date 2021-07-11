@@ -1,5 +1,6 @@
 import { fixURLInCSS, urlsStrToAbsURLs } from '@ddu6/urls';
 import { stringify } from 'ston';
+import { Counter } from './counter';
 export function unitToPlainString(unit) {
     return stdnToPlainString(unit.children);
 }
@@ -99,5 +100,9 @@ export async function extractContext(doc, dir, options = {}) {
             console.log(err);
         }
     }
+    const counter = new Counter(context.tagToGlobalOptions);
+    counter.countChildren(doc);
+    context.indexInfoArray = counter.indexInfoArray;
+    context.labelToIndexInfo = counter.labelToIndexInfo;
     return context;
 }

@@ -4,7 +4,7 @@ import {Div,Span} from 'stce'
 import {isRelURL,relURLToAbsURL} from '@ddu6/urls'
 export class Compiler{
     readonly unitToCompiling:Map<STDNUnit,boolean|undefined>=new Map()
-    constructor(public readonly context:Context){}
+    constructor(readonly context:Context){}
     async compileUnit(unit:STDNUnit){
         if(this.unitToCompiling.get(unit)===true){
             return Compiler.createErrorElement('Loop')

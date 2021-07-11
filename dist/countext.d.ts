@@ -1,17 +1,6 @@
 import { STDN, STDNUnit, STDNUnitOptions } from 'stdn';
 import { Compiler } from './compiler';
-export interface IndexInfo {
-    index: number[];
-    label: string;
-    orbit: string;
-    unit: STDNUnit;
-}
-export declare type LabelToIndexInfo = {
-    [key: string]: IndexInfo;
-};
-export declare type OrbitToLevel = {
-    [key: string]: number;
-};
+import { IndexInfo, LabelToIndexInfo } from './counter';
 export declare type UnitCompiler = (unit: STDNUnit, compiler: Compiler) => Promise<HTMLElement>;
 export declare type TagToUnitCompiler = {
     [key: string]: UnitCompiler | undefined;

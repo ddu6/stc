@@ -2,18 +2,7 @@ import { fixURLInCSS, urlsStrToAbsURLs } from '@ddu6/urls'
 import {stringify} from 'ston'
 import {STDN, STDNUnit,STDNUnitOptions} from 'stdn'
 import { Compiler } from './compiler'
-export interface IndexInfo{
-    index:number[]
-    label:string
-    orbit:string
-    unit:STDNUnit
-}
-export type LabelToIndexInfo={
-    [key:string]:IndexInfo
-}
-export type OrbitToLevel={
-    [key:string]:number
-}
+import { Counter, IndexInfo, LabelToIndexInfo } from './counter'
 export type UnitCompiler=(unit:STDNUnit,compiler:Compiler)=>Promise<HTMLElement>
 export type TagToUnitCompiler={
     [key:string]:UnitCompiler|undefined
@@ -136,5 +125,9 @@ export async function extractContext(
             console.log(err)
         }
     }
+    const counter=new Counter(context.tagToGlobalOptions)
+    counter.countChildren(doc)
+    context.indexInfoArray=counter.indexInfoArray
+    context.labelToIndexInfo=counter.labelToIndexInfo
     return context
 }
