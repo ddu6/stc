@@ -12,7 +12,7 @@ export async function compile(string, dir = '', options = {}) {
     const context = await extractContext(doc, dir, options);
     const compiler = new Compiler(context);
     return {
-        documentFragment: await compiler.compileChildren(doc),
+        documentFragment: await compiler.compileSTDN(doc),
         context,
     };
 }

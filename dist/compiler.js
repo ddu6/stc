@@ -27,22 +27,19 @@ export class Compiler {
             }
         }
         else {
-            const inlineChildren = (this.context.tagToGlobalOptions[unit.tag] ?? {})['inline-children'] === true;
+            let df;
             if (Compiler.supportedHTMLTags.includes(unit.tag)) {
                 element = document.createElement(unit.tag);
-            }
-            else if (inlineChildren) {
-                element = document.createElement('span');
+                if (Compiler.supportedHTMLTagsWithInlineChildren.includes(unit.tag)) {
+                    df = await this.compileInlineSTDN(unit.children);
+                }
+                else {
+                    df = await this.compileSTDN(unit.children);
+                }
             }
             else {
                 element = document.createElement('div');
-            }
-            let df;
-            if (inlineChildren) {
-                df = await this.compileInlineChildren(unit.children);
-            }
-            else {
-                df = await this.compileChildren(unit.children);
+                df = await this.compileSTDN(unit.children);
             }
             element.append(df);
         }
@@ -99,21 +96,21 @@ export class Compiler {
         }
         return df;
     }
-    async compileInlineChildren(children) {
+    async compileInlineSTDN(stdn) {
         const df = new DocumentFragment();
-        for (let i = 0; i < children.length; i++) {
-            df.append(await this.compileLine(children[i]));
-            if (i !== children.length - 1) {
+        for (let i = 0; i < stdn.length; i++) {
+            df.append(await this.compileLine(stdn[i]));
+            if (i !== stdn.length - 1) {
                 df.append(new Text('\n'));
             }
         }
         return df;
     }
-    async compileChildren(children) {
+    async compileSTDN(stdn) {
         const df = new DocumentFragment();
-        for (let i = 0; i < children.length; i++) {
+        for (let i = 0; i < stdn.length; i++) {
             df.append(new Div(['st-line'])
-                .append(await this.compileLine(children[i]))
+                .append(await this.compileLine(stdn[i]))
                 .element);
         }
         return df;
@@ -191,10 +188,46 @@ Compiler.supportedHTMLTags = [
     'th',
     'thead',
     'tr',
-    'fieldset',
-    'legend',
-    'details',
-    'summary',
+];
+Compiler.supportedHTMLTagsWithInlineChildren = [
+    'a',
+    'abbr',
+    'b',
+    'bdi',
+    'bdo',
+    'br',
+    'cite',
+    'code',
+    'data',
+    'dfn',
+    'em',
+    'i',
+    'kbd',
+    'mark',
+    'q',
+    'rp',
+    'rt',
+    'ruby',
+    's',
+    'samp',
+    'small',
+    'span',
+    'strong',
+    'sub',
+    'sup',
+    'time',
+    'u',
+    'var',
+    'wbr',
+    'del',
+    'ins',
+    'col',
+    'colgroup',
+    'table',
+    'tbody',
+    'tfoot',
+    'thead',
+    'tr',
 ];
 Compiler.supportedHTMLAttributes = [
     'align',

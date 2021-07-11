@@ -101,7 +101,7 @@ export async function extractContext(doc, dir, options = {}) {
         }
     }
     const counter = new Counter(context.tagToGlobalOptions);
-    counter.countChildren(doc);
+    counter.countSTDN(doc);
     context.indexInfoArray = counter.indexInfoArray;
     context.labelToIndexInfo = counter.labelToIndexInfo;
     return context;

@@ -18,5 +18,5 @@ export declare class Counter {
     constructor(tagToGlobalOptions: TagToGlobalOptions);
     private createIndex;
     countUnit(unit: STDNUnit): void;
-    countChildren(children: STDN): void;
+    countSTDN(stdn: STDN): void;
 }

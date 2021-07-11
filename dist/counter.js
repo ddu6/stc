@@ -77,23 +77,23 @@ export class Counter {
         this.indexInfoArray.push(indexInfo);
         this.labelToIndexInfo[label] = indexInfo;
     }
-    countChildren(children) {
-        for (let i = 0; i < children.length; i++) {
-            const line = children[i];
+    countSTDN(stdn) {
+        for (let i = 0; i < stdn.length; i++) {
+            const line = stdn[i];
             for (let i = 0; i < line.length; i++) {
                 const unit = line[i];
                 if (typeof unit === 'string') {
                     continue;
                 }
                 this.countUnit(unit);
-                this.countChildren(unit.children);
+                this.countSTDN(unit.children);
                 const keys = Object.keys(unit.options);
                 for (const key of keys) {
                     const val = unit.options[key];
                     if (!Array.isArray(val)) {
                         continue;
                     }
-                    this.countChildren(val);
+                    this.countSTDN(val);
                 }
             }
         }

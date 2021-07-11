@@ -7,9 +7,10 @@ export declare class Compiler {
     compileUnit(unit: STDNUnit): Promise<HTMLElement>;
     compileInline(inline: STDNInline): Promise<HTMLElement | Text>;
     compileLine(line: STDNLine): Promise<DocumentFragment>;
-    compileInlineChildren(children: STDN): Promise<DocumentFragment>;
-    compileChildren(children: STDN): Promise<DocumentFragment>;
+    compileInlineSTDN(stdn: STDN): Promise<DocumentFragment>;
+    compileSTDN(stdn: STDN): Promise<DocumentFragment>;
     static createErrorElement(err: string): HTMLSpanElement;
     static supportedHTMLTags: string[];
+    static supportedHTMLTagsWithInlineChildren: string[];
     static supportedHTMLAttributes: string[];
 }
