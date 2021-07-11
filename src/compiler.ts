@@ -84,6 +84,9 @@ export class Compiler{
             ){
                 val=relURLToAbsURL(val,this.context.dir)
             }
+            if(key==='class'){
+                val=element.className+' '+val
+            }
             try{
                 element.setAttribute(key,val)
             }catch(err){

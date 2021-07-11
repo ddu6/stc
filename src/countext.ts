@@ -120,7 +120,7 @@ export async function extractContext(
         const url=urls[i]
         try{
             const result=await(new Function(`return import(${JSON.stringify(url)})`)())
-            Object.assign(context.tagToUnitCompiler,result)
+            context.tagToUnitCompiler=Object.assign({},context.tagToUnitCompiler,result)
         }catch(err){
             console.log(err)
         }
