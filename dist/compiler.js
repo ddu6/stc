@@ -22,8 +22,12 @@ export class Compiler {
             }
             catch (err) {
                 console.log(err);
+                element = Compiler.createErrorElement('Broken');
+            }
+            if (element.classList.contains('warn')) {
+                element.classList.add('unit');
                 this.unitToCompiling.set(unit, false);
-                return Compiler.createErrorElement('Broken');
+                return element;
             }
         }
         else {
