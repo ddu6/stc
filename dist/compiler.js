@@ -43,6 +43,21 @@ export class Compiler {
             }
             element.append(df);
         }
+        const { label } = unit.options;
+        if (typeof label === 'string' && label !== '') {
+            const indexInfo = this.context.labelToIndexInfo[label];
+            if (indexInfo !== undefined) {
+                try {
+                    element.classList.add('orbit-' + indexInfo.orbit);
+                    element.classList.add('level' + indexInfo.index.length);
+                    element.dataset.index = indexInfo.index.join('.');
+                    element.dataset.label = indexInfo.label;
+                }
+                catch (err) {
+                    console.log(err);
+                }
+            }
+        }
         const keys = Object.keys(unit.options);
         for (const key of keys) {
             if (!key.startsWith('data-')

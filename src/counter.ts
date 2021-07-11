@@ -61,6 +61,9 @@ export class Counter{
         return tmp
     }
     countUnit(unit:STDNUnit){
+        if(unit.tag==='ref'){
+            return
+        }
         const {label}=unit.options
         if(
             typeof label!=='string'
