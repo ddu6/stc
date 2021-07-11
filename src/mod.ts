@@ -2,6 +2,7 @@ import { parse } from "stdn";
 import { Compiler } from "./compiler";
 import { extractContext, ExtractContextOptions } from "./countext";
 export * from './compiler'
+export * from './counter'
 export * from './countext'
 export async function compile(string:string,dir='',options:ExtractContextOptions={}){
     const doc=parse(string)
