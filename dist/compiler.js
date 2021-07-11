@@ -51,7 +51,10 @@ export class Compiler {
                     element.classList.add('orbit-' + indexInfo.orbit);
                     element.classList.add('level' + indexInfo.index.length);
                     element.dataset.index = indexInfo.index.join('.');
-                    element.dataset.label = indexInfo.label;
+                    element.dataset.label = label;
+                    if (unit.tag === 'ref') {
+                        element.classList.add('ref-tag-' + indexInfo.unit.tag);
+                    }
                 }
                 catch (err) {
                     console.log(err);
