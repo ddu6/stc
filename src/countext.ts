@@ -40,7 +40,6 @@ export function stdnToPlainString(stdn:STDN){
     return array.join('\n')
 }
 export interface ExtractContextOptions{
-    dftCSS?:string
     dftTagToUnitCompiler?:TagToUnitCompiler
     dftTagToGlobalOptions?:TagToGlobalOptions
 }
@@ -53,7 +52,7 @@ export async function extractContext(
         dir=document.location.href
     }
     const context:Context={
-        css:options.dftCSS??'',
+        css:'',
         dir,
         indexInfoArray:[],
         labelToIndexInfo:{},

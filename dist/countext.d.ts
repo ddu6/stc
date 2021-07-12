@@ -20,7 +20,6 @@ export interface Context {
 export declare function unitToPlainString(unit: STDNUnit): string;
 export declare function stdnToPlainString(stdn: STDN): string;
 export interface ExtractContextOptions {
-    dftCSS?: string;
     dftTagToUnitCompiler?: TagToUnitCompiler;
     dftTagToGlobalOptions?: TagToGlobalOptions;
 }

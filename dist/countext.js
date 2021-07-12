@@ -26,7 +26,7 @@ export async function extractContext(doc, dir, options = {}) {
         dir = document.location.href;
     }
     const context = {
-        css: options.dftCSS ?? '',
+        css: '',
         dir,
         indexInfoArray: [],
         labelToIndexInfo: {},
