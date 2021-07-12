@@ -49,16 +49,13 @@ export class Compiler{
         if(typeof label==='string'&&label!==''){
             const indexInfo=this.context.labelToIndexInfo[label]
             if(indexInfo!==undefined){
-                try{
-                    element.classList.add('orbit-'+indexInfo.orbit)
-                    element.classList.add('level'+indexInfo.index.length)
-                    element.dataset.index=indexInfo.index.join('.')
-                    element.dataset.label=label
-                    if(unit.tag==='ref'){
-                        element.classList.add('ref-tag-'+indexInfo.unit.tag)
-                    }
-                }catch(err){
-                    console.log(err)
+                element.dataset.orbit=indexInfo.orbit
+                element.dataset.level=indexInfo.index.length.toString()
+                element.classList.add('level'+indexInfo.index.length)
+                element.dataset.index=indexInfo.index.join('.')
+                element.dataset.label=label
+                if(unit.tag==='ref'){
+                    element.dataset.refTag=indexInfo.unit.tag
                 }
             }
         }
@@ -99,6 +96,7 @@ export class Compiler{
         }catch(err){
             console.log(err)
         }
+        element.dataset.tag=unit.tag
         this.unitToCompiling.set(unit,false)
         return element
     }
