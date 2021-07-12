@@ -22,19 +22,23 @@ export async function multiCompile(parts:{
     dir:string
 }[],options:ExtractContextOptions={}){
     const doc:STDN=[]
+    const partLengths:number[]=[]
     for(let i=0;i<parts.length;i++){
         const {string,dir}=parts[i]
         const stdn=parse(string)
         if(stdn===undefined){
+            partLengths.push(0)
             continue
         }
         fixURLInSTDN(stdn,dir)
         doc.push(...stdn)
+        partLengths.push(stdn.length)
     }
     const context=await extractContext(doc,'',options)
     const compiler=new Compiler(context)
     return {
         documentFragment:await compiler.compileSTDN(doc),
         context,
+        partLengths
     }
 }

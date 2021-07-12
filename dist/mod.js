@@ -19,19 +19,23 @@ export async function compile(string, dir = '', options = {}) {
 }
 export async function multiCompile(parts, options = {}) {
     const doc = [];
+    const partLengths = [];
     for (let i = 0; i < parts.length; i++) {
         const { string, dir } = parts[i];
         const stdn = parse(string);
         if (stdn === undefined) {
+            partLengths.push(0);
             continue;
         }
         fixURLInSTDN(stdn, dir);
         doc.push(...stdn);
+        partLengths.push(stdn.length);
     }
     const context = await extractContext(doc, '', options);
     const compiler = new Compiler(context);
     return {
         documentFragment: await compiler.compileSTDN(doc),
         context,
+        partLengths
     };
 }

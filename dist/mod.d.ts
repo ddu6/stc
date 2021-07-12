@@ -12,4 +12,5 @@ export declare function multiCompile(parts: {
 }[], options?: ExtractContextOptions): Promise<{
     documentFragment: DocumentFragment;
     context: import("./countext").Context;
+    partLengths: number[];
 }>;
