@@ -4,7 +4,7 @@
   "description": "STDN Compiler",
   "main": "dist/mod.js",
   "scripts": {
-    "test": "webpack"
+    "build": "tsc && webpack"
   },
   "repository": {
     "type": "git",
@@ -17,7 +17,7 @@
   },
   "homepage": "https://github.com/ddu6/stc#readme",
   "devDependencies": {
-    "@ddu6/stui": "^0.0.8",
+    "@ddu6/stui": "^0.0.10",
     "@types/node": "^16.3.1",
     "ts-loader": "^9.2.3",
     "typescript": "^4.3.5",
@@ -25,7 +25,7 @@
     "webpack-cli": "^4.7.2"
   },
   "dependencies": {
-    "@ddu6/urls": "^0.0.2",
+    "@ddu6/urls": "^0.0.3",
     "stce": "^0.0.2",
     "stdn": "^0.0.4",
     "ston": "^0.0.8"
