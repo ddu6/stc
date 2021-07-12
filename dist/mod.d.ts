@@ -6,3 +6,10 @@ export declare function compile(string: string, dir?: string, options?: ExtractC
     documentFragment: DocumentFragment;
     context: import("./countext").Context;
 } | undefined>;
+export declare function multiCompile(parts: {
+    string: string;
+    dir: string;
+}[], options?: ExtractContextOptions): Promise<{
+    documentFragment: DocumentFragment;
+    context: import("./countext").Context;
+}>;
