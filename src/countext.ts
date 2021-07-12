@@ -1,5 +1,4 @@
-import { fixURLInCSS, urlsStrToAbsURLs } from '@ddu6/urls'
-import {stringify} from 'ston'
+import { fixURLInCSS, urlsToAbsURLs } from '@ddu6/urls'
 import {STDN, STDNUnit,STDNUnitOptions} from 'stdn'
 import { Compiler } from './compiler'
 import { Counter, IndexInfo, LabelToIndexInfo } from './counter'
@@ -60,8 +59,8 @@ export async function extractContext(
         tagToGlobalOptions:options.dftTagToGlobalOptions??{},
         title:'',
     }
-    let cssURLsStr=''
-    let tagToUnitCompilerURLsStr=''
+    const cssURLs:string[]=[]
+    const tagToUnitCompilerURLs:string[]=[]
     for(let i=0;i<doc.length;i++){
         const line=doc[i]
         if(line.length===0){
@@ -78,11 +77,11 @@ export async function extractContext(
         if(unit.tag==='global'){
             let src=unit.options.css
             if(typeof src==='string'&&src!==''){
-                cssURLsStr+=stringify(src)
+                cssURLs.push(src)
             }
             src=unit.options['tag-to-unit-compiler']
             if(typeof src==='string'&&src!==''){
-                tagToUnitCompilerURLsStr+=stringify(src)
+                tagToUnitCompilerURLs.push(src)
             }
             continue
         }
@@ -101,7 +100,7 @@ export async function extractContext(
             }
         }
     }
-    let urls=await urlsStrToAbsURLs(cssURLsStr,dir)
+    let urls=await urlsToAbsURLs(cssURLs,dir)
     for(let i=0;i<urls.length;i++){
         const url=urls[i]
         try{
@@ -114,7 +113,7 @@ export async function extractContext(
             console.log(err)
         }
     }
-    urls=await urlsStrToAbsURLs(tagToUnitCompilerURLsStr,dir)
+    urls=await urlsToAbsURLs(tagToUnitCompilerURLs,dir)
     for(let i=0;i<urls.length;i++){
         const url=urls[i]
         try{
