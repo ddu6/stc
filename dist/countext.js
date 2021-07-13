@@ -1,4 +1,4 @@
-import { fixURLInCSS, urlsToAbsURLs } from '@ddu6/urls';
+import { fixURLInCSS, urlsToAbsURLs } from './urls';
 import { Counter } from './counter';
 export function unitToPlainString(unit) {
     return stdnToPlainString(unit.children);
@@ -49,11 +49,11 @@ export async function extractContext(doc, dir, options = {}) {
             continue;
         }
         if (unit.tag === 'global') {
-            let src = unit.options.css;
+            let src = unit.options['css-src'];
             if (typeof src === 'string' && src !== '') {
                 cssURLs.push(src);
             }
-            src = unit.options['tag-to-unit-compiler'];
+            src = unit.options['ucs-src'];
             if (typeof src === 'string' && src !== '') {
                 tagToUnitCompilerURLs.push(src);
             }

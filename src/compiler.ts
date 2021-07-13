@@ -1,7 +1,7 @@
 import {STDN, STDNInline, STDNLine, STDNUnit} from 'stdn'
 import {Context} from './countext'
 import {Div,Span} from 'stce'
-import {isRelURL,relURLToAbsURL} from '@ddu6/urls'
+import {isRelURL,relURLToAbsURL} from './urls'
 export class Compiler{
     readonly unitToCompiling:Map<STDNUnit,boolean|undefined>=new Map()
     constructor(readonly context:Context){}

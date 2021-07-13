@@ -15,7 +15,7 @@ window.shell=shell
     {label th1,mark A,desc DDU,theorem[STDN is easy to use.]}
     {proof[We leave it to the reader.]}
     {label co1,corollary[{label eq3,orbit alone,mark{'\\square'},class plain,equation[STDN is a good language.]}]}
-    {css main.css,tag-to-unit-compiler uc.js,global[]}`)
+    {css-src main.css,ucs-src ucs.js,global[]}`)
     if(result===undefined){
         return
     }

@@ -17,6 +17,6 @@ export declare class Counter {
     readonly labelToIndexInfo: LabelToIndexInfo;
     constructor(tagToGlobalOptions: TagToGlobalOptions);
     private createIndex;
-    countUnit(unit: STDNUnit): void;
+    private countUnit;
     countSTDN(stdn: STDN): void;
 }

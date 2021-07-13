@@ -60,7 +60,7 @@ export class Counter{
         tmp.push(++val[level-1])
         return tmp
     }
-    countUnit(unit:STDNUnit){
+    private countUnit(unit:STDNUnit){
         if(unit.tag==='ref'){
             return
         }

@@ -1,5 +1,5 @@
 import { Div, Span } from 'stce';
-import { isRelURL, relURLToAbsURL } from '@ddu6/urls';
+import { isRelURL, relURLToAbsURL } from './urls';
 export class Compiler {
     constructor(context) {
         this.context = context;
