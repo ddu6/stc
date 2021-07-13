@@ -91,6 +91,7 @@ export async function extractContext(
                 globalOptions={}
                 context.tagToGlobalOptions[unit.tag]=globalOptions
             }
+            globalOptions.__=unit.children
             const keys=Object.keys(unit.options)
             for(const key of keys){
                 if(key==='global'){
