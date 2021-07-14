@@ -1,5 +1,5 @@
 import { fixURLInCSS, urlsToAbsURLs } from './urls'
-import {STDN, STDNUnit,STDNUnitOptions} from 'stdn'
+import {STDN, STDNUnit} from 'stdn'
 import { Compiler } from './compiler'
 import { Counter, IndexInfo, LabelToIndexInfo } from './counter'
 export type UnitCompiler=(unit:STDNUnit,compiler:Compiler)=>Promise<HTMLElement>
