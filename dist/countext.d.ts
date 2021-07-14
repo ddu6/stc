@@ -1,12 +1,16 @@
-import { STDN, STDNUnit, STDNUnitOptions } from 'stdn';
+import { STDN, STDNUnit } from 'stdn';
 import { Compiler } from './compiler';
 import { IndexInfo, LabelToIndexInfo } from './counter';
 export declare type UnitCompiler = (unit: STDNUnit, compiler: Compiler) => Promise<HTMLElement>;
 export declare type TagToUnitCompiler = {
     [key: string]: UnitCompiler | undefined;
 };
+export declare type STDNUnitGlobalOptions = {
+    __?: STDN;
+    [key: string]: STDN | string | number | boolean | undefined;
+};
 export declare type TagToGlobalOptions = {
-    [key: string]: STDNUnitOptions | undefined;
+    [key: string]: STDNUnitGlobalOptions | undefined;
 };
 export interface Context {
     css: string;

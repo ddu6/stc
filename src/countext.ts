@@ -6,8 +6,12 @@ export type UnitCompiler=(unit:STDNUnit,compiler:Compiler)=>Promise<HTMLElement>
 export type TagToUnitCompiler={
     [key:string]:UnitCompiler|undefined
 }
+export type STDNUnitGlobalOptions={
+    __?:STDN
+    [key: string]:STDN|string|number|boolean|undefined
+}
 export type TagToGlobalOptions={
-    [key:string]:STDNUnitOptions|undefined
+    [key:string]:STDNUnitGlobalOptions|undefined
 }
 export interface Context{
     css:string
@@ -91,7 +95,7 @@ export async function extractContext(
                 globalOptions={}
                 context.tagToGlobalOptions[unit.tag]=globalOptions
             }
-            if(Array.isArray(globalOptions.__)){
+            if(globalOptions.__!==undefined){
                 globalOptions.__=globalOptions.__.concat(unit.children)
             }else{
                 globalOptions.__=unit.children

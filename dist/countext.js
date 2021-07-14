@@ -65,7 +65,7 @@ export async function extractContext(doc, dir, options = {}) {
                 globalOptions = {};
                 context.tagToGlobalOptions[unit.tag] = globalOptions;
             }
-            if (Array.isArray(globalOptions.__)) {
+            if (globalOptions.__ !== undefined) {
                 globalOptions.__ = globalOptions.__.concat(unit.children);
             }
             else {
