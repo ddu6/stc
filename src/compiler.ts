@@ -218,10 +218,6 @@ export class Compiler{
         'tr',
     ]
     static supportedHTMLTagsWithInlineChildren=[
-        'dl',
-        'ol',
-        'ul',
-
         'a',
         'abbr',
         'b',

@@ -212,9 +212,6 @@ Compiler.supportedHTMLTags = [
     'tr',
 ];
 Compiler.supportedHTMLTagsWithInlineChildren = [
-    'dl',
-    'ol',
-    'ul',
     'a',
     'abbr',
     'b',
