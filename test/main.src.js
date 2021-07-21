@@ -1,7 +1,4 @@
 import {compile} from '../dist/mod.js'
-import {Shell} from '@ddu6/stui'
-const shell=new Shell('Test')
-window.shell=shell
 ;(async()=>{
     const result=await compile(`{'a_1=1'}
     {display,'a_2=2'}
@@ -20,7 +17,9 @@ window.shell=shell
         return
     }
     const {documentFragment,context}=result
-    shell.styleEle.textContent+=context.css
-    shell.append(documentFragment)
+    const style=document.createElement('style')
+    style.textContent+=context.css
+    document.body.append(style)
+    document.body.append(documentFragment)
     console.log(context)
 })()
