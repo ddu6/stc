@@ -62,21 +62,30 @@ export async function extractContext(doc, dir, options = {}) {
         if (unit.options.global === true) {
             let globalOptions = context.tagToGlobalOptions[unit.tag];
             if (globalOptions === undefined) {
-                globalOptions = {};
-                context.tagToGlobalOptions[unit.tag] = globalOptions;
+                context.tagToGlobalOptions[unit.tag] = globalOptions = {};
             }
-            if (globalOptions.__ !== undefined) {
-                globalOptions.__ = globalOptions.__.concat(unit.children);
+            if (globalOptions.__ === undefined) {
+                globalOptions.__ = [unit.children];
             }
             else {
-                globalOptions.__ = unit.children;
+                globalOptions.__.push(unit.children);
             }
             const keys = Object.keys(unit.options);
             for (const key of keys) {
                 if (key === 'global' || key === '__') {
                     continue;
                 }
-                globalOptions[key] = unit.options[key];
+                const val = unit.options[key];
+                if (val === undefined) {
+                    continue;
+                }
+                const vals = globalOptions[key];
+                if (vals === undefined) {
+                    globalOptions[key] = [val];
+                }
+                else {
+                    vals.push(val);
+                }
             }
         }
     }

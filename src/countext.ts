@@ -7,8 +7,8 @@ export type TagToUnitCompiler={
     [key:string]:UnitCompiler|undefined
 }
 export type STDNUnitGlobalOptions={
-    __?:STDN
-    [key: string]:STDN|string|number|boolean|undefined
+    __?:STDN[]
+    [key: string]:(STDN|string|number|boolean)[]|undefined
 }
 export type TagToGlobalOptions={
     [key:string]:STDNUnitGlobalOptions|undefined
@@ -92,20 +92,28 @@ export async function extractContext(
         if(unit.options.global===true){
             let globalOptions=context.tagToGlobalOptions[unit.tag]
             if(globalOptions===undefined){
-                globalOptions={}
-                context.tagToGlobalOptions[unit.tag]=globalOptions
+                context.tagToGlobalOptions[unit.tag]=globalOptions={}
             }
-            if(globalOptions.__!==undefined){
-                globalOptions.__=globalOptions.__.concat(unit.children)
+            if(globalOptions.__===undefined){
+                globalOptions.__=[unit.children]
             }else{
-                globalOptions.__=unit.children
+                globalOptions.__.push(unit.children)
             }
             const keys=Object.keys(unit.options)
             for(const key of keys){
                 if(key==='global'||key==='__'){
                     continue
                 }
-                globalOptions[key]=unit.options[key]
+                const val=unit.options[key]
+                if(val===undefined){
+                    continue
+                }
+                const vals=globalOptions[key]
+                if(vals===undefined){
+                    globalOptions[key]=[val]
+                }else{
+                    vals.push(val)
+                }
             }
         }
     }

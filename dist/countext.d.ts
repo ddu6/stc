@@ -6,8 +6,8 @@ export declare type TagToUnitCompiler = {
     [key: string]: UnitCompiler | undefined;
 };
 export declare type STDNUnitGlobalOptions = {
-    __?: STDN;
-    [key: string]: STDN | string | number | boolean | undefined;
+    __?: STDN[];
+    [key: string]: (STDN | string | number | boolean)[] | undefined;
 };
 export declare type TagToGlobalOptions = {
     [key: string]: STDNUnitGlobalOptions | undefined;
