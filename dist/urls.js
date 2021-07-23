@@ -1,6 +1,6 @@
 import { parse } from 'ston';
 export function isRelURL(url) {
-    return /^[a-z][a-z0-9+.-]*:/i.test(url);
+    return !/^[a-z][a-z0-9+.-]*:/i.test(url);
 }
 export function relURLToAbsURL(url, dir) {
     try {
