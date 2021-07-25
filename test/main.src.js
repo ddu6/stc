@@ -12,7 +12,8 @@ import {compile} from '../dist/mod.js'
     {label th1,mark A,desc DDU,theorem[STDN is easy to use.]}
     {proof[We leave it to the reader.]}
     {label co1,corollary[{label eq3,orbit alone,mark{'\\square'},class plain,equation[STDN is a good language.]}]}
-    {css-src main.css,ucs-src ucs.js,global[]}`)
+    {css-src css.urls,ucs-src ucs.js,global[]}
+    {css-src 3.css,global[]}`)
     if(result===undefined){
         return
     }

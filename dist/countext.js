@@ -1,4 +1,4 @@
-import { fixURLInCSS, urlsToAbsURLs } from './urls';
+import { urlsToAbsURLs } from './urls';
 import { Counter } from './counter';
 export function unitToPlainString(unit) {
     return stdnToPlainString(unit.children);
@@ -89,23 +89,9 @@ export async function extractContext(doc, dir, options = {}) {
             }
         }
     }
-    let urls = await urlsToAbsURLs(cssURLs, dir);
-    for (let i = 0; i < urls.length; i++) {
-        const url = urls[i];
-        try {
-            const res = await window.fetch(url);
-            if (!res.ok) {
-                continue;
-            }
-            context.css += fixURLInCSS(await res.text(), url) + '\n';
-        }
-        catch (err) {
-            console.log(err);
-        }
-    }
-    urls = await urlsToAbsURLs(tagToUnitCompilerURLs, dir);
-    for (let i = 0; i < urls.length; i++) {
-        const url = urls[i];
+    context.css += (await urlsToAbsURLs(cssURLs, dir))
+        .map(val => `@import ${JSON.stringify(val)};`).join('');
+    for (const url of await urlsToAbsURLs(tagToUnitCompilerURLs, dir)) {
         try {
             const result = await (new Function(`return import(${JSON.stringify(url)})`)());
             context.tagToUnitCompiler = Object.assign({}, context.tagToUnitCompiler, result);

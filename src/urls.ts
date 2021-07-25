@@ -11,23 +11,8 @@ export function relURLToAbsURL(url:string,dir:string){
         return url
     }
 }
-export function fixURLInCSS(string:string,dir:string){
-    return string.replace(/url\(\s*['"]?(.*?)(['"]?)\s*\)/g,(match,url,mark)=>{
-        if(typeof url!=='string'){
-            return match
-        }
-        if(mark==='"'||mark==="'"){
-            url=url.replace(/\\(.)/g,'$1')
-        }
-        if(!isRelURL(url)){
-            return match
-        }
-        return `url(${JSON.stringify(relURLToAbsURL(url,dir))})`
-    })
-}
 export function fixURLInUnit(unit:STDNUnit,dir:string){
-    const keys=Object.keys(unit.options)
-    for(const key of keys){
+    for(const key of Object.keys(unit.options)){
         const val=unit.options[key]
         if(Array.isArray(val)){
             fixURLInSTDN(val,dir)
@@ -45,10 +30,8 @@ export function fixURLInUnit(unit:STDNUnit,dir:string){
     fixURLInSTDN(unit.children,dir)
 }
 export function fixURLInSTDN(stdn:STDN,dir:string){
-    for(let i=0;i<stdn.length;i++){
-        const line=stdn[i]
-        for(let i=0;i<line.length;i++){
-            const unit=line[i]
+    for(const line of stdn){
+        for(const unit of line){
             if(typeof unit==='string'){
                 continue
             }
@@ -58,21 +41,18 @@ export function fixURLInSTDN(stdn:STDN,dir:string){
 }
 export async function urlsToAbsURLs(urls:string[],dir:string){
     const out:string[]=[]
-    for(let i=0;i<urls.length;i++){
-        const url=urls[i]
+    for(const urlStr of urls){
         try{
-            const absURL=new URL(url,dir)
-            const absURLStr=absURL.href
-            const pathname=absURL.pathname
-            if(!pathname.endsWith('.urls')&&!pathname.endsWith('.urls.txt')){
-                out.push(absURLStr)
+            const url=new URL(urlStr,dir)
+            if(!url.pathname.endsWith('.urls')&&!url.pathname.endsWith('.urls.txt')){
+                out.push(url.href)
                 continue
             }
-            const res=await window.fetch(absURLStr)
+            const res=await fetch(url.href)
             if(!res.ok){
                 continue
             }
-            out.push(...(await urlsStrToAbsURLs(await res.text(),absURLStr)))
+            out.push(...(await urlsStrToAbsURLs(await res.text(),url.href)))
         }catch(err){
             console.log(err)
         }
@@ -85,8 +65,7 @@ export async function urlsStrToAbsURLs(string:string,dir:string){
         return []
     }
     const urls:string[]=[]
-    for(let i=0;i<array.length;i++){
-        const item=array[i]
+    for(const item of array){
         if(typeof item==='string'){
             urls.push(item)
         }
