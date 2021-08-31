@@ -16,7 +16,7 @@ export class Compiler{
             return new Div(['unit','global']).element
         }
         this.unitToCompiling.set(unit,true)
-        let element:HTMLElement
+        let element:HTMLElement|SVGElement
         const unitCompiler=this.context.tagToUnitCompiler[unit.tag]
         if(unitCompiler!==undefined){
             try{
@@ -39,6 +39,9 @@ export class Compiler{
                 }else{
                     df=await this.compileSTDN(unit.children)
                 }
+            }else if(Compiler.supportedSVGTags.includes(unit.tag)){
+                element=document.createElementNS("http://www.w3.org/2000/svg",unit.tag)
+                df=await this.compileInlineSTDN(unit.children)
             }else{
                 element=document.createElement('div')
                 df=await this.compileSTDN(unit.children)
@@ -259,6 +262,21 @@ export class Compiler{
         'thead',
         'tr',
     ]
+    static supportedSVGTags=[
+        'animate',
+        'animateMotion',
+        'circle',
+        'ellipse',
+        'foreignObject',
+        'g',
+        'image',
+        'path',
+        'rect',
+        'svg',
+        'text',
+        'textPath',
+        'tspan',
+    ]
     static supportedHTMLAttributes=[
         'align',
         'alt',
@@ -287,5 +305,22 @@ export class Compiler{
         'style',
         'target',
         'value',
+
+        'attributeName',
+        'begin',
+        'd',
+        'dur',
+        'fill',
+        'keyPoints',
+        'keyTimes',
+        'path',
+        'preserveAspectRatio',
+        'repeatCount',
+        'rotate',
+        'textLength',
+        'values',
+        'viewBox',
+        'x',
+        'y',
     ]
 }
