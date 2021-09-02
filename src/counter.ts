@@ -77,7 +77,7 @@ export class Counter{
             orbit=unit.tag
         }
         if(typeof level!=='number'||level<=0||level%1!==0){
-            const vals=(this.tagToGlobalOptions[unit.tag]??{}).level??[]
+            const vals=(this.tagToGlobalOptions[orbit]??{}).level??[]
             level=vals[vals.length-1]
             if(typeof level!=='number'||level<=0||level%1!==0){
                 level=1
