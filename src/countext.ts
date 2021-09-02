@@ -52,7 +52,7 @@ export async function extractContext(
     options:ExtractContextOptions={}
 ){
     if(dir===''){
-        dir=document.location.href
+        dir=location.href
     }
     const context:Context={
         css:'',

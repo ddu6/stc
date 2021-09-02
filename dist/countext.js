@@ -22,7 +22,7 @@ export function stdnToPlainString(stdn) {
 }
 export async function extractContext(doc, dir, options = {}) {
     if (dir === '') {
-        dir = document.location.href;
+        dir = location.href;
     }
     const context = {
         css: '',
