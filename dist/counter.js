@@ -51,9 +51,6 @@ export class Counter {
         return tmp;
     }
     countUnit(unit) {
-        if (unit.tag === 'ref') {
-            return;
-        }
         const { id } = unit.options;
         if (typeof id !== 'string'
             || id === ''

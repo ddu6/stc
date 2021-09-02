@@ -61,9 +61,6 @@ export class Counter{
         return tmp
     }
     private countUnit(unit:STDNUnit){
-        if(unit.tag==='ref'){
-            return
-        }
         const {id}=unit.options
         if(
             typeof id!=='string'
