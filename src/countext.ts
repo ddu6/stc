@@ -1,7 +1,7 @@
 import { urlsToAbsURLs } from './urls'
 import {STDN, STDNUnit} from 'stdn'
 import { Compiler } from './compiler'
-import { Counter, IndexInfo, LabelToIndexInfo } from './counter'
+import { Counter, IndexInfo, IdToIndexInfo } from './counter'
 export type UnitCompiler=(unit:STDNUnit,compiler:Compiler)=>Promise<HTMLElement>
 export type TagToUnitCompiler={
     [key:string]:UnitCompiler|undefined
@@ -17,7 +17,7 @@ export interface Context{
     css:string
     dir:string
     indexInfoArray:IndexInfo[]
-    labelToIndexInfo:LabelToIndexInfo
+    idToIndexInfo:IdToIndexInfo
     tagToUnitCompiler:TagToUnitCompiler
     tagToGlobalOptions:TagToGlobalOptions
     title:string
@@ -58,7 +58,7 @@ export async function extractContext(
         css:'',
         dir,
         indexInfoArray:[],
-        labelToIndexInfo:{},
+        idToIndexInfo:{},
         tagToUnitCompiler:options.dftTagToUnitCompiler??{},
         tagToGlobalOptions:options.dftTagToGlobalOptions??{},
         title:'',
@@ -130,6 +130,6 @@ export async function extractContext(
     const counter=new Counter(context.tagToGlobalOptions)
     counter.countSTDN(doc)
     context.indexInfoArray=counter.indexInfoArray
-    context.labelToIndexInfo=counter.labelToIndexInfo
+    context.idToIndexInfo=counter.idToIndexInfo
     return context
 }

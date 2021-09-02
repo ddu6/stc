@@ -4,7 +4,7 @@ export class Counter {
         this.currentHeadingIndex = [];
         this.orbitToCurrentIndex = {};
         this.indexInfoArray = [];
-        this.labelToIndexInfo = {};
+        this.idToIndexInfo = {};
     }
     createIndex(orbit, level) {
         if (orbit === 'heading') {
@@ -54,10 +54,10 @@ export class Counter {
         if (unit.tag === 'ref') {
             return;
         }
-        const { label } = unit.options;
-        if (typeof label !== 'string'
-            || label === ''
-            || this.labelToIndexInfo[label] !== undefined) {
+        const { id } = unit.options;
+        if (typeof id !== 'string'
+            || id === ''
+            || this.idToIndexInfo[id] !== undefined) {
             return;
         }
         let { orbit, level } = unit.options;
@@ -74,12 +74,12 @@ export class Counter {
         const index = this.createIndex(orbit, level);
         const indexInfo = {
             index,
-            label,
+            id,
             orbit,
             unit,
         };
         this.indexInfoArray.push(indexInfo);
-        this.labelToIndexInfo[label] = indexInfo;
+        this.idToIndexInfo[id] = indexInfo;
     }
     countSTDN(stdn) {
         for (let i = 0; i < stdn.length; i++) {

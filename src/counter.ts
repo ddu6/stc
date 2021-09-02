@@ -2,11 +2,11 @@ import { STDN, STDNUnit } from "stdn"
 import { TagToGlobalOptions } from "./countext"
 export interface IndexInfo{
     index:number[]
-    label:string
+    id:string
     orbit:string
     unit:STDNUnit
 }
-export type LabelToIndexInfo={
+export type IdToIndexInfo={
     [key:string]:IndexInfo|undefined
 }
 export class Counter{
@@ -15,7 +15,7 @@ export class Counter{
         [key:string]:number[]|undefined
     }={}
     readonly indexInfoArray:IndexInfo[]=[]
-    readonly labelToIndexInfo:LabelToIndexInfo={}
+    readonly idToIndexInfo:IdToIndexInfo={}
     constructor(readonly tagToGlobalOptions:TagToGlobalOptions){}
     private createIndex(orbit:string,level:number){
         if(orbit==='heading'){
@@ -64,11 +64,11 @@ export class Counter{
         if(unit.tag==='ref'){
             return
         }
-        const {label}=unit.options
+        const {id}=unit.options
         if(
-            typeof label!=='string'
-            ||label===''
-            ||this.labelToIndexInfo[label]!==undefined
+            typeof id!=='string'
+            ||id===''
+            ||this.idToIndexInfo[id]!==undefined
         ){
             return
         }
@@ -86,12 +86,12 @@ export class Counter{
         const index=this.createIndex(orbit,level)
         const indexInfo:IndexInfo={
             index,
-            label,
+            id,
             orbit,
             unit,
         }
         this.indexInfoArray.push(indexInfo)
-        this.labelToIndexInfo[label]=indexInfo
+        this.idToIndexInfo[id]=indexInfo
     }
     countSTDN(stdn:STDN){
         for(let i=0;i<stdn.length;i++){

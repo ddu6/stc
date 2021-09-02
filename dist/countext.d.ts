@@ -1,6 +1,6 @@
 import { STDN, STDNUnit } from 'stdn';
 import { Compiler } from './compiler';
-import { IndexInfo, LabelToIndexInfo } from './counter';
+import { IndexInfo, IdToIndexInfo } from './counter';
 export declare type UnitCompiler = (unit: STDNUnit, compiler: Compiler) => Promise<HTMLElement>;
 export declare type TagToUnitCompiler = {
     [key: string]: UnitCompiler | undefined;
@@ -16,7 +16,7 @@ export interface Context {
     css: string;
     dir: string;
     indexInfoArray: IndexInfo[];
-    labelToIndexInfo: LabelToIndexInfo;
+    idToIndexInfo: IdToIndexInfo;
     tagToUnitCompiler: TagToUnitCompiler;
     tagToGlobalOptions: TagToGlobalOptions;
     title: string;

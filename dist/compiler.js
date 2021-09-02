@@ -51,18 +51,13 @@ export class Compiler {
             }
             element.append(df);
         }
-        const { label } = unit.options;
-        if (typeof label === 'string' && label !== '') {
-            const indexInfo = this.context.labelToIndexInfo[label];
+        const { id } = unit.options;
+        if (typeof id === 'string' && id !== '') {
+            const indexInfo = this.context.idToIndexInfo[id];
             if (indexInfo !== undefined) {
                 element.dataset.orbit = indexInfo.orbit;
                 element.dataset.level = indexInfo.index.length.toString();
-                element.classList.add('level' + indexInfo.index.length);
                 element.dataset.index = indexInfo.index.join('.');
-                element.dataset.label = label;
-                if (unit.tag === 'ref') {
-                    element.dataset.refTag = indexInfo.unit.tag;
-                }
             }
         }
         const keys = Object.keys(unit.options);

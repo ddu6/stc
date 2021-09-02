@@ -28,7 +28,7 @@ export async function extractContext(doc, dir, options = {}) {
         css: '',
         dir,
         indexInfoArray: [],
-        labelToIndexInfo: {},
+        idToIndexInfo: {},
         tagToUnitCompiler: options.dftTagToUnitCompiler ?? {},
         tagToGlobalOptions: options.dftTagToGlobalOptions ?? {},
         title: '',
@@ -103,6 +103,6 @@ export async function extractContext(doc, dir, options = {}) {
     const counter = new Counter(context.tagToGlobalOptions);
     counter.countSTDN(doc);
     context.indexInfoArray = counter.indexInfoArray;
-    context.labelToIndexInfo = counter.labelToIndexInfo;
+    context.idToIndexInfo = counter.idToIndexInfo;
     return context;
 }
