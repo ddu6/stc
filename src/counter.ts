@@ -64,13 +64,13 @@ export class Counter{
         const {id}=unit.options
         if(
             typeof id!=='string'
-            ||id===''
+            ||id.length===0
             ||this.idToIndexInfo[id]!==undefined
         ){
             return
         }
         let {orbit,level}=unit.options
-        if(typeof orbit!=='string'||orbit===''){
+        if(typeof orbit!=='string'||orbit.length===0){
             orbit=unit.tag
         }
         if(typeof level!=='number'||level<=0||level%1!==0){

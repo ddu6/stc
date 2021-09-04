@@ -51,7 +51,7 @@ export async function extractContext(
     dir:string,
     options:ExtractContextOptions={}
 ){
-    if(dir===''){
+    if(dir.length===0){
         dir=location.href
     }
     const context:Context={
@@ -80,11 +80,11 @@ export async function extractContext(
         }
         if(unit.tag==='global'){
             let src=unit.options['css-src']
-            if(typeof src==='string'&&src!==''){
+            if(typeof src==='string'){
                 cssURLs.push(src)
             }
             src=unit.options['ucs-src']
-            if(typeof src==='string'&&src!==''){
+            if(typeof src==='string'){
                 tagToUnitCompilerURLs.push(src)
             }
             continue

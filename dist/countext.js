@@ -21,7 +21,7 @@ export function stdnToPlainString(stdn) {
     return array.join('\n');
 }
 export async function extractContext(doc, dir, options = {}) {
-    if (dir === '') {
+    if (dir.length === 0) {
         dir = location.href;
     }
     const context = {
@@ -50,11 +50,11 @@ export async function extractContext(doc, dir, options = {}) {
         }
         if (unit.tag === 'global') {
             let src = unit.options['css-src'];
-            if (typeof src === 'string' && src !== '') {
+            if (typeof src === 'string') {
                 cssURLs.push(src);
             }
             src = unit.options['ucs-src'];
-            if (typeof src === 'string' && src !== '') {
+            if (typeof src === 'string') {
                 tagToUnitCompilerURLs.push(src);
             }
             continue;

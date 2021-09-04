@@ -52,7 +52,7 @@ export class Compiler {
             element.append(df);
         }
         const { id } = unit.options;
-        if (typeof id === 'string' && id !== '') {
+        if (typeof id === 'string' && id.length > 0) {
             const indexInfo = this.context.idToIndexInfo[id];
             if (indexInfo !== undefined) {
                 element.dataset.orbit = indexInfo.orbit;
@@ -73,7 +73,7 @@ export class Compiler {
             if (typeof val !== 'string') {
                 continue;
             }
-            if (this.context.dir !== ''
+            if (this.context.dir.length > 0
                 && (key === 'src' || key === 'href')
                 && isRelURL(val)) {
                 val = relURLToAbsURL(val, this.context.dir);
