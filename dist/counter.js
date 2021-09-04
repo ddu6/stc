@@ -51,31 +51,30 @@ export class Counter {
     }
     countUnit(unit) {
         const { id } = unit.options;
-        if (typeof id !== 'string'
-            || id.length === 0
-            || this.idToIndexInfo[id] !== undefined) {
-            return;
-        }
-        let { orbit, level } = unit.options;
-        if (typeof orbit !== 'string' || orbit.length === 0) {
-            orbit = unit.tag;
-        }
-        if (typeof level !== 'number' || level <= 0 || level % 1 !== 0) {
-            const vals = (this.tagToGlobalOptions[orbit] ?? {}).level ?? [];
-            level = vals[vals.length - 1];
-            if (typeof level !== 'number' || level <= 0 || level % 1 !== 0) {
-                level = 1;
+        if (typeof id === 'string'
+            && id.length > 0
+            && this.idToIndexInfo[id] === undefined) {
+            let { orbit, level } = unit.options;
+            if (typeof orbit !== 'string' || orbit.length === 0) {
+                orbit = unit.tag;
             }
+            if (typeof level !== 'number' || level <= 0 || level % 1 !== 0) {
+                const vals = (this.tagToGlobalOptions[orbit] ?? {}).level ?? [];
+                level = vals[vals.length - 1];
+                if (typeof level !== 'number' || level <= 0 || level % 1 !== 0) {
+                    level = 1;
+                }
+            }
+            const index = this.createIndex(orbit, level);
+            const indexInfo = {
+                index,
+                id,
+                orbit,
+                unit,
+            };
+            this.indexInfoArray.push(indexInfo);
+            this.idToIndexInfo[id] = indexInfo;
         }
-        const index = this.createIndex(orbit, level);
-        const indexInfo = {
-            index,
-            id,
-            orbit,
-            unit,
-        };
-        this.indexInfoArray.push(indexInfo);
-        this.idToIndexInfo[id] = indexInfo;
         for (const key of Object.keys(unit.options)) {
             const val = unit.options[key];
             if (Array.isArray(val)) {
