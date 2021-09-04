@@ -103,12 +103,7 @@ export class Compiler{
         if(typeof inline!=='string'){
             return await this.compileUnit(inline)
         }
-        if(inline!==' '){
-            return new Text(inline)
-        }
-        const span=document.createElement('span')
-        span.textContent=' '
-        return span
+        return new Text(inline)
     }
     async compileLine(line:STDNLine){
         const df=new DocumentFragment()
