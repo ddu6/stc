@@ -21,8 +21,7 @@ export async function compile(string, dir = '', options = {}) {
 export async function multiCompile(parts, options = {}) {
     const doc = [];
     const partLengths = [];
-    for (let i = 0; i < parts.length; i++) {
-        const { string, dir } = parts[i];
+    for (const { string, dir } of parts) {
         const stdn = parse(string);
         if (stdn === undefined) {
             partLengths.push(0);

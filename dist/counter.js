@@ -17,8 +17,7 @@ export class Counter {
                 for (let i = level; i < this.currentHeadingIndex.length; i++) {
                     this.currentHeadingIndex[i] = 0;
                 }
-                const keys = Object.keys(this.orbitToCurrentIndex);
-                for (const key of keys) {
+                for (const key of Object.keys(this.orbitToCurrentIndex)) {
                     const val = this.orbitToCurrentIndex[key];
                     if (val === undefined || val.length < level) {
                         continue;
@@ -77,24 +76,19 @@ export class Counter {
         };
         this.indexInfoArray.push(indexInfo);
         this.idToIndexInfo[id] = indexInfo;
+        for (const key of Object.keys(unit.options)) {
+            const val = unit.options[key];
+            if (Array.isArray(val)) {
+                this.countSTDN(val);
+            }
+        }
+        this.countSTDN(unit.children);
     }
     countSTDN(stdn) {
-        for (let i = 0; i < stdn.length; i++) {
-            const line = stdn[i];
-            for (let i = 0; i < line.length; i++) {
-                const unit = line[i];
-                if (typeof unit === 'string') {
-                    continue;
-                }
-                this.countUnit(unit);
-                this.countSTDN(unit.children);
-                const keys = Object.keys(unit.options);
-                for (const key of keys) {
-                    const val = unit.options[key];
-                    if (!Array.isArray(val)) {
-                        continue;
-                    }
-                    this.countSTDN(val);
+        for (const line of stdn) {
+            for (const unit of line) {
+                if (typeof unit !== 'string') {
+                    this.countUnit(unit);
                 }
             }
         }

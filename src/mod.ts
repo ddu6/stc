@@ -24,8 +24,7 @@ export async function multiCompile(parts:{
 }[],options:ExtractContextOptions={}){
     const doc:STDN=[]
     const partLengths:number[]=[]
-    for(let i=0;i<parts.length;i++){
-        const {string,dir}=parts[i]
+    for(const {string,dir} of parts){
         const stdn=parse(string)
         if(stdn===undefined){
             partLengths.push(0)

@@ -32,10 +32,9 @@ export function fixURLInUnit(unit:STDNUnit,dir:string){
 export function fixURLInSTDN(stdn:STDN,dir:string){
     for(const line of stdn){
         for(const unit of line){
-            if(typeof unit==='string'){
-                continue
+            if(typeof unit!=='string'){
+                fixURLInUnit(unit,dir)
             }
-            fixURLInUnit(unit,dir)
         }
     }
 }

@@ -5,11 +5,9 @@ export function unitToPlainString(unit) {
 }
 export function stdnToPlainString(stdn) {
     const array = [];
-    for (let i = 0; i < stdn.length; i++) {
-        const line = stdn[i];
+    for (const line of stdn) {
         let string = '';
-        for (let i = 0; i < line.length; i++) {
-            const inline = line[i];
+        for (const inline of line) {
             if (typeof inline === 'string') {
                 string += inline;
                 continue;
@@ -35,8 +33,7 @@ export async function extractContext(doc, dir, options = {}) {
     };
     const cssURLs = [];
     const tagToUnitCompilerURLs = [];
-    for (let i = 0; i < doc.length; i++) {
-        const line = doc[i];
+    for (const line of doc) {
         if (line.length === 0) {
             continue;
         }
@@ -70,8 +67,7 @@ export async function extractContext(doc, dir, options = {}) {
             else {
                 globalOptions.__.push(unit.children);
             }
-            const keys = Object.keys(unit.options);
-            for (const key of keys) {
+            for (const key of Object.keys(unit.options)) {
                 if (key === 'global' || key === '__') {
                     continue;
                 }

@@ -29,10 +29,9 @@ export function fixURLInUnit(unit, dir) {
 export function fixURLInSTDN(stdn, dir) {
     for (const line of stdn) {
         for (const unit of line) {
-            if (typeof unit === 'string') {
-                continue;
+            if (typeof unit !== 'string') {
+                fixURLInUnit(unit, dir);
             }
-            fixURLInUnit(unit, dir);
         }
     }
 }

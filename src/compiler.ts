@@ -57,8 +57,7 @@ export class Compiler{
                 element.dataset.index=indexInfo.index.join('.')
             }
         }
-        const keys=Object.keys(unit.options)
-        for(const key of keys){
+        for(const key of Object.keys(unit.options)){
             if(
                 !key.startsWith('data-')
                 &&!Compiler.supportedHTMLAttributes.includes(key)
@@ -68,6 +67,8 @@ export class Compiler{
             let val=unit.options[key]
             if(val===true){
                 val=''
+            }else if(typeof val==='number'){
+                val=val.toString()
             }
             if(typeof val!=='string'){
                 continue
@@ -80,7 +81,7 @@ export class Compiler{
                 val=relURLToAbsURL(val,this.context.dir)
             }
             if(key==='class'){
-                val=element.className+' '+val
+                val=(element.getAttribute('class')??'')+' '+val
             }
             try{
                 element.setAttribute(key,val)
@@ -111,8 +112,8 @@ export class Compiler{
     }
     async compileLine(line:STDNLine){
         const df=new DocumentFragment()
-        for(let i=0;i<line.length;i++){
-            df.append(await this.compileInline(line[i]))
+        for(const inline of line){
+            df.append(await this.compileInline(inline))
         }
         return df
     }
@@ -128,10 +129,10 @@ export class Compiler{
     }
     async compileSTDN(stdn:STDN){
         const df=new DocumentFragment()
-        for(let i=0;i<stdn.length;i++){
+        for(const line of stdn){
             df.append(
                 new Div(['st-line'])
-                .append(await this.compileLine(stdn[i]))
+                .append(await this.compileLine(line))
                 .element
             )
         }
