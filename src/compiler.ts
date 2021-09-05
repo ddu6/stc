@@ -73,15 +73,19 @@ export class Compiler{
             if(typeof val!=='string'){
                 continue
             }
+            if(element.hasAttribute(key)){
+                if(key==='class'){
+                    val=(element.getAttribute(key)??'')+' '+val
+                }else{
+                    continue
+                }
+            }
             if(
                 this.context.dir.length>0
                 &&(key==='src'||key==='href')
                 &&isRelURL(val)
             ){
                 val=relURLToAbsURL(val,this.context.dir)
-            }
-            if(key==='class'){
-                val=(element.getAttribute('class')??'')+' '+val
             }
             try{
                 element.setAttribute(key,val)
