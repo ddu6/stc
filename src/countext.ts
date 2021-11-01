@@ -14,9 +14,7 @@ export type TagToGlobalOptions={
     [key:string]:STDNUnitGlobalOptions|undefined
 }
 export type TagToVariables={
-    [key:string]:{
-        [key:string]:unknown
-    }|undefined
+    [key:string]:unknown
 }
 export interface Context{
     css:string
@@ -45,13 +43,6 @@ export function stdnToPlainString(stdn:STDN){
         array.push(string)
     }
     return array.join('\n')
-}
-export function getVariable(name:string,tag:string,tagToVariables:TagToVariables){
-    const variables=tagToVariables[tag]
-    if(variables===undefined){
-        return undefined
-    }
-    return variables[name]
 }
 export function getGlobalOptionArray(option:string,tag:string,tagToGlobalOptions:TagToGlobalOptions){
     const options=tagToGlobalOptions[tag]

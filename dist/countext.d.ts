@@ -13,9 +13,7 @@ export declare type TagToGlobalOptions = {
     [key: string]: STDNUnitGlobalOptions | undefined;
 };
 export declare type TagToVariables = {
-    [key: string]: {
-        [key: string]: unknown;
-    } | undefined;
+    [key: string]: unknown;
 };
 export interface Context {
     css: string;
@@ -29,7 +27,6 @@ export interface Context {
 }
 export declare function unitToPlainString(unit: STDNUnit): string;
 export declare function stdnToPlainString(stdn: STDN): string;
-export declare function getVariable(name: string, tag: string, tagToVariables: TagToVariables): unknown;
 export declare function getGlobalOptionArray(option: string, tag: string, tagToGlobalOptions: TagToGlobalOptions): (string | number | boolean | STDN)[];
 export declare function getLastGlobalOption(option: string, tag: string, tagToGlobalOptions: TagToGlobalOptions): string | number | boolean | STDN | undefined;
 export declare function getGlobalChildren(tag: string, tagToGlobalOptions: TagToGlobalOptions): import("stdn").STDNLine[];
