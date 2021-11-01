@@ -1,6 +1,6 @@
 {
   "name": "@ddu6/stc",
-  "version": "0.2.9",
+  "version": "0.2.10",
   "description": "STDN Compiler",
   "main": "dist/mod.js",
   "scripts": {
