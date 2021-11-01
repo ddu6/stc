@@ -12,7 +12,7 @@ export declare type STDNUnitGlobalOptions = {
 export declare type TagToGlobalOptions = {
     [key: string]: STDNUnitGlobalOptions | undefined;
 };
-export declare type TagToVariables = {
+export declare type Variables = {
     [key: string]: unknown;
 };
 export interface Context {
@@ -22,8 +22,8 @@ export interface Context {
     idToIndexInfo: IdToIndexInfo;
     tagToUnitCompiler: TagToUnitCompiler;
     tagToGlobalOptions: TagToGlobalOptions;
-    tagToVariables: TagToVariables;
     title: string;
+    variables: Variables;
 }
 export declare function unitToPlainString(unit: STDNUnit): string;
 export declare function stdnToPlainString(stdn: STDN): string;

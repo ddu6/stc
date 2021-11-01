@@ -13,7 +13,7 @@ export type STDNUnitGlobalOptions={
 export type TagToGlobalOptions={
     [key:string]:STDNUnitGlobalOptions|undefined
 }
-export type TagToVariables={
+export type Variables={
     [key:string]:unknown
 }
 export interface Context{
@@ -23,8 +23,8 @@ export interface Context{
     idToIndexInfo:IdToIndexInfo
     tagToUnitCompiler:TagToUnitCompiler
     tagToGlobalOptions:TagToGlobalOptions
-    tagToVariables:TagToVariables
     title:string
+    variables:Variables
 }
 export function unitToPlainString(unit:STDNUnit){
     return stdnToPlainString(unit.children)
@@ -101,7 +101,7 @@ export async function extractContext(
         idToIndexInfo:{},
         tagToUnitCompiler:options.dftTagToUnitCompiler??{},
         tagToGlobalOptions:options.dftTagToGlobalOptions??{},
-        tagToVariables:{},
+        variables:{},
         title:'',
     }
     const cssURLs:string[]=[]

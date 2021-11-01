@@ -67,7 +67,7 @@ export async function extractContext(doc, dir, options = {}) {
         idToIndexInfo: {},
         tagToUnitCompiler: options.dftTagToUnitCompiler ?? {},
         tagToGlobalOptions: options.dftTagToGlobalOptions ?? {},
-        tagToVariables: {},
+        variables: {},
         title: '',
     };
     const cssURLs = [];
