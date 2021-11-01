@@ -46,6 +46,13 @@ export function stdnToPlainString(stdn:STDN){
     }
     return array.join('\n')
 }
+export function getVariable(name:string,tag:string,tagToVariables:TagToVariables){
+    const variables=tagToVariables[tag]
+    if(variables===undefined){
+        return undefined
+    }
+    return variables[name]
+}
 export function getGlobalOptionArray(option:string,tag:string,tagToGlobalOptions:TagToGlobalOptions){
     const options=tagToGlobalOptions[tag]
     if(options===undefined){

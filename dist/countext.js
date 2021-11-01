@@ -18,6 +18,13 @@ export function stdnToPlainString(stdn) {
     }
     return array.join('\n');
 }
+export function getVariable(name, tag, tagToVariables) {
+    const variables = tagToVariables[tag];
+    if (variables === undefined) {
+        return undefined;
+    }
+    return variables[name];
+}
 export function getGlobalOptionArray(option, tag, tagToGlobalOptions) {
     const options = tagToGlobalOptions[tag];
     if (options === undefined) {
