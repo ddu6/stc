@@ -40,6 +40,44 @@ export function stdnToPlainString(stdn:STDN){
     }
     return array.join('\n')
 }
+export function getGlobalOptionArray(option:string,tag:string,tagToGlobalOptions:TagToGlobalOptions){
+    const options=tagToGlobalOptions[tag]
+    if(options===undefined){
+        return []
+    }
+    return options[option]??[]
+}
+export function getLastGlobalOption(option:string,tag:string,tagToGlobalOptions:TagToGlobalOptions){
+    const array=getGlobalOptionArray(option,tag,tagToGlobalOptions)
+    if(array.length===0){
+        return undefined
+    }
+    return array[array.length-1]
+}
+export function getGlobalChildren(tag:string,tagToGlobalOptions:TagToGlobalOptions){
+    const options=tagToGlobalOptions[tag]
+    if(options===undefined){
+        return []
+    }
+    const array=options.__
+    if(array===undefined){
+        return []
+    }
+    return array.flat()
+}
+export function getGlobalStrings(option:string,tag:string,tagToGlobalOptions:TagToGlobalOptions){
+    const array=getGlobalOptionArray(option,tag,tagToGlobalOptions)
+    const strings:string[]=[]
+    for(const val of array){
+        if(typeof val==='string'){
+            strings.push(val)
+        }
+    }
+    return strings
+}
+export async function getGlobalURLs(option:string,tag:string,tagToGlobalOptions:TagToGlobalOptions,dir:string){
+    return await urlsToAbsURLs(getGlobalStrings(option,tag,tagToGlobalOptions),dir)
+}
 export interface ExtractContextOptions{
     dftTagToUnitCompiler?:TagToUnitCompiler
     dftTagToGlobalOptions?:TagToGlobalOptions

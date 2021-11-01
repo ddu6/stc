@@ -18,6 +18,44 @@ export function stdnToPlainString(stdn) {
     }
     return array.join('\n');
 }
+export function getGlobalOptionArray(option, tag, tagToGlobalOptions) {
+    const options = tagToGlobalOptions[tag];
+    if (options === undefined) {
+        return [];
+    }
+    return options[option] ?? [];
+}
+export function getLastGlobalOption(option, tag, tagToGlobalOptions) {
+    const array = getGlobalOptionArray(option, tag, tagToGlobalOptions);
+    if (array.length === 0) {
+        return undefined;
+    }
+    return array[array.length - 1];
+}
+export function getGlobalChildren(tag, tagToGlobalOptions) {
+    const options = tagToGlobalOptions[tag];
+    if (options === undefined) {
+        return [];
+    }
+    const array = options.__;
+    if (array === undefined) {
+        return [];
+    }
+    return array.flat();
+}
+export function getGlobalStrings(option, tag, tagToGlobalOptions) {
+    const array = getGlobalOptionArray(option, tag, tagToGlobalOptions);
+    const strings = [];
+    for (const val of array) {
+        if (typeof val === 'string') {
+            strings.push(val);
+        }
+    }
+    return strings;
+}
+export async function getGlobalURLs(option, tag, tagToGlobalOptions, dir) {
+    return await urlsToAbsURLs(getGlobalStrings(option, tag, tagToGlobalOptions), dir);
+}
 export async function extractContext(doc, dir, options = {}) {
     if (dir.length === 0) {
         dir = location.href;

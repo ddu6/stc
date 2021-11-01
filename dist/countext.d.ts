@@ -23,6 +23,11 @@ export interface Context {
 }
 export declare function unitToPlainString(unit: STDNUnit): string;
 export declare function stdnToPlainString(stdn: STDN): string;
+export declare function getGlobalOptionArray(option: string, tag: string, tagToGlobalOptions: TagToGlobalOptions): (string | number | boolean | STDN)[];
+export declare function getLastGlobalOption(option: string, tag: string, tagToGlobalOptions: TagToGlobalOptions): string | number | boolean | STDN | undefined;
+export declare function getGlobalChildren(tag: string, tagToGlobalOptions: TagToGlobalOptions): import("stdn").STDNLine[];
+export declare function getGlobalStrings(option: string, tag: string, tagToGlobalOptions: TagToGlobalOptions): string[];
+export declare function getGlobalURLs(option: string, tag: string, tagToGlobalOptions: TagToGlobalOptions, dir: string): Promise<string[]>;
 export interface ExtractContextOptions {
     dftTagToUnitCompiler?: TagToUnitCompiler;
     dftTagToGlobalOptions?: TagToGlobalOptions;
