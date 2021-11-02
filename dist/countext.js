@@ -85,13 +85,41 @@ export async function extractContext(doc, dir, options = {}) {
             continue;
         }
         if (unit.tag === 'global') {
-            let src = unit.options['css-src'];
-            if (typeof src === 'string') {
-                cssURLs.push(src);
+            const mod = unit.options['mod'];
+            if (typeof mod === 'string') {
+                cssURLs.push(`https://cdn.jsdelivr.net/gh/st-org/st-mod/${mod}/main.css`);
+                tagToUnitCompilerURLs.push(`https://cdn.jsdelivr.net/gh/st-org/st-mod/${mod}/main.js`);
             }
-            src = unit.options['ucs-src'];
-            if (typeof src === 'string') {
-                tagToUnitCompilerURLs.push(src);
+            {
+                const gh = unit.options['gh'];
+                if (typeof gh === 'string') {
+                    cssURLs.push(`https://cdn.jsdelivr.net/gh/${gh}/main.css`);
+                    tagToUnitCompilerURLs.push(`https://cdn.jsdelivr.net/gh/${gh}/main.js`);
+                }
+            }
+            {
+                const gh = unit.options['css-gh'];
+                if (typeof gh === 'string') {
+                    cssURLs.push(`https://cdn.jsdelivr.net/gh/${gh}/main.css`);
+                }
+            }
+            {
+                const gh = unit.options['ucs-gh'];
+                if (typeof gh === 'string') {
+                    tagToUnitCompilerURLs.push(`https://cdn.jsdelivr.net/gh/${gh}/main.js`);
+                }
+            }
+            {
+                const src = unit.options['css-src'];
+                if (typeof src === 'string') {
+                    cssURLs.push(src);
+                }
+            }
+            {
+                const src = unit.options['ucs-src'];
+                if (typeof src === 'string') {
+                    tagToUnitCompilerURLs.push(src);
+                }
             }
             continue;
         }
