@@ -1,7 +1,7 @@
 import { STDN, STDNUnit } from 'stdn';
 import { Compiler } from './compiler';
 import { IndexInfo, IdToIndexInfo } from './counter';
-export declare type UnitCompiler = (unit: STDNUnit, compiler: Compiler) => Promise<HTMLElement>;
+export declare type UnitCompiler = (unit: STDNUnit, compiler: Compiler) => Promise<HTMLElement | SVGElement>;
 export declare type TagToUnitCompiler = {
     [key: string]: UnitCompiler | undefined;
 };

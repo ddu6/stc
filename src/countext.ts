@@ -2,7 +2,7 @@ import { urlsToAbsURLs } from './urls'
 import {STDN, STDNUnit} from 'stdn'
 import { Compiler } from './compiler'
 import { Counter, IndexInfo, IdToIndexInfo } from './counter'
-export type UnitCompiler=(unit:STDNUnit,compiler:Compiler)=>Promise<HTMLElement>
+export type UnitCompiler=(unit:STDNUnit,compiler:Compiler)=>Promise<HTMLElement|SVGElement>
 export type TagToUnitCompiler={
     [key:string]:UnitCompiler|undefined
 }
