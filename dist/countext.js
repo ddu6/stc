@@ -65,11 +65,17 @@ export async function extractContext(doc, dir, options = {}) {
         dir,
         indexInfoArray: [],
         idToIndexInfo: {},
-        tagToUnitCompiler: options.dftTagToUnitCompiler ?? {},
-        tagToGlobalOptions: options.dftTagToGlobalOptions ?? {},
-        variables: {},
+        tagToGlobalOptions: {},
+        tagToUnitCompiler: {},
         title: '',
+        variables: {},
     };
+    if (options.dftTagToGlobalOptions !== undefined) {
+        Object.assign(context.tagToGlobalOptions, options.dftTagToGlobalOptions);
+    }
+    if (options.dftTagToUnitCompiler !== undefined) {
+        Object.assign(context.tagToUnitCompiler, options.dftTagToUnitCompiler);
+    }
     const cssURLs = [];
     const tagToUnitCompilerURLs = [];
     for (const line of doc) {
@@ -164,8 +170,7 @@ export async function extractContext(doc, dir, options = {}) {
         .map(val => `@import ${JSON.stringify(val)};`).join('');
     for (const url of await urlsToAbsURLs(tagToUnitCompilerURLs, dir)) {
         try {
-            const result = await (new Function(`return import(${JSON.stringify(url)})`)());
-            context.tagToUnitCompiler = Object.assign({}, context.tagToUnitCompiler, result);
+            Object.assign(context.tagToUnitCompiler, await (new Function(`return import(${JSON.stringify(url)})`)()));
         }
         catch (err) {
             console.log(err);

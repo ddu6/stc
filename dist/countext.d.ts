@@ -20,8 +20,8 @@ export interface Context {
     dir: string;
     indexInfoArray: IndexInfo[];
     idToIndexInfo: IdToIndexInfo;
-    tagToUnitCompiler: TagToUnitCompiler;
     tagToGlobalOptions: TagToGlobalOptions;
+    tagToUnitCompiler: TagToUnitCompiler;
     title: string;
     variables: Variables;
 }
