@@ -141,6 +141,7 @@ export class Compiler{
         return new Span(['unit','warn']).setText(err).element
     }
     static supportedHTMLTags=[
+        'address',
         'article',
         'aside',
         'footer',
@@ -199,7 +200,14 @@ export class Compiler{
         'var',
         'wbr',
 
+        'area',
+        'audio',
         'img',
+        'map',
+        'track',
+        'video',
+
+        'iframe',
 
         'del',
         'ins',
@@ -245,6 +253,15 @@ export class Compiler{
         'u',
         'var',
         'wbr',
+
+        'area',
+        'audio',
+        'img',
+        'map',
+        'track',
+        'video',
+
+        'iframe',
 
         'del',
         'ins',
