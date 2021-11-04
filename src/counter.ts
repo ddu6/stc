@@ -1,5 +1,5 @@
 import { STDN, STDNUnit } from "stdn"
-import { getLastGlobalOption, TagToGlobalOptions } from "./countext"
+import { getLastGlobalOption, TagToGlobalOptions, unitToPlainString } from "./countext"
 export interface IndexInfo{
     index:number[]
     id:string
@@ -20,6 +20,7 @@ export class Counter{
     }={}
     readonly indexInfoArray:IndexInfo[]=[]
     readonly idToIndexInfo:IdToIndexInfo={}
+    title=''
     constructor(readonly tagToGlobalOptions:TagToGlobalOptions){}
     private createIndex(realOrbit:string,level:number){
         if(realOrbit==='heading'){
@@ -76,6 +77,9 @@ export class Counter{
         return this.orbitToRealOrbit[orbit]=this.getRealOrbit(val)
     }
     private countUnit(unit:STDNUnit){
+        if(unit.tag==='title'){
+            this.title=unitToPlainString(unit)
+        }
         const {id}=unit.options
         if(
             typeof id==='string'

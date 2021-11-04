@@ -19,6 +19,7 @@ export declare class Counter {
     };
     readonly indexInfoArray: IndexInfo[];
     readonly idToIndexInfo: IdToIndexInfo;
+    title: string;
     constructor(tagToGlobalOptions: TagToGlobalOptions);
     private createIndex;
     private getRealOrbit;

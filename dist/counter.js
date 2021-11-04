@@ -1,4 +1,4 @@
-import { getLastGlobalOption } from "./countext";
+import { getLastGlobalOption, unitToPlainString } from "./countext";
 export class Counter {
     constructor(tagToGlobalOptions) {
         this.tagToGlobalOptions = tagToGlobalOptions;
@@ -7,6 +7,7 @@ export class Counter {
         this.orbitToRealOrbit = {};
         this.indexInfoArray = [];
         this.idToIndexInfo = {};
+        this.title = '';
     }
     createIndex(realOrbit, level) {
         if (realOrbit === 'heading') {
@@ -64,6 +65,9 @@ export class Counter {
         return this.orbitToRealOrbit[orbit] = this.getRealOrbit(val);
     }
     countUnit(unit) {
+        if (unit.tag === 'title') {
+            this.title = unitToPlainString(unit);
+        }
         const { id } = unit.options;
         if (typeof id === 'string'
             && id.length > 0

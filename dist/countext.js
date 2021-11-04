@@ -85,10 +85,6 @@ export async function extractContext(doc, dir, options = {}) {
         if (typeof unit === 'string') {
             continue;
         }
-        if (unit.tag === 'title') {
-            context.title = unitToPlainString(unit);
-            continue;
-        }
         if (unit.tag === 'global') {
             const mod = unit.options['mod'];
             if (typeof mod === 'string') {
@@ -179,5 +175,6 @@ export async function extractContext(doc, dir, options = {}) {
     counter.countSTDN(doc);
     context.indexInfoArray = counter.indexInfoArray;
     context.idToIndexInfo = counter.idToIndexInfo;
+    context.title = counter.title;
     return context;
 }
