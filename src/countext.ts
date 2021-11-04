@@ -13,9 +13,6 @@ export type STDNUnitGlobalOptions={
 export type TagToGlobalOptions={
     [key:string]:STDNUnitGlobalOptions|undefined
 }
-export type Variables={
-    [key:string]:unknown
-}
 export interface Context{
     css:string
     dir:string
@@ -24,7 +21,6 @@ export interface Context{
     tagToGlobalOptions:TagToGlobalOptions
     tagToUnitCompiler:TagToUnitCompiler
     title:string
-    variables:Variables
 }
 export function unitToPlainString(unit:STDNUnit){
     return stdnToPlainString(unit.children)
@@ -102,7 +98,6 @@ export async function extractContext(
         tagToGlobalOptions:{},
         tagToUnitCompiler:{},
         title:'',
-        variables:{},
     }
     if(options.dftTagToGlobalOptions!==undefined){
         Object.assign(context.tagToGlobalOptions,options.dftTagToGlobalOptions)

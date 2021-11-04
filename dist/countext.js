@@ -68,7 +68,6 @@ export async function extractContext(doc, dir, options = {}) {
         tagToGlobalOptions: {},
         tagToUnitCompiler: {},
         title: '',
-        variables: {},
     };
     if (options.dftTagToGlobalOptions !== undefined) {
         Object.assign(context.tagToGlobalOptions, options.dftTagToGlobalOptions);
