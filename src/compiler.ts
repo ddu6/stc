@@ -58,11 +58,12 @@ export class Compiler{
             }
         }
         for(const key of Object.keys(unit.options)){
+            let attr=key
             if(
                 !key.startsWith('data-')
                 &&!Compiler.supportedHTMLAttributes.includes(key)
             ){
-                continue
+                attr=`data-${key}`
             }
             let val=unit.options[key]
             if(val===true){
@@ -73,22 +74,22 @@ export class Compiler{
             if(typeof val!=='string'){
                 continue
             }
-            if(element.hasAttribute(key)){
-                if(key==='class'){
-                    val=(element.getAttribute(key)??'')+' '+val
+            if(element.hasAttribute(attr)){
+                if(attr==='class'){
+                    val=(element.getAttribute(attr)??'')+' '+val
                 }else{
                     continue
                 }
             }
             if(
                 this.context.dir.length>0
-                &&(key==='src'||key==='href')
+                &&(attr==='src'||attr==='href')
                 &&isRelURL(val)
             ){
                 val=relURLToAbsURL(val,this.context.dir)
             }
             try{
-                element.setAttribute(key,val)
+                element.setAttribute(attr,val)
             }catch(err){
                 console.log(err)
             }
