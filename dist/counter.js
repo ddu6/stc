@@ -65,7 +65,7 @@ export class Counter {
         return this.orbitToRealOrbit[orbit] = this.getRealOrbit(val);
     }
     countUnit(unit) {
-        if (unit.tag === 'title') {
+        if (this.title.length === 0 && unit.tag === 'title') {
             this.title = unitToPlainString(unit);
         }
         const { id } = unit.options;
