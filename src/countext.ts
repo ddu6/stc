@@ -1,7 +1,7 @@
-import { urlsToAbsURLs } from './urls'
-import {STDN, STDNUnit} from 'stdn'
-import { Compiler } from './compiler'
-import { Counter, IndexInfo, IdToIndexInfo } from './counter'
+import {urlsToAbsURLs} from './urls'
+import {STDN,STDNUnit} from 'stdn'
+import {Compiler} from './compiler'
+import {Counter} from './counter'
 export type UnitCompiler=(unit:STDNUnit,compiler:Compiler)=>Promise<HTMLElement|SVGElement>
 export type TagToUnitCompiler={
     [key:string]:UnitCompiler|undefined
@@ -16,11 +16,12 @@ export type TagToGlobalOptions={
 export interface Context{
     css:string
     dir:string
-    indexInfoArray:IndexInfo[]
-    idToIndexInfo:IdToIndexInfo
+    indexInfoArray:Counter['indexInfoArray']
+    idToIndexInfo:Counter['idToIndexInfo']
     tagToGlobalOptions:TagToGlobalOptions
     tagToUnitCompiler:TagToUnitCompiler
-    title:string
+    title:Counter['title']
+    unitToId:Counter['unitToId']
 }
 export function unitToPlainString(unit:STDNUnit){
     return stdnToPlainString(unit.children)
@@ -39,6 +40,26 @@ export function stdnToPlainString(stdn:STDN){
         array.push(string)
     }
     return array.join('\n')
+}
+export function unitToInlinePlainString(unit:STDNUnit){
+    return stdnToInlinePlainString(unit.children)
+}
+export function stdnToInlinePlainString(stdn:STDN){
+    if(stdn.length===0){
+        return ''
+    }
+    let string=''
+    for(const inline of stdn[0]){
+        if(typeof inline==='string'){
+            string+=inline
+            continue
+        }
+        string+=unitToInlinePlainString(inline)
+    }
+    return string
+}
+export function stringToId(string:string){
+    return string.replace(/[^\s\w-]/g,'').toLowerCase().trim().split(/[\s_-]+/).join('-')
 }
 export function getGlobalOptionArray(option:string,tag:string,tagToGlobalOptions:TagToGlobalOptions){
     const options=tagToGlobalOptions[tag]
@@ -79,31 +100,20 @@ export async function getGlobalURLs(option:string,tag:string,tagToGlobalOptions:
     return await urlsToAbsURLs(getGlobalStrings(option,tag,tagToGlobalOptions),dir)
 }
 export interface ExtractContextOptions{
-    dftTagToUnitCompiler?:TagToUnitCompiler
-    dftTagToGlobalOptions?:TagToGlobalOptions
+    builtInTagToUnitCompiler?:TagToUnitCompiler
 }
 export async function extractContext(
     doc:STDN,
     dir:string,
     options:ExtractContextOptions={}
-){
+):Promise<Context>{
     if(dir.length===0){
         dir=location.href
     }
-    const context:Context={
-        css:'',
-        dir,
-        indexInfoArray:[],
-        idToIndexInfo:{},
-        tagToGlobalOptions:{},
-        tagToUnitCompiler:{},
-        title:'',
-    }
-    if(options.dftTagToGlobalOptions!==undefined){
-        Object.assign(context.tagToGlobalOptions,options.dftTagToGlobalOptions)
-    }
-    if(options.dftTagToUnitCompiler!==undefined){
-        Object.assign(context.tagToUnitCompiler,options.dftTagToUnitCompiler)
+    const tagToGlobalOptions:Context['tagToGlobalOptions']={}
+    const tagToUnitCompiler:Context['tagToUnitCompiler']={}
+    if(options.builtInTagToUnitCompiler!==undefined){
+        Object.assign(tagToUnitCompiler,options.builtInTagToUnitCompiler)
     }
     const cssURLs:string[]=[]
     const tagToUnitCompilerURLs:string[]=[]
@@ -163,9 +173,9 @@ export async function extractContext(
             continue
         }
         if(unit.options.global===true){
-            let globalOptions=context.tagToGlobalOptions[unit.tag]
+            let globalOptions=tagToGlobalOptions[unit.tag]
             if(globalOptions===undefined){
-                context.tagToGlobalOptions[unit.tag]=globalOptions={}
+                tagToGlobalOptions[unit.tag]=globalOptions={}
             }
             if(globalOptions.__===undefined){
                 globalOptions.__=[unit.children]
@@ -189,19 +199,25 @@ export async function extractContext(
             }
         }
     }
-    context.css+=(await urlsToAbsURLs(cssURLs,dir))
+    const css=(await urlsToAbsURLs(cssURLs,dir))
     .map(val=>`@import ${JSON.stringify(val)};`).join('')
     for(const url of await urlsToAbsURLs(tagToUnitCompilerURLs,dir)){
         try{
-            Object.assign(context.tagToUnitCompiler,await (new Function(`return import(${JSON.stringify(url)})`)()))
+            Object.assign(tagToUnitCompiler,await (new Function(`return import(${JSON.stringify(url)})`)()))
         }catch(err){
             console.log(err)
         }
     }
-    const counter=new Counter(context.tagToGlobalOptions)
+    const counter=new Counter(tagToGlobalOptions)
     counter.countSTDN(doc)
-    context.indexInfoArray=counter.indexInfoArray
-    context.idToIndexInfo=counter.idToIndexInfo
-    context.title=counter.title
-    return context
+    return {
+        css,
+        dir,
+        indexInfoArray:counter.indexInfoArray,
+        idToIndexInfo:counter.idToIndexInfo,
+        tagToGlobalOptions,
+        tagToUnitCompiler,
+        title:counter.title,
+        unitToId:counter.unitToId,
+    }
 }

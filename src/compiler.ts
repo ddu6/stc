@@ -1,9 +1,9 @@
-import {STDN, STDNInline, STDNLine, STDNUnit} from 'stdn'
+import {STDN,STDNInline,STDNLine,STDNUnit} from 'stdn'
 import {Context} from './countext'
 import {Div,Span} from 'stce'
 import {isRelURL,relURLToAbsURL} from './urls'
 export class Compiler{
-    readonly unitToCompiling:Map<STDNUnit,boolean|undefined>=new Map()
+    readonly unitToCompiling=new Map<STDNUnit,boolean|undefined>()
     constructor(readonly context:Context){}
     async compileUnit(unit:STDNUnit){
         if(this.unitToCompiling.get(unit)===true){
@@ -48,8 +48,9 @@ export class Compiler{
             }
             element.append(df)
         }
-        const {id}=unit.options
-        if(typeof id==='string'&&id.length>0){
+        const id=this.context.unitToId.get(unit)
+        if(id!==undefined){
+            element.id=id
             const indexInfo=this.context.idToIndexInfo[id]
             if(indexInfo!==undefined){
                 element.dataset.orbit=indexInfo.orbit
@@ -58,12 +59,18 @@ export class Compiler{
             }
         }
         for(const key of Object.keys(unit.options)){
+            if(key==='id'||key==='class'){
+                continue
+            }
             let attr=key
             if(
                 !key.startsWith('data-')
                 &&!Compiler.supportedHTMLAttributes.includes(key)
             ){
                 attr=`data-${key}`
+            }
+            if(element.hasAttribute(attr)){
+                continue
             }
             let val=unit.options[key]
             if(val===true){
@@ -73,13 +80,6 @@ export class Compiler{
             }
             if(typeof val!=='string'){
                 continue
-            }
-            if(element.hasAttribute(attr)){
-                if(attr==='class'){
-                    val=(element.getAttribute(attr)??'')+' '+val
-                }else{
-                    continue
-                }
             }
             if(
                 this.context.dir.length>0
@@ -97,6 +97,9 @@ export class Compiler{
         element.classList.add('unit')
         try{
             element.classList.add(unit.tag)
+            if(typeof unit.options.class==='string'){
+                element.classList.add(...unit.options.class.trim().split(/\s+/))
+            }
         }catch(err){
             console.log(err)
         }

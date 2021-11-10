@@ -1,5 +1,5 @@
-import { STDN, STDNUnit } from "stdn";
-import { TagToGlobalOptions } from "./countext";
+import { STDN, STDNUnit } from 'stdn';
+import { TagToGlobalOptions } from './countext';
 export interface IndexInfo {
     index: number[];
     id: string;
@@ -14,11 +14,13 @@ export declare class Counter {
     readonly tagToGlobalOptions: TagToGlobalOptions;
     private readonly currentHeadingIndex;
     private readonly realOrbitToCurrentIndex;
+    private readonly baseIdToCount;
     readonly orbitToRealOrbit: {
         [key: string]: string | undefined;
     };
     readonly indexInfoArray: IndexInfo[];
     readonly idToIndexInfo: IdToIndexInfo;
+    readonly unitToId: Map<STDNUnit, string | undefined>;
     title: string;
     constructor(tagToGlobalOptions: TagToGlobalOptions);
     private createIndex;

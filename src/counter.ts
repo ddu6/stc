@@ -1,5 +1,5 @@
-import { STDN, STDNUnit } from "stdn"
-import { getLastGlobalOption, TagToGlobalOptions, unitToPlainString } from "./countext"
+import {STDN,STDNUnit} from 'stdn'
+import {getLastGlobalOption,stringToId,TagToGlobalOptions,unitToInlinePlainString,unitToPlainString} from './countext'
 export interface IndexInfo{
     index:number[]
     id:string
@@ -15,11 +15,15 @@ export class Counter{
     private readonly realOrbitToCurrentIndex:{
         [key:string]:number[]|undefined
     }={}
+    private readonly baseIdToCount:{
+        [key:string]:number|undefined
+    }={}
     readonly orbitToRealOrbit:{
         [key:string]:string|undefined
     }={}
     readonly indexInfoArray:IndexInfo[]=[]
     readonly idToIndexInfo:IdToIndexInfo={}
+    readonly unitToId=new Map<STDNUnit,string|undefined>()
     title=''
     constructor(readonly tagToGlobalOptions:TagToGlobalOptions){}
     private createIndex(realOrbit:string,level:number){
@@ -80,35 +84,32 @@ export class Counter{
         if(this.title.length===0&&unit.tag==='title'){
             this.title=unitToPlainString(unit)
         }
-        const {id}=unit.options
-        if(
-            typeof id==='string'
-            &&id.length>0
-            &&this.idToIndexInfo[id]===undefined
-        ){
-            let orbit=unit.options.orbit
-            ??getLastGlobalOption('orbit',unit.tag,this.tagToGlobalOptions)
-            if(typeof orbit!=='string'||orbit.length===0){
-                orbit=unit.tag
-            }
-            const realOrbit=this.getRealOrbit(orbit)
-            let level=unit.options.level
-            ??getLastGlobalOption('level',unit.tag,this.tagToGlobalOptions)
-            ??getLastGlobalOption('level',realOrbit,this.tagToGlobalOptions)
-            if(typeof level!=='number'||level<=0||level%1!==0){
-                level=1
-            }
-            const index=this.createIndex(realOrbit,level)
-            const indexInfo:IndexInfo={
-                index,
-                id,
-                orbit,
-                realOrbit,
-                unit,
-            }
-            this.indexInfoArray.push(indexInfo)
-            this.idToIndexInfo[id]=indexInfo
+        const baseId=stringToId(typeof unit.options.id==='string'?unit.options.id:unitToInlinePlainString(unit))
+        const count=this.baseIdToCount[baseId]=(this.baseIdToCount[baseId]??0)+1
+        const id=count>1||baseId.length===0?`${baseId}~${count}`:baseId
+        let orbit=unit.options.orbit
+        ??getLastGlobalOption('orbit',unit.tag,this.tagToGlobalOptions)
+        if(typeof orbit!=='string'||orbit.length===0){
+            orbit=unit.tag
         }
+        const realOrbit=this.getRealOrbit(orbit)
+        let level=unit.options.level
+        ??getLastGlobalOption('level',unit.tag,this.tagToGlobalOptions)
+        ??getLastGlobalOption('level',realOrbit,this.tagToGlobalOptions)
+        if(typeof level!=='number'||level<=0||level%1!==0){
+            level=1
+        }
+        const index=this.createIndex(realOrbit,level)
+        const indexInfo:IndexInfo={
+            index,
+            id,
+            orbit,
+            realOrbit,
+            unit,
+        }
+        this.indexInfoArray.push(indexInfo)
+        this.idToIndexInfo[id]=indexInfo
+        this.unitToId.set(unit,id)
         for(const key of Object.keys(unit.options)){
             const val=unit.options[key]
             if(Array.isArray(val)){

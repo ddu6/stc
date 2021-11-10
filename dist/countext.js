@@ -18,6 +18,26 @@ export function stdnToPlainString(stdn) {
     }
     return array.join('\n');
 }
+export function unitToInlinePlainString(unit) {
+    return stdnToInlinePlainString(unit.children);
+}
+export function stdnToInlinePlainString(stdn) {
+    if (stdn.length === 0) {
+        return '';
+    }
+    let string = '';
+    for (const inline of stdn[0]) {
+        if (typeof inline === 'string') {
+            string += inline;
+            continue;
+        }
+        string += unitToInlinePlainString(inline);
+    }
+    return string;
+}
+export function stringToId(string) {
+    return string.replace(/[^\s\w-]/g, '').toLowerCase().trim().split(/[\s_-]+/).join('-');
+}
 export function getGlobalOptionArray(option, tag, tagToGlobalOptions) {
     const options = tagToGlobalOptions[tag];
     if (options === undefined) {
@@ -60,20 +80,10 @@ export async function extractContext(doc, dir, options = {}) {
     if (dir.length === 0) {
         dir = location.href;
     }
-    const context = {
-        css: '',
-        dir,
-        indexInfoArray: [],
-        idToIndexInfo: {},
-        tagToGlobalOptions: {},
-        tagToUnitCompiler: {},
-        title: '',
-    };
-    if (options.dftTagToGlobalOptions !== undefined) {
-        Object.assign(context.tagToGlobalOptions, options.dftTagToGlobalOptions);
-    }
-    if (options.dftTagToUnitCompiler !== undefined) {
-        Object.assign(context.tagToUnitCompiler, options.dftTagToUnitCompiler);
+    const tagToGlobalOptions = {};
+    const tagToUnitCompiler = {};
+    if (options.builtInTagToUnitCompiler !== undefined) {
+        Object.assign(tagToUnitCompiler, options.builtInTagToUnitCompiler);
     }
     const cssURLs = [];
     const tagToUnitCompilerURLs = [];
@@ -133,9 +143,9 @@ export async function extractContext(doc, dir, options = {}) {
             continue;
         }
         if (unit.options.global === true) {
-            let globalOptions = context.tagToGlobalOptions[unit.tag];
+            let globalOptions = tagToGlobalOptions[unit.tag];
             if (globalOptions === undefined) {
-                context.tagToGlobalOptions[unit.tag] = globalOptions = {};
+                tagToGlobalOptions[unit.tag] = globalOptions = {};
             }
             if (globalOptions.__ === undefined) {
                 globalOptions.__ = [unit.children];
@@ -161,20 +171,26 @@ export async function extractContext(doc, dir, options = {}) {
             }
         }
     }
-    context.css += (await urlsToAbsURLs(cssURLs, dir))
+    const css = (await urlsToAbsURLs(cssURLs, dir))
         .map(val => `@import ${JSON.stringify(val)};`).join('');
     for (const url of await urlsToAbsURLs(tagToUnitCompilerURLs, dir)) {
         try {
-            Object.assign(context.tagToUnitCompiler, await (new Function(`return import(${JSON.stringify(url)})`)()));
+            Object.assign(tagToUnitCompiler, await (new Function(`return import(${JSON.stringify(url)})`)()));
         }
         catch (err) {
             console.log(err);
         }
     }
-    const counter = new Counter(context.tagToGlobalOptions);
+    const counter = new Counter(tagToGlobalOptions);
     counter.countSTDN(doc);
-    context.indexInfoArray = counter.indexInfoArray;
-    context.idToIndexInfo = counter.idToIndexInfo;
-    context.title = counter.title;
-    return context;
+    return {
+        css,
+        dir,
+        indexInfoArray: counter.indexInfoArray,
+        idToIndexInfo: counter.idToIndexInfo,
+        tagToGlobalOptions,
+        tagToUnitCompiler,
+        title: counter.title,
+        unitToId: counter.unitToId,
+    };
 }

@@ -1,12 +1,14 @@
-import { getLastGlobalOption, unitToPlainString } from "./countext";
+import { getLastGlobalOption, stringToId, unitToInlinePlainString, unitToPlainString } from './countext';
 export class Counter {
     constructor(tagToGlobalOptions) {
         this.tagToGlobalOptions = tagToGlobalOptions;
         this.currentHeadingIndex = [];
         this.realOrbitToCurrentIndex = {};
+        this.baseIdToCount = {};
         this.orbitToRealOrbit = {};
         this.indexInfoArray = [];
         this.idToIndexInfo = {};
+        this.unitToId = new Map();
         this.title = '';
     }
     createIndex(realOrbit, level) {
@@ -68,33 +70,32 @@ export class Counter {
         if (this.title.length === 0 && unit.tag === 'title') {
             this.title = unitToPlainString(unit);
         }
-        const { id } = unit.options;
-        if (typeof id === 'string'
-            && id.length > 0
-            && this.idToIndexInfo[id] === undefined) {
-            let orbit = unit.options.orbit
-                ?? getLastGlobalOption('orbit', unit.tag, this.tagToGlobalOptions);
-            if (typeof orbit !== 'string' || orbit.length === 0) {
-                orbit = unit.tag;
-            }
-            const realOrbit = this.getRealOrbit(orbit);
-            let level = unit.options.level
-                ?? getLastGlobalOption('level', unit.tag, this.tagToGlobalOptions)
-                ?? getLastGlobalOption('level', realOrbit, this.tagToGlobalOptions);
-            if (typeof level !== 'number' || level <= 0 || level % 1 !== 0) {
-                level = 1;
-            }
-            const index = this.createIndex(realOrbit, level);
-            const indexInfo = {
-                index,
-                id,
-                orbit,
-                realOrbit,
-                unit,
-            };
-            this.indexInfoArray.push(indexInfo);
-            this.idToIndexInfo[id] = indexInfo;
+        const baseId = stringToId(typeof unit.options.id === 'string' ? unit.options.id : unitToInlinePlainString(unit));
+        const count = this.baseIdToCount[baseId] = (this.baseIdToCount[baseId] ?? 0) + 1;
+        const id = count > 1 || baseId.length === 0 ? `${baseId}~${count}` : baseId;
+        let orbit = unit.options.orbit
+            ?? getLastGlobalOption('orbit', unit.tag, this.tagToGlobalOptions);
+        if (typeof orbit !== 'string' || orbit.length === 0) {
+            orbit = unit.tag;
         }
+        const realOrbit = this.getRealOrbit(orbit);
+        let level = unit.options.level
+            ?? getLastGlobalOption('level', unit.tag, this.tagToGlobalOptions)
+            ?? getLastGlobalOption('level', realOrbit, this.tagToGlobalOptions);
+        if (typeof level !== 'number' || level <= 0 || level % 1 !== 0) {
+            level = 1;
+        }
+        const index = this.createIndex(realOrbit, level);
+        const indexInfo = {
+            index,
+            id,
+            orbit,
+            realOrbit,
+            unit,
+        };
+        this.indexInfoArray.push(indexInfo);
+        this.idToIndexInfo[id] = indexInfo;
+        this.unitToId.set(unit, id);
         for (const key of Object.keys(unit.options)) {
             const val = unit.options[key];
             if (Array.isArray(val)) {
