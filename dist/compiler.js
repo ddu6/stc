@@ -51,15 +51,19 @@ export class Compiler {
             }
             element.append(df);
         }
+        element.classList.add('unit');
+        try {
+            element.classList.add(unit.tag);
+            if (typeof unit.options.class === 'string') {
+                element.classList.add(...unit.options.class.trim().split(/\s+/));
+            }
+        }
+        catch (err) {
+            console.log(err);
+        }
         const id = this.context.unitToId.get(unit);
         if (id !== undefined) {
             element.id = id;
-            const indexInfo = this.context.idToIndexInfo[id];
-            if (indexInfo !== undefined) {
-                element.dataset.orbit = indexInfo.orbit;
-                element.dataset.level = indexInfo.index.length.toString();
-                element.dataset.index = indexInfo.index.join('.');
-            }
         }
         for (const key of Object.keys(unit.options)) {
             if (key === 'id' || key === 'class') {
@@ -95,17 +99,6 @@ export class Compiler {
                 console.log(err);
             }
         }
-        element.classList.add('unit');
-        try {
-            element.classList.add(unit.tag);
-            if (typeof unit.options.class === 'string') {
-                element.classList.add(...unit.options.class.trim().split(/\s+/));
-            }
-        }
-        catch (err) {
-            console.log(err);
-        }
-        element.dataset.tag = unit.tag;
         this.unitToCompiling.set(unit, false);
         return element;
     }
