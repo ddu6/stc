@@ -74,42 +74,44 @@ export class Counter{
             return realOrbit
         }
         this.orbitToRealOrbit[orbit]=orbit
-        const val=getLastGlobalOption('merge-into',orbit,this.tagToGlobalOptions)
-        if(typeof val!=='string'||val.length===0||val===orbit){
+        const value=getLastGlobalOption('merge-into',orbit,this.tagToGlobalOptions)
+        if(typeof value!=='string'||value.length===0||value===orbit){
             return orbit
         }
-        return this.orbitToRealOrbit[orbit]=this.getRealOrbit(val)
+        return this.orbitToRealOrbit[orbit]=this.getRealOrbit(value)
     }
     private countUnit(unit:STDNUnit){
         if(this.title.length===0&&unit.tag==='title'){
             this.title=unitToPlainString(unit)
         }
-        const baseId=stringToId(typeof unit.options.id==='string'?unit.options.id:unitToInlinePlainString(unit))
-        const count=this.baseIdToCount[baseId]=(this.baseIdToCount[baseId]??0)+1
-        const id=count>1||baseId.length===0?`${baseId}~${count}`:baseId
-        let orbit=unit.options.orbit
-        ??getLastGlobalOption('orbit',unit.tag,this.tagToGlobalOptions)
-        if(typeof orbit!=='string'||orbit.length===0){
-            orbit=unit.tag
+        if(unit.tag!=='global'&&unit.options.global!==true){
+            const baseId=stringToId(typeof unit.options.id==='string'?unit.options.id:unitToInlinePlainString(unit))
+            const count=this.baseIdToCount[baseId]=(this.baseIdToCount[baseId]??0)+1
+            const id=count>1||baseId.length===0?`${baseId}~${count}`:baseId
+            let orbit=unit.options.orbit
+                ??getLastGlobalOption('orbit',unit.tag,this.tagToGlobalOptions)
+            if(typeof orbit!=='string'||orbit.length===0){
+                orbit=unit.tag
+            }
+            const realOrbit=this.getRealOrbit(orbit)
+            let level=unit.options.level
+                ??getLastGlobalOption('level',unit.tag,this.tagToGlobalOptions)
+                ??getLastGlobalOption('level',realOrbit,this.tagToGlobalOptions)
+            if(typeof level!=='number'||level<=0||level%1!==0){
+                level=1
+            }
+            const index=this.createIndex(realOrbit,level)
+            const indexInfo:IndexInfo={
+                index,
+                id,
+                orbit,
+                realOrbit,
+                unit,
+            }
+            this.indexInfoArray.push(indexInfo)
+            this.idToIndexInfo[id]=indexInfo
+            this.unitToId.set(unit,id)
         }
-        const realOrbit=this.getRealOrbit(orbit)
-        let level=unit.options.level
-        ??getLastGlobalOption('level',unit.tag,this.tagToGlobalOptions)
-        ??getLastGlobalOption('level',realOrbit,this.tagToGlobalOptions)
-        if(typeof level!=='number'||level<=0||level%1!==0){
-            level=1
-        }
-        const index=this.createIndex(realOrbit,level)
-        const indexInfo:IndexInfo={
-            index,
-            id,
-            orbit,
-            realOrbit,
-            unit,
-        }
-        this.indexInfoArray.push(indexInfo)
-        this.idToIndexInfo[id]=indexInfo
-        this.unitToId.set(unit,id)
         for(const key of Object.keys(unit.options)){
             const val=unit.options[key]
             if(Array.isArray(val)){
