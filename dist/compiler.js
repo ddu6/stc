@@ -1,21 +1,34 @@
+import { getLastGlobalOption } from './countext';
 import { Div, Span } from 'stce';
 import { isRelURL, relURLToAbsURL } from './urls';
 export class Compiler {
     constructor(context) {
         this.context = context;
+        this.tagToRealTag = {};
         this.unitToCompiling = new Map();
+    }
+    getRealTag(tag) {
+        let realTag = this.tagToRealTag[tag];
+        if (realTag !== undefined) {
+            return realTag;
+        }
+        this.tagToRealTag[tag] = tag;
+        const value = getLastGlobalOption('compile-with', tag, this.context.tagToGlobalOptions);
+        if (typeof value !== 'string' || value.length === 0 || value === tag) {
+            return tag;
+        }
+        return this.tagToRealTag[tag] = this.getRealTag(value);
     }
     async compileUnit(unit) {
         if (this.unitToCompiling.get(unit) === true) {
             return Compiler.createErrorElement('Loop');
         }
-        if (unit.tag === 'global'
-            || unit.options.global === true) {
+        if (unit.tag === 'global' || unit.options.global === true) {
             return new Div(['unit', 'global']).element;
         }
         this.unitToCompiling.set(unit, true);
         let element;
-        const unitCompiler = this.context.tagToUnitCompiler[unit.tag];
+        const unitCompiler = this.context.tagToUnitCompiler[this.getRealTag(unit.tag)];
         if (unitCompiler !== undefined) {
             try {
                 element = await unitCompiler(unit, this);

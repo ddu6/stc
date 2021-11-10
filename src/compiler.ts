@@ -1,23 +1,35 @@
 import {STDN,STDNInline,STDNLine,STDNUnit} from 'stdn'
-import {Context} from './countext'
+import {Context,getLastGlobalOption} from './countext'
 import {Div,Span} from 'stce'
 import {isRelURL,relURLToAbsURL} from './urls'
 export class Compiler{
+    private readonly tagToRealTag:{
+        [key:string]:string|undefined
+    }={}
     readonly unitToCompiling=new Map<STDNUnit,boolean|undefined>()
     constructor(readonly context:Context){}
+    getRealTag(tag:string):string{
+        let realTag=this.tagToRealTag[tag]
+        if(realTag!==undefined){
+            return realTag
+        }
+        this.tagToRealTag[tag]=tag
+        const value=getLastGlobalOption('compile-with',tag,this.context.tagToGlobalOptions)
+        if(typeof value!=='string'||value.length===0||value===tag){
+            return tag
+        }
+        return this.tagToRealTag[tag]=this.getRealTag(value)
+    }
     async compileUnit(unit:STDNUnit){
         if(this.unitToCompiling.get(unit)===true){
             return Compiler.createErrorElement('Loop')
         }
-        if(
-            unit.tag==='global'
-            ||unit.options.global===true
-        ){
+        if(unit.tag==='global'||unit.options.global===true){
             return new Div(['unit','global']).element
         }
         this.unitToCompiling.set(unit,true)
         let element:HTMLElement|SVGElement
-        const unitCompiler=this.context.tagToUnitCompiler[unit.tag]
+        const unitCompiler=this.context.tagToUnitCompiler[this.getRealTag(unit.tag)]
         if(unitCompiler!==undefined){
             try{
                 element=await unitCompiler(unit,this)

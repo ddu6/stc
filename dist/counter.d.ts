@@ -15,16 +15,14 @@ export declare class Counter {
     private readonly currentHeadingIndex;
     private readonly realOrbitToCurrentIndex;
     private readonly baseIdToCount;
-    readonly orbitToRealOrbit: {
-        [key: string]: string | undefined;
-    };
+    private readonly orbitToRealOrbit;
     readonly indexInfoArray: IndexInfo[];
     readonly idToIndexInfo: IdToIndexInfo;
     readonly unitToId: Map<STDNUnit, string | undefined>;
     title: string;
     constructor(tagToGlobalOptions: TagToGlobalOptions);
     private createIndex;
-    private getRealOrbit;
+    getRealOrbit(orbit: string): string;
     private countUnit;
     countSTDN(stdn: STDN): void;
 }

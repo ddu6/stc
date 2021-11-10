@@ -18,7 +18,7 @@ export class Counter{
     private readonly baseIdToCount:{
         [key:string]:number|undefined
     }={}
-    readonly orbitToRealOrbit:{
+    private readonly orbitToRealOrbit:{
         [key:string]:string|undefined
     }={}
     readonly indexInfoArray:IndexInfo[]=[]
@@ -68,7 +68,7 @@ export class Counter{
         tmp.push(++val[level-1])
         return tmp
     }
-    private getRealOrbit(orbit:string):string{
+    getRealOrbit(orbit:string):string{
         let realOrbit=this.orbitToRealOrbit[orbit]
         if(realOrbit!==undefined){
             return realOrbit
