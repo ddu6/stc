@@ -1,9 +1,9 @@
 import {compile} from '../dist/mod.js'
-const example=`{id t1, style margin:1em 0, theorem [
+const example=`{id flt, style margin:1em 0, theorem [
     'Let n be an integer greater than 2, then there are no positive integers a,b,c satisfying'
     {style text-align:center, 'a^n+b^n=c^n.'}
 ]}
-['The first successful proof of '{href #t1, a[theorem FLT]}' was released in 1994 by Andrew Wiles.']
+['The first successful proof of '{href #flt, a[theorem FLT]}' was released in 1994 by Andrew Wiles.']
 {style height:100vh}`
 ;(async()=>{
     const result=await compile(example)
