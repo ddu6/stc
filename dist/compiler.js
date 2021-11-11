@@ -14,7 +14,7 @@ export class Compiler {
             return new Div(['unit', 'global']).element;
         }
         this.unitToCompiling.set(unit, true);
-        let realTag = unit.options.realTag
+        let realTag = unit.options['compile-with']
             ?? getLastGlobalOption('compile-with', unit.tag, this.context.tagToGlobalOptions);
         if (typeof realTag !== 'string' || realTag.length === 0) {
             realTag = unit.tag;
