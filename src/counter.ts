@@ -4,7 +4,6 @@ export interface IndexInfo{
     index:number[]
     id:string
     orbit:string
-    realOrbit:string
     unit:STDNUnit
 }
 export type IdToIndexInfo={
@@ -12,22 +11,19 @@ export type IdToIndexInfo={
 }
 export class Counter{
     private readonly currentHeadingIndex:number[]=[]
-    private readonly realOrbitToCurrentIndex:{
+    private readonly orbitToCurrentIndex:{
         [key:string]:number[]|undefined
     }={}
     private readonly baseIdToCount:{
         [key:string]:number|undefined
-    }={}
-    private readonly orbitToRealOrbit:{
-        [key:string]:string|undefined
     }={}
     readonly indexInfoArray:IndexInfo[]=[]
     readonly idToIndexInfo:IdToIndexInfo={}
     readonly unitToId=new Map<STDNUnit,string|undefined>()
     title=''
     constructor(readonly tagToGlobalOptions:TagToGlobalOptions){}
-    private createIndex(realOrbit:string,level:number){
-        if(realOrbit==='heading'){
+    private createIndex(orbit:string,level:number){
+        if(orbit==='heading'){
             if(this.currentHeadingIndex.length<level){
                 for(let i=this.currentHeadingIndex.length;i<level;i++){
                     this.currentHeadingIndex.push(0)
@@ -36,8 +32,8 @@ export class Counter{
                 for(let i=level;i<this.currentHeadingIndex.length;i++){
                     this.currentHeadingIndex[i]=0
                 }
-                for(const key of Object.keys(this.realOrbitToCurrentIndex)){
-                    const val=this.realOrbitToCurrentIndex[key]
+                for(const key of Object.keys(this.orbitToCurrentIndex)){
+                    const val=this.orbitToCurrentIndex[key]
                     if(val===undefined||val.length<level){
                         continue
                     }
@@ -49,10 +45,10 @@ export class Counter{
             this.currentHeadingIndex[level-1]++
             return this.currentHeadingIndex.slice(0,level)
         }
-        let val=this.realOrbitToCurrentIndex[realOrbit]
+        let val=this.orbitToCurrentIndex[orbit]
         if(val===undefined){
             val=[]
-            this.realOrbitToCurrentIndex[realOrbit]=val
+            this.orbitToCurrentIndex[orbit]=val
         }
         if(val.length<level){
             for(let i=val.length;i<level;i++){
@@ -68,18 +64,6 @@ export class Counter{
         tmp.push(++val[level-1])
         return tmp
     }
-    getRealOrbit(orbit:string):string{
-        let realOrbit=this.orbitToRealOrbit[orbit]
-        if(realOrbit!==undefined){
-            return realOrbit
-        }
-        this.orbitToRealOrbit[orbit]=orbit
-        const value=getLastGlobalOption('merge-into',orbit,this.tagToGlobalOptions)
-        if(typeof value!=='string'||value.length===0||value===orbit){
-            return orbit
-        }
-        return this.orbitToRealOrbit[orbit]=this.getRealOrbit(value)
-    }
     private countUnit(unit:STDNUnit){
         if(this.title.length===0&&unit.tag==='title'){
             this.title=unitToPlainString(unit)
@@ -93,19 +77,17 @@ export class Counter{
             if(typeof orbit!=='string'||orbit.length===0){
                 orbit=unit.tag
             }
-            const realOrbit=this.getRealOrbit(orbit)
             let level=unit.options.level
                 ??getLastGlobalOption('level',unit.tag,this.tagToGlobalOptions)
-                ??getLastGlobalOption('level',realOrbit,this.tagToGlobalOptions)
+                ??getLastGlobalOption('level',orbit,this.tagToGlobalOptions)
             if(typeof level!=='number'||level<=0||level%1!==0){
                 level=1
             }
-            const index=this.createIndex(realOrbit,level)
+            const index=this.createIndex(orbit,level)
             const indexInfo:IndexInfo={
                 index,
                 id,
                 orbit,
-                realOrbit,
                 unit,
             }
             this.indexInfoArray.push(indexInfo)

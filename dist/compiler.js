@@ -12,12 +12,11 @@ export class Compiler {
         if (realTag !== undefined) {
             return realTag;
         }
-        this.tagToRealTag[tag] = tag;
         const value = getLastGlobalOption('compile-with', tag, this.context.tagToGlobalOptions);
-        if (typeof value !== 'string' || value.length === 0 || value === tag) {
-            return tag;
+        if (typeof value !== 'string' || value.length === 0) {
+            return this.tagToRealTag[tag] = tag;
         }
-        return this.tagToRealTag[tag] = this.getRealTag(value);
+        return this.tagToRealTag[tag] = value;
     }
     async compileUnit(unit) {
         if (this.unitToCompiling.get(unit) === true) {
@@ -27,8 +26,9 @@ export class Compiler {
             return new Div(['unit', 'global']).element;
         }
         this.unitToCompiling.set(unit, true);
+        const realTag = this.getRealTag(unit.tag);
+        const unitCompiler = this.context.tagToUnitCompiler[realTag];
         let element;
-        const unitCompiler = this.context.tagToUnitCompiler[this.getRealTag(unit.tag)];
         if (unitCompiler !== undefined) {
             try {
                 element = await unitCompiler(unit, this);
@@ -45,17 +45,17 @@ export class Compiler {
         }
         else {
             let df;
-            if (Compiler.supportedHTMLTags.includes(unit.tag)) {
-                element = document.createElement(unit.tag);
-                if (Compiler.supportedHTMLTagsWithInlineChildren.includes(unit.tag)) {
+            if (Compiler.supportedHTMLTags.includes(realTag)) {
+                element = document.createElement(realTag);
+                if (Compiler.supportedHTMLTagsWithInlineChildren.includes(realTag)) {
                     df = await this.compileInlineSTDN(unit.children);
                 }
                 else {
                     df = await this.compileSTDN(unit.children);
                 }
             }
-            else if (Compiler.supportedSVGTags.includes(unit.tag)) {
-                element = document.createElementNS("http://www.w3.org/2000/svg", unit.tag);
+            else if (Compiler.supportedSVGTags.includes(realTag)) {
+                element = document.createElementNS("http://www.w3.org/2000/svg", realTag);
                 df = await this.compileInlineSTDN(unit.children);
             }
             else {
@@ -67,6 +67,7 @@ export class Compiler {
         element.classList.add('unit');
         try {
             element.classList.add(unit.tag);
+            element.classList.add(realTag);
             if (typeof unit.options.class === 'string') {
                 element.classList.add(...unit.options.class.trim().split(/\s+/));
             }
