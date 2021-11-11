@@ -52,7 +52,6 @@ export class Compiler{
         }
         element.classList.add('unit')
         try{
-            element.classList.add(unit.tag)
             element.classList.add(realTag)
             if(typeof unit.options.class==='string'){
                 element.classList.add(...unit.options.class.trim().split(/\s+/))
