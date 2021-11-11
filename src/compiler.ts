@@ -3,22 +3,8 @@ import {Context,getLastGlobalOption} from './countext'
 import {Div,Span} from 'stce'
 import {isRelURL,relURLToAbsURL} from './urls'
 export class Compiler{
-    private readonly tagToRealTag:{
-        [key:string]:string|undefined
-    }={}
     readonly unitToCompiling=new Map<STDNUnit,boolean|undefined>()
     constructor(readonly context:Context){}
-    getRealTag(tag:string){
-        let realTag=this.tagToRealTag[tag]
-        if(realTag!==undefined){
-            return realTag
-        }
-        const value=getLastGlobalOption('compile-with',tag,this.context.tagToGlobalOptions)
-        if(typeof value!=='string'||value.length===0){
-            return this.tagToRealTag[tag]=tag
-        }
-        return this.tagToRealTag[tag]=value
-    }
     async compileUnit(unit:STDNUnit){
         if(this.unitToCompiling.get(unit)===true){
             return Compiler.createErrorElement('Loop')
@@ -27,7 +13,11 @@ export class Compiler{
             return new Div(['unit','global']).element
         }
         this.unitToCompiling.set(unit,true)
-        const realTag=this.getRealTag(unit.tag)
+        let realTag=unit.options.realTag
+            ??getLastGlobalOption('compile-with',unit.tag,this.context.tagToGlobalOptions)
+        if(typeof realTag!=='string'||realTag.length===0){
+            realTag=unit.tag
+        }
         const unitCompiler=this.context.tagToUnitCompiler[realTag]
         let element:HTMLElement|SVGElement
         if(unitCompiler!==undefined){
