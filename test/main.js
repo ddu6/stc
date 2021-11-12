@@ -1,4 +1,4 @@
-import {compile} from '../dist/mod.js'
+import {compile} from '../mod.js'
 const example=`{id flt, style margin:1em 0, theorem [
     'Let n be an integer greater than 2, then there are no positive integers a,b,c satisfying'
     {style text-align:center, 'a^n+b^n=c^n.'}
