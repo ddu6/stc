@@ -129,7 +129,7 @@ export async function extractContext(
             const mod=unit.options['mod']
             if(typeof mod==='string'){
                 cssURLs.push(`https://cdn.jsdelivr.net/gh/st-mod/${mod}/main.css`)
-                tagToUnitCompilerURLs.push(`https://cdn.jsdelivr.net/gh/st-mod/${mod}/main.js`)
+                tagToUnitCompilerURLs.push(`https://cdn.jsdelivr.net/gh/st-mod/${mod}/ucs.js`)
             }
             const css=unit.options['css']
             if(typeof css==='string'){
@@ -137,13 +137,13 @@ export async function extractContext(
             }
             const ucs=unit.options['ucs']
             if(typeof ucs==='string'){
-                tagToUnitCompilerURLs.push(`https://cdn.jsdelivr.net/gh/st-mod/${ucs}/main.js`)
+                tagToUnitCompilerURLs.push(`https://cdn.jsdelivr.net/gh/st-mod/${ucs}/ucs.js`)
             }
             {
                 const gh=unit.options['mod-gh']
                 if(typeof gh==='string'){
                     cssURLs.push(`https://cdn.jsdelivr.net/gh/${gh}/main.css`)
-                    tagToUnitCompilerURLs.push(`https://cdn.jsdelivr.net/gh/${gh}/main.js`)
+                    tagToUnitCompilerURLs.push(`https://cdn.jsdelivr.net/gh/${gh}/ucs.js`)
                 }
             }
             {
@@ -155,7 +155,7 @@ export async function extractContext(
             {
                 const gh=unit.options['ucs-gh']
                 if(typeof gh==='string'){
-                    tagToUnitCompilerURLs.push(`https://cdn.jsdelivr.net/gh/${gh}/main.js`)
+                    tagToUnitCompilerURLs.push(`https://cdn.jsdelivr.net/gh/${gh}/ucs.js`)
                 }
             }
             {
