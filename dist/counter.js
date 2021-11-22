@@ -64,13 +64,26 @@ export class Counter {
             let orbit = unit.options.orbit
                 ?? getLastGlobalOption('orbit', unit.tag, this.tagToGlobalOptions);
             if (typeof orbit !== 'string' || orbit.length === 0) {
-                orbit = unit.tag;
+                orbit = unit.tag === 'h1'
+                    || unit.tag === 'h2'
+                    || unit.tag === 'h3'
+                    || unit.tag === 'h4'
+                    || unit.tag === 'h5'
+                    || unit.tag === 'h6'
+                    ? 'heading' : unit.tag;
             }
             let level = unit.options.level
                 ?? getLastGlobalOption('level', unit.tag, this.tagToGlobalOptions)
                 ?? getLastGlobalOption('level', orbit, this.tagToGlobalOptions);
             if (typeof level !== 'number' || level <= 0 || level % 1 !== 0) {
-                level = 1;
+                switch (unit.tag) {
+                    case 'h2': level = 2;
+                    case 'h3': level = 3;
+                    case 'h4': level = 4;
+                    case 'h5': level = 5;
+                    case 'h6': level = 6;
+                    default: level = 1;
+                }
             }
             const index = this.createIndex(orbit, level);
             const indexInfo = {
