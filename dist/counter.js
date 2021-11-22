@@ -77,11 +77,21 @@ export class Counter {
                 ?? getLastGlobalOption('level', orbit, this.tagToGlobalOptions);
             if (typeof level !== 'number' || level <= 0 || level % 1 !== 0) {
                 switch (unit.tag) {
-                    case 'h2': level = 2;
-                    case 'h3': level = 3;
-                    case 'h4': level = 4;
-                    case 'h5': level = 5;
-                    case 'h6': level = 6;
+                    case 'h2':
+                        level = 2;
+                        break;
+                    case 'h3':
+                        level = 3;
+                        break;
+                    case 'h4':
+                        level = 4;
+                        break;
+                    case 'h5':
+                        level = 5;
+                        break;
+                    case 'h6':
+                        level = 6;
+                        break;
                     default: level = 1;
                 }
             }
