@@ -1,5 +1,5 @@
 import {STDN,STDNInline,STDNLine,STDNUnit} from 'stdn'
-import {Context,getLastGlobalOption} from './countext'
+import {Context,getGlobalOptionArray,getLastGlobalOption} from './countext'
 import {Div,Span} from 'stce'
 import {isRelURL,relURLToAbsURL} from './urls'
 export class Compiler{
@@ -55,6 +55,11 @@ export class Compiler{
             element.classList.add(realTag)
             if(typeof unit.options.class==='string'){
                 element.classList.add(...unit.options.class.trim().split(/\s+/))
+            }
+            for(const val of getGlobalOptionArray('class',unit.tag,this.context.tagToGlobalOptions)){
+                if(typeof val==='string'){
+                    element.classList.add(...val.trim().split(/\s+/))
+                }
             }
         }catch(err){
             console.log(err)
