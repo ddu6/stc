@@ -36,7 +36,7 @@ export function stdnToInlinePlainString(stdn) {
     return string;
 }
 export function stringToId(string) {
-    return Array.from(string.matchAll(/[a-zA-Z0-9]+/g)).slice(0, 10).join('-').toLowerCase();
+    return Array.from(string.slice(0, 100).matchAll(/[a-zA-Z0-9]+/g)).join('-').toLowerCase();
 }
 export function getGlobalOptionArray(option, tag, tagToGlobalOptions) {
     const options = tagToGlobalOptions[tag];
