@@ -59,7 +59,7 @@ export function stdnToInlinePlainString(stdn:STDN){
     return string
 }
 export function stringToId(string:string){
-    return string.replace(/[^\s\w-]/g,'').toLowerCase().trim().split(/[\s_-]+/).join('-')
+    return Array.from(string.matchAll(/[a-zA-Z0-9]+/g)).slice(0,10).join('-').toLowerCase()
 }
 export function getGlobalOptionArray(option:string,tag:string,tagToGlobalOptions:TagToGlobalOptions){
     const options=tagToGlobalOptions[tag]
