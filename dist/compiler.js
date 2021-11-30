@@ -274,16 +274,20 @@ Compiler.supportedSVGTags = [
     'animate',
     'animateMotion',
     'circle',
+    'clipPath',
     'ellipse',
     'foreignObject',
     'g',
     'image',
+    'mask',
     'path',
+    'pattern',
     'rect',
     'svg',
     'text',
     'textPath',
     'tspan',
+    'use',
 ];
 Compiler.supportedHTMLAttributes = [
     'accesskey',
@@ -356,4 +360,6 @@ Compiler.supportedHTMLAttributes = [
     'viewBox',
     'x',
     'y',
+    'width',
+    'height',
 ];

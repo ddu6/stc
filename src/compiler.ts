@@ -280,16 +280,20 @@ export class Compiler{
         'animate',
         'animateMotion',
         'circle',
+        'clipPath',
         'ellipse',
         'foreignObject',
         'g',
         'image',
+        'mask',
         'path',
+        'pattern',
         'rect',
         'svg',
         'text',
         'textPath',
         'tspan',
+        'use',
     ]
     static supportedHTMLAttributes=[
         'accesskey',
@@ -363,5 +367,7 @@ export class Compiler{
         'viewBox',
         'x',
         'y',
+        'width',
+        'height',
     ]
 }
