@@ -2,6 +2,7 @@ import { fixURLInSTDN } from './urls';
 import { parse } from "stdn";
 import { Compiler } from "./compiler";
 import { extractContext } from "./countext";
+export * from './base';
 export * from './urls';
 export * from './compiler';
 export * from './counter';

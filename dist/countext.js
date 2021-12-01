@@ -1,43 +1,5 @@
 import { urlsToAbsURLs } from './urls';
 import { Counter } from './counter';
-export function unitToPlainString(unit) {
-    return stdnToPlainString(unit.children);
-}
-export function stdnToPlainString(stdn) {
-    const array = [];
-    for (const line of stdn) {
-        let string = '';
-        for (const inline of line) {
-            if (typeof inline === 'string') {
-                string += inline;
-                continue;
-            }
-            string += unitToPlainString(inline);
-        }
-        array.push(string);
-    }
-    return array.join('\n');
-}
-export function unitToInlinePlainString(unit) {
-    return stdnToInlinePlainString(unit.children);
-}
-export function stdnToInlinePlainString(stdn) {
-    if (stdn.length === 0) {
-        return '';
-    }
-    let string = '';
-    for (const inline of stdn[0]) {
-        if (typeof inline === 'string') {
-            string += inline;
-            continue;
-        }
-        string += unitToInlinePlainString(inline);
-    }
-    return string;
-}
-export function stringToId(string) {
-    return Array.from(string.slice(0, 100).matchAll(/[a-zA-Z0-9]+/g)).join('-').toLowerCase();
-}
 export function getGlobalOptionArray(option, tag, tagToGlobalOptions) {
     const options = tagToGlobalOptions[tag];
     if (options === undefined) {

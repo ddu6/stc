@@ -1,4 +1,5 @@
-import { getLastGlobalOption, stringToId, unitToInlinePlainString, unitToPlainString } from './countext';
+import { unitToPlainString, unitToInlinePlainString, stringToId } from './base';
+import { getLastGlobalOption } from './countext';
 export class Counter {
     constructor(tagToGlobalOptions) {
         this.tagToGlobalOptions = tagToGlobalOptions;

@@ -23,44 +23,6 @@ export interface Context{
     title:Counter['title']
     unitToId:Counter['unitToId']
 }
-export function unitToPlainString(unit:STDNUnit){
-    return stdnToPlainString(unit.children)
-}
-export function stdnToPlainString(stdn:STDN){
-    const array:string[]=[]
-    for(const line of stdn){
-        let string=''
-        for(const inline of line){
-            if(typeof inline==='string'){
-                string+=inline
-                continue
-            }
-            string+=unitToPlainString(inline)
-        }
-        array.push(string)
-    }
-    return array.join('\n')
-}
-export function unitToInlinePlainString(unit:STDNUnit){
-    return stdnToInlinePlainString(unit.children)
-}
-export function stdnToInlinePlainString(stdn:STDN){
-    if(stdn.length===0){
-        return ''
-    }
-    let string=''
-    for(const inline of stdn[0]){
-        if(typeof inline==='string'){
-            string+=inline
-            continue
-        }
-        string+=unitToInlinePlainString(inline)
-    }
-    return string
-}
-export function stringToId(string:string){
-    return Array.from(string.slice(0,100).matchAll(/[a-zA-Z0-9]+/g)).join('-').toLowerCase()
-}
 export function getGlobalOptionArray(option:string,tag:string,tagToGlobalOptions:TagToGlobalOptions){
     const options=tagToGlobalOptions[tag]
     if(options===undefined){

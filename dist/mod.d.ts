@@ -1,4 +1,5 @@
 import { ExtractContextOptions } from "./countext";
+export * from './base';
 export * from './urls';
 export * from './compiler';
 export * from './counter';

@@ -22,11 +22,6 @@ export interface Context {
     title: Counter['title'];
     unitToId: Counter['unitToId'];
 }
-export declare function unitToPlainString(unit: STDNUnit): string;
-export declare function stdnToPlainString(stdn: STDN): string;
-export declare function unitToInlinePlainString(unit: STDNUnit): string;
-export declare function stdnToInlinePlainString(stdn: STDN): string;
-export declare function stringToId(string: string): string;
 export declare function getGlobalOptionArray(option: string, tag: string, tagToGlobalOptions: TagToGlobalOptions): (string | number | boolean | STDN)[];
 export declare function getLastGlobalOption(option: string, tag: string, tagToGlobalOptions: TagToGlobalOptions): string | number | boolean | STDN | undefined;
 export declare function getGlobalChildren(tag: string, tagToGlobalOptions: TagToGlobalOptions): import("stdn").STDNLine[];

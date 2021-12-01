@@ -1,5 +1,6 @@
 import {STDN,STDNUnit} from 'stdn'
-import {getLastGlobalOption,stringToId,TagToGlobalOptions,unitToInlinePlainString,unitToPlainString} from './countext'
+import {unitToPlainString,unitToInlinePlainString,stringToId} from './base'
+import {getLastGlobalOption,TagToGlobalOptions} from './countext'
 export interface IndexInfo{
     index:number[]
     id:string
