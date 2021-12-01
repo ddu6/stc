@@ -1,7 +1,10 @@
-import { getGlobalOptionArray, getLastGlobalOption } from './countext';
-import { Div, Span } from 'stce';
-import { isRelURL, relURLToAbsURL } from './urls';
-export class Compiler {
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.Compiler = void 0;
+const countext_1 = require("./countext");
+const stce_1 = require("stce");
+const urls_1 = require("./urls");
+class Compiler {
     constructor(context) {
         this.context = context;
         this.unitToCompiling = new Map();
@@ -11,11 +14,11 @@ export class Compiler {
             return Compiler.createErrorElement('Loop');
         }
         if (unit.tag === 'global' || unit.options.global === true) {
-            return new Div(['unit', 'global']).element;
+            return new stce_1.Div(['unit', 'global']).element;
         }
         this.unitToCompiling.set(unit, true);
         let realTag = unit.options['compile-with']
-            ?? getLastGlobalOption('compile-with', unit.tag, this.context.tagToGlobalOptions);
+            ?? (0, countext_1.getLastGlobalOption)('compile-with', unit.tag, this.context.tagToGlobalOptions);
         if (typeof realTag !== 'string' || realTag.length === 0) {
             realTag = unit.tag;
         }
@@ -62,7 +65,7 @@ export class Compiler {
             if (typeof unit.options.class === 'string') {
                 element.classList.add(...unit.options.class.trim().split(/\s+/));
             }
-            for (const val of getGlobalOptionArray('class', unit.tag, this.context.tagToGlobalOptions)) {
+            for (const val of (0, countext_1.getGlobalOptionArray)('class', unit.tag, this.context.tagToGlobalOptions)) {
                 if (typeof val === 'string') {
                     element.classList.add(...val.trim().split(/\s+/));
                 }
@@ -99,8 +102,8 @@ export class Compiler {
             }
             if (this.context.dir.length > 0
                 && (attr === 'src' || attr === 'href')
-                && isRelURL(val)) {
-                val = relURLToAbsURL(val, this.context.dir);
+                && (0, urls_1.isRelURL)(val)) {
+                val = (0, urls_1.relURLToAbsURL)(val, this.context.dir);
             }
             try {
                 element.setAttribute(attr, val);
@@ -138,16 +141,17 @@ export class Compiler {
     async compileSTDN(stdn) {
         const df = new DocumentFragment();
         for (const line of stdn) {
-            df.append(new Div(['st-line'])
+            df.append(new stce_1.Div(['st-line'])
                 .append(await this.compileLine(line))
                 .element);
         }
         return df;
     }
     static createErrorElement(err) {
-        return new Span(['unit', 'warn']).setText(err).element;
+        return new stce_1.Span(['unit', 'warn']).setText(err).element;
     }
 }
+exports.Compiler = Compiler;
 Compiler.supportedHTMLTags = [
     'address',
     'article',

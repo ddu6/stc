@@ -1,8 +1,12 @@
-import { parse } from 'ston';
-export function isRelURL(url) {
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.urlsStrToAbsURLs = exports.urlsToAbsURLs = exports.fixURLInSTDN = exports.fixURLInUnit = exports.relURLToAbsURL = exports.isRelURL = void 0;
+const ston_1 = require("ston");
+function isRelURL(url) {
     return !url.startsWith('#') && !/^[a-z][a-z0-9+.-]*:/i.test(url);
 }
-export function relURLToAbsURL(url, dir) {
+exports.isRelURL = isRelURL;
+function relURLToAbsURL(url, dir) {
     try {
         return new URL(url, dir).href;
     }
@@ -11,7 +15,8 @@ export function relURLToAbsURL(url, dir) {
         return url;
     }
 }
-export function fixURLInUnit(unit, dir) {
+exports.relURLToAbsURL = relURLToAbsURL;
+function fixURLInUnit(unit, dir) {
     for (const key of Object.keys(unit.options)) {
         const val = unit.options[key];
         if (Array.isArray(val)) {
@@ -26,7 +31,8 @@ export function fixURLInUnit(unit, dir) {
     }
     fixURLInSTDN(unit.children, dir);
 }
-export function fixURLInSTDN(stdn, dir) {
+exports.fixURLInUnit = fixURLInUnit;
+function fixURLInSTDN(stdn, dir) {
     for (const line of stdn) {
         for (const unit of line) {
             if (typeof unit !== 'string') {
@@ -35,7 +41,8 @@ export function fixURLInSTDN(stdn, dir) {
         }
     }
 }
-export async function urlsToAbsURLs(urls, dir) {
+exports.fixURLInSTDN = fixURLInSTDN;
+async function urlsToAbsURLs(urls, dir) {
     const out = [];
     for (const urlStr of urls) {
         try {
@@ -56,8 +63,9 @@ export async function urlsToAbsURLs(urls, dir) {
     }
     return out;
 }
-export async function urlsStrToAbsURLs(string, dir) {
-    const array = parse('[' + string + ']');
+exports.urlsToAbsURLs = urlsToAbsURLs;
+async function urlsStrToAbsURLs(string, dir) {
+    const array = (0, ston_1.parse)('[' + string + ']');
     if (!Array.isArray(array)) {
         return [];
     }
@@ -69,3 +77,4 @@ export async function urlsStrToAbsURLs(string, dir) {
     }
     return await urlsToAbsURLs(urls, dir);
 }
+exports.urlsStrToAbsURLs = urlsStrToAbsURLs;
