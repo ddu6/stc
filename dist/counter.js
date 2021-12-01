@@ -1,9 +1,6 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.Counter = void 0;
-const base_1 = require("./base");
-const countext_1 = require("./countext");
-class Counter {
+import { unitToPlainString, unitToInlinePlainString, stringToId } from './base';
+import { getLastGlobalOption } from './countext';
+export class Counter {
     constructor(tagToGlobalOptions) {
         this.tagToGlobalOptions = tagToGlobalOptions;
         this.currentHeadingIndex = [];
@@ -59,14 +56,14 @@ class Counter {
     }
     countUnit(unit) {
         if (this.title.length === 0 && unit.tag === 'title') {
-            this.title = (0, base_1.unitToPlainString)(unit);
+            this.title = unitToPlainString(unit);
         }
         if (unit.tag !== 'global' && unit.options.global !== true) {
-            const baseId = (0, base_1.stringToId)(typeof unit.options.id === 'string' ? unit.options.id : (0, base_1.unitToInlinePlainString)(unit));
+            const baseId = stringToId(typeof unit.options.id === 'string' ? unit.options.id : unitToInlinePlainString(unit));
             const count = this.baseIdToCount[baseId] = (this.baseIdToCount[baseId] ?? 0) + 1;
             const id = count > 1 || baseId.length === 0 ? `${baseId}~${count}` : baseId;
             let orbit = unit.options.orbit
-                ?? (0, countext_1.getLastGlobalOption)('orbit', unit.tag, this.tagToGlobalOptions);
+                ?? getLastGlobalOption('orbit', unit.tag, this.tagToGlobalOptions);
             if (typeof orbit !== 'string' || orbit.length === 0) {
                 orbit = unit.tag === 'h1'
                     || unit.tag === 'h2'
@@ -77,8 +74,8 @@ class Counter {
                     ? 'heading' : unit.tag;
             }
             let level = unit.options.level
-                ?? (0, countext_1.getLastGlobalOption)('level', unit.tag, this.tagToGlobalOptions)
-                ?? (0, countext_1.getLastGlobalOption)('level', orbit, this.tagToGlobalOptions);
+                ?? getLastGlobalOption('level', unit.tag, this.tagToGlobalOptions)
+                ?? getLastGlobalOption('level', orbit, this.tagToGlobalOptions);
             if (typeof level !== 'number' || level <= 0 || level % 1 !== 0) {
                 switch (unit.tag) {
                     case 'h2':
@@ -128,4 +125,3 @@ class Counter {
         }
     }
 }
-exports.Counter = Counter;

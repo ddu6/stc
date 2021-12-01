@@ -1,25 +1,20 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.extractContext = exports.getGlobalURLs = exports.getGlobalStrings = exports.getGlobalChildren = exports.getLastGlobalOption = exports.getGlobalOptionArray = void 0;
-const urls_1 = require("./urls");
-const counter_1 = require("./counter");
-function getGlobalOptionArray(option, tag, tagToGlobalOptions) {
+import { urlsToAbsURLs } from './urls';
+import { Counter } from './counter';
+export function getGlobalOptionArray(option, tag, tagToGlobalOptions) {
     const options = tagToGlobalOptions[tag];
     if (options === undefined) {
         return [];
     }
     return options[option] ?? [];
 }
-exports.getGlobalOptionArray = getGlobalOptionArray;
-function getLastGlobalOption(option, tag, tagToGlobalOptions) {
+export function getLastGlobalOption(option, tag, tagToGlobalOptions) {
     const array = getGlobalOptionArray(option, tag, tagToGlobalOptions);
     if (array.length === 0) {
         return undefined;
     }
     return array[array.length - 1];
 }
-exports.getLastGlobalOption = getLastGlobalOption;
-function getGlobalChildren(tag, tagToGlobalOptions) {
+export function getGlobalChildren(tag, tagToGlobalOptions) {
     const options = tagToGlobalOptions[tag];
     if (options === undefined) {
         return [];
@@ -30,8 +25,7 @@ function getGlobalChildren(tag, tagToGlobalOptions) {
     }
     return array.flat();
 }
-exports.getGlobalChildren = getGlobalChildren;
-function getGlobalStrings(option, tag, tagToGlobalOptions) {
+export function getGlobalStrings(option, tag, tagToGlobalOptions) {
     const array = getGlobalOptionArray(option, tag, tagToGlobalOptions);
     const strings = [];
     for (const val of array) {
@@ -41,12 +35,10 @@ function getGlobalStrings(option, tag, tagToGlobalOptions) {
     }
     return strings;
 }
-exports.getGlobalStrings = getGlobalStrings;
-async function getGlobalURLs(option, tag, tagToGlobalOptions, dir) {
-    return await (0, urls_1.urlsToAbsURLs)(getGlobalStrings(option, tag, tagToGlobalOptions), dir);
+export async function getGlobalURLs(option, tag, tagToGlobalOptions, dir) {
+    return await urlsToAbsURLs(getGlobalStrings(option, tag, tagToGlobalOptions), dir);
 }
-exports.getGlobalURLs = getGlobalURLs;
-async function extractContext(doc, dir, options = {}) {
+export async function extractContext(doc, dir, options = {}) {
     if (dir.length === 0) {
         dir = location.href;
     }
@@ -141,9 +133,9 @@ async function extractContext(doc, dir, options = {}) {
             }
         }
     }
-    const css = (await (0, urls_1.urlsToAbsURLs)(cssURLs, dir))
+    const css = (await urlsToAbsURLs(cssURLs, dir))
         .map(val => `@import ${JSON.stringify(val)};`).join('');
-    for (const url of await (0, urls_1.urlsToAbsURLs)(tagToUnitCompilerURLs, dir)) {
+    for (const url of await urlsToAbsURLs(tagToUnitCompilerURLs, dir)) {
         try {
             Object.assign(tagToUnitCompiler, await (new Function(`return import(${JSON.stringify(url)})`)()));
         }
@@ -151,7 +143,7 @@ async function extractContext(doc, dir, options = {}) {
             console.log(err);
         }
     }
-    const counter = new counter_1.Counter(tagToGlobalOptions);
+    const counter = new Counter(tagToGlobalOptions);
     counter.countSTDN(doc);
     return {
         css,
@@ -164,4 +156,3 @@ async function extractContext(doc, dir, options = {}) {
         unitToId: counter.unitToId,
     };
 }
-exports.extractContext = extractContext;
