@@ -20,10 +20,13 @@ export function unitToPlainString(unit) {
     return stdnToPlainString(unit.children);
 }
 export function stdnToInlinePlainString(stdn) {
-    if (stdn.length === 0) {
-        return '';
+    for (const line of stdn) {
+        const string = lineToInlinePlainString(line);
+        if (string.length > 0) {
+            return string;
+        }
     }
-    return lineToInlinePlainString(stdn[0]);
+    return '';
 }
 export function lineToInlinePlainString(line) {
     let string = '';
