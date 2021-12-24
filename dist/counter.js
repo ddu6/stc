@@ -1,4 +1,4 @@
-import { unitToPlainString, unitToInlinePlainString, stringToId } from './base';
+import { unitToInlinePlainString, stringToId } from './base';
 import { getLastGlobalOption } from './countext';
 export class Counter {
     constructor(tagToGlobalOptions) {
@@ -56,7 +56,7 @@ export class Counter {
     }
     countUnit(unit) {
         if (this.title.length === 0 && unit.tag === 'title') {
-            this.title = unitToPlainString(unit);
+            this.title = unitToInlinePlainString(unit);
         }
         if (unit.tag !== 'global' && unit.options.global !== true) {
             const baseId = stringToId(typeof unit.options.id === 'string' ? unit.options.id : unitToInlinePlainString(unit));

@@ -1,5 +1,5 @@
 import {STDN,STDNUnit} from 'stdn'
-import {unitToPlainString,unitToInlinePlainString,stringToId} from './base'
+import {unitToInlinePlainString,stringToId} from './base'
 import {getLastGlobalOption,TagToGlobalOptions} from './countext'
 export interface IndexInfo{
     index:number[]
@@ -67,7 +67,7 @@ export class Counter{
     }
     private countUnit(unit:STDNUnit){
         if(this.title.length===0&&unit.tag==='title'){
-            this.title=unitToPlainString(unit)
+            this.title=unitToInlinePlainString(unit)
         }
         if(unit.tag!=='global'&&unit.options.global!==true){
             const baseId=stringToId(typeof unit.options.id==='string'?unit.options.id:unitToInlinePlainString(unit))
