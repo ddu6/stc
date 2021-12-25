@@ -16,7 +16,8 @@ export async function compile(string:string,dir='',options:ExtractContextOptions
     const compiler=new Compiler(context)
     return {
         documentFragment:await compiler.compileSTDN(doc),
-        context,
+        compiler,
+        doc,
     }
 }
 export async function multiCompile(parts:{
@@ -39,7 +40,8 @@ export async function multiCompile(parts:{
     const compiler=new Compiler(context)
     return {
         documentFragment:await compiler.compileSTDN(doc),
-        context,
-        partLengths
+        partLengths,
+        compiler,
+        doc,
     }
 }

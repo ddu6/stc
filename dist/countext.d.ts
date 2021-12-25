@@ -29,5 +29,8 @@ export declare function getGlobalStrings(option: string, tag: string, tagToGloba
 export declare function getGlobalURLs(option: string, tag: string, tagToGlobalOptions: TagToGlobalOptions, dir: string): Promise<string[]>;
 export interface ExtractContextOptions {
     builtInTagToUnitCompiler?: TagToUnitCompiler;
+    style?: HTMLStyleElement;
+    headSTDN?: STDN;
+    footSTDN?: STDN;
 }
 export declare function extractContext(doc: STDN, dir: string, options?: ExtractContextOptions): Promise<Context>;

@@ -63,6 +63,9 @@ export async function getGlobalURLs(option:string,tag:string,tagToGlobalOptions:
 }
 export interface ExtractContextOptions{
     builtInTagToUnitCompiler?:TagToUnitCompiler
+    style?:HTMLStyleElement
+    headSTDN?:STDN
+    footSTDN?:STDN
 }
 export async function extractContext(
     doc:STDN,
@@ -79,7 +82,8 @@ export async function extractContext(
     }
     const cssURLs:string[]=[]
     const tagToUnitCompilerURLs:string[]=[]
-    for(const line of doc){
+    const fullDoc=(options.headSTDN??[]).concat(doc).concat(options.footSTDN??[])
+    for(const line of fullDoc){
         if(line.length===0){
             continue
         }
@@ -163,6 +167,9 @@ export async function extractContext(
     }
     const css=(await urlsToAbsURLs(cssURLs,dir))
     .map(val=>`@import ${JSON.stringify(val)};`).join('')
+    if(options.style!==undefined){
+        options.style.textContent=css
+    }
     for(const url of await urlsToAbsURLs(tagToUnitCompilerURLs,dir)){
         try{
             Object.assign(tagToUnitCompiler,await (new Function(`return import(${JSON.stringify(url)})`)()))
