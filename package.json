@@ -19,7 +19,7 @@
   },
   "dependencies": {
     "stce": "^0.0.9",
-    "stdn": "^0.2.5",
+    "stdn": "^0.2.6",
     "ston": "^0.2.3"
   },
   "engines": {
