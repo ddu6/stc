@@ -7,13 +7,7 @@ const example=`{id flt, style margin:1em 0, theorem [
 {style height:100vh}`
 ;(async()=>{
     const result=await compile(example)
-    if(result===undefined){
-        return
+    if(result!==undefined){
+        document.body.append(result.documentFragment)
     }
-    const {documentFragment,context}=result
-    const style=document.createElement('style')
-    style.textContent+=context.css
-    document.body.append(style)
-    document.body.append(documentFragment)
-    console.log(context)
 })()
