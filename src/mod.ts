@@ -1,12 +1,12 @@
-import { fixURLInSTDN } from './urls'
-import { parse, STDN } from "stdn"
-import { Compiler } from "./compiler"
-import { extractContext, ExtractContextOptions } from "./countext"
+import {fixURLInSTDN} from './urls'
+import {parse,STDN} from 'stdn'
+import {Compiler} from './compiler'
+import {ExtractContextOptions,extractContext} from './extractor'
 export * from './base'
 export * from './urls'
-export * from './compiler'
 export * from './counter'
-export * from './countext'
+export * from './extractor'
+export * from './compiler'
 export async function compile(string:string,dir='',options:ExtractContextOptions={}){
     const doc=parse(string)
     if(doc===undefined){

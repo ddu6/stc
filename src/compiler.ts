@@ -1,150 +1,11 @@
-import {STDN,STDNInline,STDNLine,STDNUnit} from 'stdn'
-import {Context,getGlobalOptionArray,getLastGlobalOption} from './countext'
-import {Div,Span} from 'stce'
-import {isRelURL,relURLToAbsURL} from './urls'
+import * as ston from 'ston'
+import * as stdn from 'stdn'
+import * as base from './base'
+import * as urls from './urls'
+import * as counter from './counter'
+import * as extractor from './extractor'
 export class Compiler{
-    readonly unitToCompiling=new Map<STDNUnit,boolean|undefined>()
-    constructor(readonly context:Context){}
-    async compileUnit(unit:STDNUnit){
-        if(this.unitToCompiling.get(unit)===true){
-            return Compiler.createErrorElement('Loop')
-        }
-        if(unit.tag==='global'||unit.options.global===true){
-            return new Div(['unit','global']).element
-        }
-        this.unitToCompiling.set(unit,true)
-        let realTag=unit.options['compile-with']
-            ??getLastGlobalOption('compile-with',unit.tag,this.context.tagToGlobalOptions)
-        if(typeof realTag!=='string'||realTag.length===0){
-            realTag=unit.tag
-        }
-        const unitCompiler=this.context.tagToUnitCompiler[realTag]
-        let element:HTMLElement|SVGElement
-        if(unitCompiler!==undefined){
-            try{
-                element=await unitCompiler(unit,this)
-            }catch(err){
-                console.log(err)
-                element=Compiler.createErrorElement('Broken')
-            }
-            if(element.classList.contains('warn')){
-                element.classList.add('unit')
-                this.unitToCompiling.set(unit,false)
-                return element
-            }
-        }else{
-            let df:DocumentFragment
-            if(Compiler.supportedHTMLTags.includes(realTag)){
-                element=document.createElement(realTag)
-                if(Compiler.supportedHTMLTagsWithInlineChildren.includes(realTag)){
-                    df=await this.compileInlineSTDN(unit.children)
-                }else{
-                    df=await this.compileSTDN(unit.children)
-                }
-            }else if(Compiler.supportedSVGTags.includes(realTag)){
-                element=document.createElementNS("http://www.w3.org/2000/svg",realTag)
-                df=await this.compileInlineSTDN(unit.children)
-            }else{
-                element=document.createElement('div')
-                df=await this.compileSTDN(unit.children)
-            }
-            element.append(df)
-        }
-        element.classList.add('unit')
-        try{
-            element.classList.add(realTag)
-            if(typeof unit.options.class==='string'){
-                element.classList.add(...unit.options.class.trim().split(/\s+/))
-            }
-            for(const val of getGlobalOptionArray('class',unit.tag,this.context.tagToGlobalOptions)){
-                if(typeof val==='string'){
-                    element.classList.add(...val.trim().split(/\s+/))
-                }
-            }
-        }catch(err){
-            console.log(err)
-        }
-        const id=this.context.unitToId.get(unit)
-        if(id!==undefined){
-            element.id=id
-        }
-        for(const key of Object.keys(unit.options)){
-            if(key==='id'||key==='class'){
-                continue
-            }
-            let attr=key
-            if(
-                !key.startsWith('data-')
-                &&!Compiler.supportedHTMLAttributes.includes(key)
-            ){
-                attr=`data-${key}`
-            }
-            if(element.hasAttribute(attr)){
-                continue
-            }
-            let val=unit.options[key]
-            if(val===true){
-                val=''
-            }else if(typeof val==='number'){
-                val=val.toString()
-            }
-            if(typeof val!=='string'){
-                continue
-            }
-            if(
-                this.context.dir.length>0
-                &&(attr==='src'||attr==='href')
-                &&isRelURL(val)
-            ){
-                val=relURLToAbsURL(val,this.context.dir)
-            }
-            try{
-                element.setAttribute(attr,val)
-            }catch(err){
-                console.log(err)
-            }
-        }
-        this.unitToCompiling.set(unit,false)
-        return element
-    }
-    async compileInline(inline:STDNInline){
-        if(typeof inline!=='string'){
-            return await this.compileUnit(inline)
-        }
-        return new Text(inline)
-    }
-    async compileLine(line:STDNLine){
-        const df=new DocumentFragment()
-        for(const inline of line){
-            df.append(await this.compileInline(inline))
-        }
-        return df
-    }
-    async compileInlineSTDN(stdn:STDN){
-        const df=new DocumentFragment()
-        for(let i=0;i<stdn.length;i++){
-            df.append(await this.compileLine(stdn[i]))
-            if(i!==stdn.length-1){
-                df.append(new Text('\n'))
-            }
-        }
-        return df
-    }
-    async compileSTDN(stdn:STDN){
-        const df=new DocumentFragment()
-        for(const line of stdn){
-            df.append(
-                new Div(['st-line'])
-                .append(await this.compileLine(line))
-                .element
-            )
-        }
-        return df
-    }
-    static createErrorElement(err:string){
-        return new Span(['unit','warn']).setText(err).element
-    }
-    static supportedHTMLTags=[
+    readonly supportedHTMLTags=[
         'address',
         'article',
         'aside',
@@ -227,7 +88,7 @@ export class Compiler{
         'thead',
         'tr',
     ]
-    static supportedHTMLTagsWithInlineChildren=[
+    readonly supportedHTMLTagsWithInlineChildren=[
         'a',
         'abbr',
         'b',
@@ -276,7 +137,7 @@ export class Compiler{
         'thead',
         'tr',
     ]
-    static supportedSVGTags=[
+    readonly supportedSVGTags=[
         'animate',
         'animateMotion',
         'circle',
@@ -295,7 +156,7 @@ export class Compiler{
         'tspan',
         'use',
     ]
-    static supportedHTMLAttributes=[
+    readonly supportedHTMLAttributes=[
         'accesskey',
         'align',
         'allow',
@@ -370,4 +231,153 @@ export class Compiler{
         'width',
         'height',
     ]
+    readonly ston=ston
+    readonly stdn=stdn
+    readonly base=base
+    readonly urls=urls
+    readonly counter=counter
+    readonly extractor=extractor
+    readonly unitToCompiling=new Map<stdn.STDNUnit,boolean|undefined>()
+    constructor(readonly context:extractor.Context){}
+    createErrorElement(err:string){
+        const element=document.createElement('span')
+        element.classList.add('unit','warn')
+        element.textContent=err
+        return element
+    }
+    async compileUnit(unit:stdn.STDNUnit){
+        if(this.unitToCompiling.get(unit)===true){
+            return this.createErrorElement('Loop')
+        }
+        if(unit.tag==='global'||unit.options.global===true){
+            const element=document.createElement('div')
+            element.classList.add('unit','global')
+            return element
+        }
+        this.unitToCompiling.set(unit,true)
+        let realTag=unit.options['compile-with']
+            ??extractor.extractLastGlobalOption('compile-with',unit.tag,this.context.tagToGlobalOptions)
+        if(typeof realTag!=='string'||realTag.length===0){
+            realTag=unit.tag
+        }
+        const unitCompiler=this.context.tagToUnitCompiler[realTag]
+        let element:HTMLElement|SVGElement
+        if(unitCompiler!==undefined){
+            try{
+                element=await unitCompiler(unit,this)
+            }catch(err){
+                console.log(err)
+                element=this.createErrorElement('Broken')
+            }
+            if(element.classList.contains('warn')){
+                element.classList.add('unit')
+                this.unitToCompiling.set(unit,false)
+                return element
+            }
+        }else{
+            if(this.supportedHTMLTags.includes(realTag)){
+                element=document.createElement(realTag)
+                if(this.supportedHTMLTagsWithInlineChildren.includes(realTag)){
+                    element.append(await this.compileInlineSTDN(unit.children))
+                }else{
+                    element.append(await this.compileSTDN(unit.children))
+                }
+            }else if(this.supportedSVGTags.includes(realTag)){
+                element=document.createElementNS("http://www.w3.org/2000/svg",realTag)
+                element.append(await this.compileInlineSTDN(unit.children))
+            }else{
+                element=document.createElement('div')
+                element.append(await this.compileSTDN(unit.children))
+            }
+        }
+        element.classList.add('unit')
+        try{
+            element.classList.add(realTag)
+            if(typeof unit.options.class==='string'){
+                element.classList.add(...unit.options.class.trim().split(/\s+/))
+            }
+            for(const val of extractor.extractGlobalOptionArray('class',unit.tag,this.context.tagToGlobalOptions)){
+                if(typeof val==='string'){
+                    element.classList.add(...val.trim().split(/\s+/))
+                }
+            }
+        }catch(err){
+            console.log(err)
+        }
+        const id=this.context.unitToId.get(unit)
+        if(id!==undefined){
+            element.id=id
+        }
+        for(const key of Object.keys(unit.options)){
+            if(key==='id'||key==='class'){
+                continue
+            }
+            let attr=key
+            if(
+                !key.startsWith('data-')
+                &&!this.supportedHTMLAttributes.includes(key)
+            ){
+                attr=`data-${key}`
+            }
+            if(element.hasAttribute(attr)){
+                continue
+            }
+            let val=unit.options[key]
+            if(val===true){
+                val=''
+            }else if(typeof val==='number'){
+                val=val.toString()
+            }
+            if(typeof val!=='string'){
+                continue
+            }
+            if(
+                this.context.dir.length>0
+                &&(attr==='src'||attr==='href')
+                &&urls.isRelURL(val)
+            ){
+                val=urls.relURLToAbsURL(val,this.context.dir)
+            }
+            try{
+                element.setAttribute(attr,val)
+            }catch(err){
+                console.log(err)
+            }
+        }
+        this.unitToCompiling.set(unit,false)
+        return element
+    }
+    async compileInline(inline:stdn.STDNInline){
+        if(typeof inline!=='string'){
+            return await this.compileUnit(inline)
+        }
+        return new Text(inline)
+    }
+    async compileLine(line:stdn.STDNLine){
+        const df=new DocumentFragment()
+        for(const inline of line){
+            df.append(await this.compileInline(inline))
+        }
+        return df
+    }
+    async compileInlineSTDN(stdn:stdn.STDN){
+        const df=new DocumentFragment()
+        for(let i=0;i<stdn.length;i++){
+            df.append(await this.compileLine(stdn[i]))
+            if(i!==stdn.length-1){
+                df.append(new Text('\n'))
+            }
+        }
+        return df
+    }
+    async compileSTDN(stdn:stdn.STDN){
+        const df=new DocumentFragment()
+        for(const line of stdn){
+            const div=document.createElement('div')
+            div.classList.add('st-line')
+            df.append(div)
+            div.append(await this.compileLine(line))
+        }
+        return df
+    }
 }

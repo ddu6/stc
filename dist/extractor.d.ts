@@ -1,6 +1,6 @@
 import { STDN, STDNUnit } from 'stdn';
-import { Compiler } from './compiler';
 import { Counter } from './counter';
+import { Compiler } from './compiler';
 export declare type UnitCompiler = (unit: STDNUnit, compiler: Compiler) => Promise<HTMLElement | SVGElement>;
 export declare type TagToUnitCompiler = {
     [key: string]: UnitCompiler | undefined;
@@ -22,11 +22,11 @@ export interface Context {
     title: Counter['title'];
     unitToId: Counter['unitToId'];
 }
-export declare function getGlobalOptionArray(option: string, tag: string, tagToGlobalOptions: TagToGlobalOptions): (string | number | boolean | STDN)[];
-export declare function getLastGlobalOption(option: string, tag: string, tagToGlobalOptions: TagToGlobalOptions): string | number | boolean | STDN | undefined;
-export declare function getGlobalChildren(tag: string, tagToGlobalOptions: TagToGlobalOptions): import("stdn").STDNLine[];
-export declare function getGlobalStrings(option: string, tag: string, tagToGlobalOptions: TagToGlobalOptions): string[];
-export declare function getGlobalURLs(option: string, tag: string, tagToGlobalOptions: TagToGlobalOptions, dir: string): Promise<string[]>;
+export declare function extractGlobalOptionArray(option: string, tag: string, tagToGlobalOptions: TagToGlobalOptions): (string | number | boolean | STDN)[];
+export declare function extractLastGlobalOption(option: string, tag: string, tagToGlobalOptions: TagToGlobalOptions): string | number | boolean | STDN | undefined;
+export declare function extractGlobalChildren(tag: string, tagToGlobalOptions: TagToGlobalOptions): import("stdn").STDNLine[];
+export declare function extractGlobalStrings(option: string, tag: string, tagToGlobalOptions: TagToGlobalOptions): string[];
+export declare function extractGlobalURLs(option: string, tag: string, tagToGlobalOptions: TagToGlobalOptions, dir: string): Promise<string[]>;
 export interface ExtractContextOptions {
     builtInTagToUnitCompiler?: TagToUnitCompiler;
     style?: HTMLStyleElement;

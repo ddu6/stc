@@ -1,7 +1,7 @@
 import {urlsToAbsURLs} from './urls'
 import {STDN,STDNUnit} from 'stdn'
-import {Compiler} from './compiler'
 import {Counter} from './counter'
+import {Compiler} from './compiler'
 export type UnitCompiler=(unit:STDNUnit,compiler:Compiler)=>Promise<HTMLElement|SVGElement>
 export type TagToUnitCompiler={
     [key:string]:UnitCompiler|undefined
@@ -23,21 +23,21 @@ export interface Context{
     title:Counter['title']
     unitToId:Counter['unitToId']
 }
-export function getGlobalOptionArray(option:string,tag:string,tagToGlobalOptions:TagToGlobalOptions){
+export function extractGlobalOptionArray(option:string,tag:string,tagToGlobalOptions:TagToGlobalOptions){
     const options=tagToGlobalOptions[tag]
     if(options===undefined){
         return []
     }
     return options[option]??[]
 }
-export function getLastGlobalOption(option:string,tag:string,tagToGlobalOptions:TagToGlobalOptions){
-    const array=getGlobalOptionArray(option,tag,tagToGlobalOptions)
+export function extractLastGlobalOption(option:string,tag:string,tagToGlobalOptions:TagToGlobalOptions){
+    const array=extractGlobalOptionArray(option,tag,tagToGlobalOptions)
     if(array.length===0){
         return undefined
     }
     return array[array.length-1]
 }
-export function getGlobalChildren(tag:string,tagToGlobalOptions:TagToGlobalOptions){
+export function extractGlobalChildren(tag:string,tagToGlobalOptions:TagToGlobalOptions){
     const options=tagToGlobalOptions[tag]
     if(options===undefined){
         return []
@@ -48,8 +48,8 @@ export function getGlobalChildren(tag:string,tagToGlobalOptions:TagToGlobalOptio
     }
     return array.flat()
 }
-export function getGlobalStrings(option:string,tag:string,tagToGlobalOptions:TagToGlobalOptions){
-    const array=getGlobalOptionArray(option,tag,tagToGlobalOptions)
+export function extractGlobalStrings(option:string,tag:string,tagToGlobalOptions:TagToGlobalOptions){
+    const array=extractGlobalOptionArray(option,tag,tagToGlobalOptions)
     const strings:string[]=[]
     for(const val of array){
         if(typeof val==='string'){
@@ -58,8 +58,8 @@ export function getGlobalStrings(option:string,tag:string,tagToGlobalOptions:Tag
     }
     return strings
 }
-export async function getGlobalURLs(option:string,tag:string,tagToGlobalOptions:TagToGlobalOptions,dir:string){
-    return await urlsToAbsURLs(getGlobalStrings(option,tag,tagToGlobalOptions),dir)
+export async function extractGlobalURLs(option:string,tag:string,tagToGlobalOptions:TagToGlobalOptions,dir:string){
+    return await urlsToAbsURLs(extractGlobalStrings(option,tag,tagToGlobalOptions),dir)
 }
 export interface ExtractContextOptions{
     builtInTagToUnitCompiler?:TagToUnitCompiler

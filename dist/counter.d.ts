@@ -1,5 +1,5 @@
 import { STDN, STDNUnit } from 'stdn';
-import { TagToGlobalOptions } from './countext';
+import { TagToGlobalOptions } from './extractor';
 export interface IndexInfo {
     index: number[];
     id: string;

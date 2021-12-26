@@ -1,5 +1,5 @@
-import { unitToInlinePlainString, stringToId } from './base';
-import { getLastGlobalOption } from './countext';
+import { stringToId, unitToInlinePlainString } from './base';
+import { extractLastGlobalOption } from './extractor';
 export class Counter {
     constructor(tagToGlobalOptions) {
         this.tagToGlobalOptions = tagToGlobalOptions;
@@ -63,7 +63,7 @@ export class Counter {
             const count = this.baseIdToCount[baseId] = (this.baseIdToCount[baseId] ?? 0) + 1;
             const id = count > 1 || baseId.length === 0 ? `${baseId}~${count}` : baseId;
             let orbit = unit.options.orbit
-                ?? getLastGlobalOption('orbit', unit.tag, this.tagToGlobalOptions);
+                ?? extractLastGlobalOption('orbit', unit.tag, this.tagToGlobalOptions);
             if (typeof orbit !== 'string' || orbit.length === 0) {
                 orbit = unit.tag === 'h1'
                     || unit.tag === 'h2'
@@ -74,8 +74,8 @@ export class Counter {
                     ? 'heading' : unit.tag;
             }
             let level = unit.options.level
-                ?? getLastGlobalOption('level', unit.tag, this.tagToGlobalOptions)
-                ?? getLastGlobalOption('level', orbit, this.tagToGlobalOptions);
+                ?? extractLastGlobalOption('level', unit.tag, this.tagToGlobalOptions)
+                ?? extractLastGlobalOption('level', orbit, this.tagToGlobalOptions);
             if (typeof level !== 'number' || level <= 0 || level % 1 !== 0) {
                 switch (unit.tag) {
                     case 'h2':

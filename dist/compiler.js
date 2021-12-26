@@ -1,21 +1,253 @@
-import { getGlobalOptionArray, getLastGlobalOption } from './countext';
-import { Div, Span } from 'stce';
-import { isRelURL, relURLToAbsURL } from './urls';
+import * as ston from 'ston';
+import * as stdn from 'stdn';
+import * as base from './base';
+import * as urls from './urls';
+import * as counter from './counter';
+import * as extractor from './extractor';
 export class Compiler {
     constructor(context) {
         this.context = context;
+        this.supportedHTMLTags = [
+            'address',
+            'article',
+            'aside',
+            'footer',
+            'header',
+            'h1',
+            'h2',
+            'h3',
+            'h4',
+            'h5',
+            'h6',
+            'main',
+            'nav',
+            'section',
+            'blockquote',
+            'dd',
+            'div',
+            'dl',
+            'dt',
+            'figcaption',
+            'figure',
+            'hr',
+            'li',
+            'ol',
+            'p',
+            'pre',
+            'ul',
+            'a',
+            'abbr',
+            'b',
+            'bdi',
+            'bdo',
+            'br',
+            'cite',
+            'code',
+            'data',
+            'dfn',
+            'em',
+            'i',
+            'kbd',
+            'mark',
+            'q',
+            'rp',
+            'rt',
+            'ruby',
+            's',
+            'samp',
+            'small',
+            'span',
+            'strong',
+            'sub',
+            'sup',
+            'time',
+            'u',
+            'var',
+            'wbr',
+            'area',
+            'audio',
+            'img',
+            'map',
+            'track',
+            'video',
+            'iframe',
+            'del',
+            'ins',
+            'caption',
+            'col',
+            'colgroup',
+            'table',
+            'tbody',
+            'td',
+            'tfoot',
+            'th',
+            'thead',
+            'tr',
+        ];
+        this.supportedHTMLTagsWithInlineChildren = [
+            'a',
+            'abbr',
+            'b',
+            'bdi',
+            'bdo',
+            'br',
+            'cite',
+            'code',
+            'data',
+            'dfn',
+            'em',
+            'i',
+            'kbd',
+            'mark',
+            'q',
+            'rp',
+            'rt',
+            'ruby',
+            's',
+            'samp',
+            'small',
+            'span',
+            'strong',
+            'sub',
+            'sup',
+            'time',
+            'u',
+            'var',
+            'wbr',
+            'audio',
+            'img',
+            'track',
+            'video',
+            'iframe',
+            'del',
+            'ins',
+            'col',
+            'colgroup',
+            'table',
+            'tbody',
+            'tfoot',
+            'thead',
+            'tr',
+        ];
+        this.supportedSVGTags = [
+            'animate',
+            'animateMotion',
+            'circle',
+            'clipPath',
+            'ellipse',
+            'foreignObject',
+            'g',
+            'image',
+            'mask',
+            'path',
+            'pattern',
+            'rect',
+            'svg',
+            'text',
+            'textPath',
+            'tspan',
+            'use',
+        ];
+        this.supportedHTMLAttributes = [
+            'accesskey',
+            'align',
+            'allow',
+            'alt',
+            'autoplay',
+            'cite',
+            'class',
+            'cols',
+            'colspan',
+            'controls',
+            'coords',
+            'crossorigin',
+            'datetime',
+            'decoding',
+            'default',
+            'dir',
+            'download',
+            'draggable',
+            'for',
+            'headers',
+            'href',
+            'hreflang',
+            'id',
+            'kind',
+            'label',
+            'lang',
+            'loop',
+            'muted',
+            'name',
+            'open',
+            'ping',
+            'poster',
+            'preload',
+            'referrerpolicy',
+            'rel',
+            'reversed',
+            'rows',
+            'rowspan',
+            'sandbox',
+            'scope',
+            'span',
+            'spellcheck',
+            'src',
+            'srcdoc',
+            'srclang',
+            'srcset',
+            'start',
+            'style',
+            'tabindex',
+            'target',
+            'title',
+            'translate',
+            'usemap',
+            'value',
+            'attributeName',
+            'begin',
+            'd',
+            'dur',
+            'fill',
+            'keyPoints',
+            'keyTimes',
+            'path',
+            'preserveAspectRatio',
+            'repeatCount',
+            'rotate',
+            'textLength',
+            'values',
+            'viewBox',
+            'x',
+            'y',
+            'width',
+            'height',
+        ];
+        this.ston = ston;
+        this.stdn = stdn;
+        this.base = base;
+        this.urls = urls;
+        this.counter = counter;
+        this.extractor = extractor;
         this.unitToCompiling = new Map();
+    }
+    createErrorElement(err) {
+        const element = document.createElement('span');
+        element.classList.add('unit', 'warn');
+        element.textContent = err;
+        return element;
     }
     async compileUnit(unit) {
         if (this.unitToCompiling.get(unit) === true) {
-            return Compiler.createErrorElement('Loop');
+            return this.createErrorElement('Loop');
         }
         if (unit.tag === 'global' || unit.options.global === true) {
-            return new Div(['unit', 'global']).element;
+            const element = document.createElement('div');
+            element.classList.add('unit', 'global');
+            return element;
         }
         this.unitToCompiling.set(unit, true);
         let realTag = unit.options['compile-with']
-            ?? getLastGlobalOption('compile-with', unit.tag, this.context.tagToGlobalOptions);
+            ?? extractor.extractLastGlobalOption('compile-with', unit.tag, this.context.tagToGlobalOptions);
         if (typeof realTag !== 'string' || realTag.length === 0) {
             realTag = unit.tag;
         }
@@ -27,7 +259,7 @@ export class Compiler {
             }
             catch (err) {
                 console.log(err);
-                element = Compiler.createErrorElement('Broken');
+                element = this.createErrorElement('Broken');
             }
             if (element.classList.contains('warn')) {
                 element.classList.add('unit');
@@ -36,25 +268,23 @@ export class Compiler {
             }
         }
         else {
-            let df;
-            if (Compiler.supportedHTMLTags.includes(realTag)) {
+            if (this.supportedHTMLTags.includes(realTag)) {
                 element = document.createElement(realTag);
-                if (Compiler.supportedHTMLTagsWithInlineChildren.includes(realTag)) {
-                    df = await this.compileInlineSTDN(unit.children);
+                if (this.supportedHTMLTagsWithInlineChildren.includes(realTag)) {
+                    element.append(await this.compileInlineSTDN(unit.children));
                 }
                 else {
-                    df = await this.compileSTDN(unit.children);
+                    element.append(await this.compileSTDN(unit.children));
                 }
             }
-            else if (Compiler.supportedSVGTags.includes(realTag)) {
+            else if (this.supportedSVGTags.includes(realTag)) {
                 element = document.createElementNS("http://www.w3.org/2000/svg", realTag);
-                df = await this.compileInlineSTDN(unit.children);
+                element.append(await this.compileInlineSTDN(unit.children));
             }
             else {
                 element = document.createElement('div');
-                df = await this.compileSTDN(unit.children);
+                element.append(await this.compileSTDN(unit.children));
             }
-            element.append(df);
         }
         element.classList.add('unit');
         try {
@@ -62,7 +292,7 @@ export class Compiler {
             if (typeof unit.options.class === 'string') {
                 element.classList.add(...unit.options.class.trim().split(/\s+/));
             }
-            for (const val of getGlobalOptionArray('class', unit.tag, this.context.tagToGlobalOptions)) {
+            for (const val of extractor.extractGlobalOptionArray('class', unit.tag, this.context.tagToGlobalOptions)) {
                 if (typeof val === 'string') {
                     element.classList.add(...val.trim().split(/\s+/));
                 }
@@ -81,7 +311,7 @@ export class Compiler {
             }
             let attr = key;
             if (!key.startsWith('data-')
-                && !Compiler.supportedHTMLAttributes.includes(key)) {
+                && !this.supportedHTMLAttributes.includes(key)) {
                 attr = `data-${key}`;
             }
             if (element.hasAttribute(attr)) {
@@ -99,8 +329,8 @@ export class Compiler {
             }
             if (this.context.dir.length > 0
                 && (attr === 'src' || attr === 'href')
-                && isRelURL(val)) {
-                val = relURLToAbsURL(val, this.context.dir);
+                && urls.isRelURL(val)) {
+                val = urls.relURLToAbsURL(val, this.context.dir);
             }
             try {
                 element.setAttribute(attr, val);
@@ -138,228 +368,11 @@ export class Compiler {
     async compileSTDN(stdn) {
         const df = new DocumentFragment();
         for (const line of stdn) {
-            df.append(new Div(['st-line'])
-                .append(await this.compileLine(line))
-                .element);
+            const div = document.createElement('div');
+            div.classList.add('st-line');
+            df.append(div);
+            div.append(await this.compileLine(line));
         }
         return df;
     }
-    static createErrorElement(err) {
-        return new Span(['unit', 'warn']).setText(err).element;
-    }
 }
-Compiler.supportedHTMLTags = [
-    'address',
-    'article',
-    'aside',
-    'footer',
-    'header',
-    'h1',
-    'h2',
-    'h3',
-    'h4',
-    'h5',
-    'h6',
-    'main',
-    'nav',
-    'section',
-    'blockquote',
-    'dd',
-    'div',
-    'dl',
-    'dt',
-    'figcaption',
-    'figure',
-    'hr',
-    'li',
-    'ol',
-    'p',
-    'pre',
-    'ul',
-    'a',
-    'abbr',
-    'b',
-    'bdi',
-    'bdo',
-    'br',
-    'cite',
-    'code',
-    'data',
-    'dfn',
-    'em',
-    'i',
-    'kbd',
-    'mark',
-    'q',
-    'rp',
-    'rt',
-    'ruby',
-    's',
-    'samp',
-    'small',
-    'span',
-    'strong',
-    'sub',
-    'sup',
-    'time',
-    'u',
-    'var',
-    'wbr',
-    'area',
-    'audio',
-    'img',
-    'map',
-    'track',
-    'video',
-    'iframe',
-    'del',
-    'ins',
-    'caption',
-    'col',
-    'colgroup',
-    'table',
-    'tbody',
-    'td',
-    'tfoot',
-    'th',
-    'thead',
-    'tr',
-];
-Compiler.supportedHTMLTagsWithInlineChildren = [
-    'a',
-    'abbr',
-    'b',
-    'bdi',
-    'bdo',
-    'br',
-    'cite',
-    'code',
-    'data',
-    'dfn',
-    'em',
-    'i',
-    'kbd',
-    'mark',
-    'q',
-    'rp',
-    'rt',
-    'ruby',
-    's',
-    'samp',
-    'small',
-    'span',
-    'strong',
-    'sub',
-    'sup',
-    'time',
-    'u',
-    'var',
-    'wbr',
-    'audio',
-    'img',
-    'track',
-    'video',
-    'iframe',
-    'del',
-    'ins',
-    'col',
-    'colgroup',
-    'table',
-    'tbody',
-    'tfoot',
-    'thead',
-    'tr',
-];
-Compiler.supportedSVGTags = [
-    'animate',
-    'animateMotion',
-    'circle',
-    'clipPath',
-    'ellipse',
-    'foreignObject',
-    'g',
-    'image',
-    'mask',
-    'path',
-    'pattern',
-    'rect',
-    'svg',
-    'text',
-    'textPath',
-    'tspan',
-    'use',
-];
-Compiler.supportedHTMLAttributes = [
-    'accesskey',
-    'align',
-    'allow',
-    'alt',
-    'autoplay',
-    'cite',
-    'class',
-    'cols',
-    'colspan',
-    'controls',
-    'coords',
-    'crossorigin',
-    'datetime',
-    'decoding',
-    'default',
-    'dir',
-    'download',
-    'draggable',
-    'for',
-    'headers',
-    'href',
-    'hreflang',
-    'id',
-    'kind',
-    'label',
-    'lang',
-    'loop',
-    'muted',
-    'name',
-    'open',
-    'ping',
-    'poster',
-    'preload',
-    'referrerpolicy',
-    'rel',
-    'reversed',
-    'rows',
-    'rowspan',
-    'sandbox',
-    'scope',
-    'span',
-    'spellcheck',
-    'src',
-    'srcdoc',
-    'srclang',
-    'srcset',
-    'start',
-    'style',
-    'tabindex',
-    'target',
-    'title',
-    'translate',
-    'usemap',
-    'value',
-    'attributeName',
-    'begin',
-    'd',
-    'dur',
-    'fill',
-    'keyPoints',
-    'keyTimes',
-    'path',
-    'preserveAspectRatio',
-    'repeatCount',
-    'rotate',
-    'textLength',
-    'values',
-    'viewBox',
-    'x',
-    'y',
-    'width',
-    'height',
-];

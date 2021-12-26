@@ -1,20 +1,20 @@
 import { urlsToAbsURLs } from './urls';
 import { Counter } from './counter';
-export function getGlobalOptionArray(option, tag, tagToGlobalOptions) {
+export function extractGlobalOptionArray(option, tag, tagToGlobalOptions) {
     const options = tagToGlobalOptions[tag];
     if (options === undefined) {
         return [];
     }
     return options[option] ?? [];
 }
-export function getLastGlobalOption(option, tag, tagToGlobalOptions) {
-    const array = getGlobalOptionArray(option, tag, tagToGlobalOptions);
+export function extractLastGlobalOption(option, tag, tagToGlobalOptions) {
+    const array = extractGlobalOptionArray(option, tag, tagToGlobalOptions);
     if (array.length === 0) {
         return undefined;
     }
     return array[array.length - 1];
 }
-export function getGlobalChildren(tag, tagToGlobalOptions) {
+export function extractGlobalChildren(tag, tagToGlobalOptions) {
     const options = tagToGlobalOptions[tag];
     if (options === undefined) {
         return [];
@@ -25,8 +25,8 @@ export function getGlobalChildren(tag, tagToGlobalOptions) {
     }
     return array.flat();
 }
-export function getGlobalStrings(option, tag, tagToGlobalOptions) {
-    const array = getGlobalOptionArray(option, tag, tagToGlobalOptions);
+export function extractGlobalStrings(option, tag, tagToGlobalOptions) {
+    const array = extractGlobalOptionArray(option, tag, tagToGlobalOptions);
     const strings = [];
     for (const val of array) {
         if (typeof val === 'string') {
@@ -35,8 +35,8 @@ export function getGlobalStrings(option, tag, tagToGlobalOptions) {
     }
     return strings;
 }
-export async function getGlobalURLs(option, tag, tagToGlobalOptions, dir) {
-    return await urlsToAbsURLs(getGlobalStrings(option, tag, tagToGlobalOptions), dir);
+export async function extractGlobalURLs(option, tag, tagToGlobalOptions, dir) {
+    return await urlsToAbsURLs(extractGlobalStrings(option, tag, tagToGlobalOptions), dir);
 }
 export async function extractContext(doc, dir, options = {}) {
     if (dir.length === 0) {
