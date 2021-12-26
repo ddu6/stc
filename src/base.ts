@@ -1,4 +1,4 @@
-import {STDN,STDNLine,STDNUnit} from 'stdn'
+import type {STDN,STDNLine,STDNUnit} from 'stdn'
 export function stdnToPlainString(stdn:STDN){
     const array:string[]=[]
     for(const line of stdn){

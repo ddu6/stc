@@ -1,5 +1,5 @@
 import {parse} from 'ston'
-import {STDN, STDNUnit} from 'stdn'
+import type {STDN, STDNUnit} from 'stdn'
 export function isRelURL(url:string){
     return !url.startsWith('#')&&!/^[a-z][a-z0-9+.-]*:/i.test(url)
 }

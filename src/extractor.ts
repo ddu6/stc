@@ -1,7 +1,7 @@
+import type {STDN,STDNUnit} from 'stdn'
 import {urlsToAbsURLs} from './urls'
-import {STDN,STDNUnit} from 'stdn'
 import {Counter} from './counter'
-import {Compiler} from './compiler'
+import type {Compiler} from './compiler'
 export type UnitCompiler=(unit:STDNUnit,compiler:Compiler)=>Promise<HTMLElement|SVGElement>
 export type TagToUnitCompiler={
     [key:string]:UnitCompiler|undefined

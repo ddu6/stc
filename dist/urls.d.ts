@@ -1,4 +1,4 @@
-import { STDN, STDNUnit } from 'stdn';
+import type { STDN, STDNUnit } from 'stdn';
 export declare function isRelURL(url: string): boolean;
 export declare function relURLToAbsURL(url: string, dir: string): string;
 export declare function fixURLInUnit(unit: STDNUnit, dir: string): void;

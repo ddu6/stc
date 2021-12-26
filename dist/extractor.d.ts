@@ -1,6 +1,6 @@
-import { STDN, STDNUnit } from 'stdn';
+import type { STDN, STDNUnit } from 'stdn';
 import { Counter } from './counter';
-import { Compiler } from './compiler';
+import type { Compiler } from './compiler';
 export declare type UnitCompiler = (unit: STDNUnit, compiler: Compiler) => Promise<HTMLElement | SVGElement>;
 export declare type TagToUnitCompiler = {
     [key: string]: UnitCompiler | undefined;

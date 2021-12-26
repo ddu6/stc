@@ -1,4 +1,4 @@
-import {STDN,STDNUnit} from 'stdn'
+import type {STDN,STDNUnit} from 'stdn'
 import {stringToId,unitToInlinePlainString} from './base'
 import {extractLastGlobalOption,TagToGlobalOptions} from './extractor'
 export interface IndexInfo{
