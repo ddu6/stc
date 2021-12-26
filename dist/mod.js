@@ -1,5 +1,5 @@
-import { fixURLInSTDN } from './urls';
 import { parse } from 'stdn';
+import { fixURLInSTDN } from './urls';
 import { Compiler } from './compiler';
 import { extractContext } from './extractor';
 export * from './base';
