@@ -4,6 +4,10 @@ import * as base from './base';
 import * as urls from './urls';
 import * as counter from './counter';
 import * as extractor from './extractor';
+export declare const supportedHTMLTags: string[];
+export declare const supportedHTMLTagsWithInlineChildren: string[];
+export declare const supportedSVGTags: string[];
+export declare const supportedHTMLAttributes: string[];
 export declare class Compiler {
     readonly context: extractor.Context;
     readonly supportedHTMLTags: string[];
