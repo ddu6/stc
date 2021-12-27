@@ -35,7 +35,7 @@ export function fixURLInSTDN(stdn, dir) {
         }
     }
 }
-export async function urlsToAbsURLs(urls, dir) {
+export async function urlsToAbsURLs(urls, dir, ancestors = []) {
     const out = [];
     for (const urlStr of urls) {
         try {
@@ -44,11 +44,14 @@ export async function urlsToAbsURLs(urls, dir) {
                 out.push(url.href);
                 continue;
             }
+            if (ancestors.includes(url.href)) {
+                continue;
+            }
             const res = await fetch(url.href);
             if (!res.ok) {
                 continue;
             }
-            out.push(...(await urlsStrToAbsURLs(await res.text(), url.href)));
+            out.push(...(await urlsStrToAbsURLs(await res.text(), url.href, ancestors.concat(url.href))));
         }
         catch (err) {
             console.log(err);
@@ -56,7 +59,7 @@ export async function urlsToAbsURLs(urls, dir) {
     }
     return out;
 }
-export async function urlsStrToAbsURLs(string, dir) {
+export async function urlsStrToAbsURLs(string, dir, ancestors = []) {
     const array = parse('[' + string + ']');
     if (!Array.isArray(array)) {
         return [];
@@ -67,5 +70,5 @@ export async function urlsStrToAbsURLs(string, dir) {
             urls.push(item);
         }
     }
-    return await urlsToAbsURLs(urls, dir);
+    return await urlsToAbsURLs(urls, dir, ancestors);
 }
