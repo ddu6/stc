@@ -4,6 +4,7 @@ import * as base from './base';
 import * as urls from './urls';
 import * as counter from './counter';
 import * as extractor from './extractor';
+import { compile, multiCompile } from './mod';
 export const supportedHTMLTags = [
     'address',
     'article',
@@ -232,6 +233,8 @@ export class Compiler {
         this.urls = urls;
         this.counter = counter;
         this.extractor = extractor;
+        this.compile = compile;
+        this.multiCompile = multiCompile;
         this.unitToCompiling = new Map();
     }
     createErrorElement(err) {

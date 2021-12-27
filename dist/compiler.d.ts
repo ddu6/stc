@@ -4,6 +4,7 @@ import * as base from './base';
 import * as urls from './urls';
 import * as counter from './counter';
 import * as extractor from './extractor';
+import { compile, multiCompile } from './mod';
 export declare const supportedHTMLTags: string[];
 export declare const supportedHTMLTagsWithInlineChildren: string[];
 export declare const supportedSVGTags: string[];
@@ -20,6 +21,8 @@ export declare class Compiler {
     readonly urls: typeof urls;
     readonly counter: typeof counter;
     readonly extractor: typeof extractor;
+    readonly compile: typeof compile;
+    readonly multiCompile: typeof multiCompile;
     readonly unitToCompiling: Map<stdn.STDNUnit, boolean | undefined>;
     constructor(context: extractor.Context);
     createErrorElement(err: string): HTMLSpanElement;

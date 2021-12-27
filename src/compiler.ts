@@ -4,6 +4,7 @@ import * as base from './base'
 import * as urls from './urls'
 import * as counter from './counter'
 import * as extractor from './extractor'
+import {compile,multiCompile} from './mod'
 export const supportedHTMLTags=[
     'address',
     'article',
@@ -241,6 +242,8 @@ export class Compiler{
     readonly urls=urls
     readonly counter=counter
     readonly extractor=extractor
+    readonly compile=compile
+    readonly multiCompile=multiCompile
     readonly unitToCompiling=new Map<stdn.STDNUnit,boolean|undefined>()
     constructor(readonly context:extractor.Context){}
     createErrorElement(err:string){
