@@ -236,6 +236,7 @@ export class Compiler {
         this.compile = compile;
         this.multiCompile = multiCompile;
         this.unitToCompiling = new Map();
+        this.unitToCompiled = new Map();
     }
     createErrorElement(err) {
         const element = document.createElement('span');
@@ -247,14 +248,14 @@ export class Compiler {
         if (this.unitToCompiling.get(unit) === true) {
             return this.createErrorElement('Loop');
         }
+        this.unitToCompiled.set(unit, true);
         if (unit.tag === 'global' || unit.options.global === true) {
             const element = document.createElement('div');
             element.classList.add('unit', 'global');
             return element;
         }
         this.unitToCompiling.set(unit, true);
-        let realTag = unit.options['compile-with']
-            ?? extractor.extractLastGlobalOption('compile-with', unit.tag, this.context.tagToGlobalOptions);
+        let realTag = unit.options['compile-with'] ?? extractor.extractLastGlobalOption('compile-with', unit.tag, this.context.tagToGlobalOptions);
         if (typeof realTag !== 'string' || realTag.length === 0) {
             realTag = unit.tag;
         }
@@ -268,8 +269,7 @@ export class Compiler {
                 console.log(err);
                 element = this.createErrorElement('Broken');
             }
-            if (element.classList.contains('warn')) {
-                element.classList.add('unit');
+            if (element.classList.contains('unit') && element.classList.contains('warn')) {
                 this.unitToCompiling.set(unit, false);
                 return element;
             }
@@ -317,8 +317,7 @@ export class Compiler {
                 continue;
             }
             let attr = key;
-            if (!key.startsWith('data-')
-                && !supportedHTMLAttributes.includes(key)) {
+            if (!key.startsWith('data-') && !supportedHTMLAttributes.includes(key)) {
                 attr = `data-${key}`;
             }
             if (element.hasAttribute(attr)) {
@@ -335,7 +334,7 @@ export class Compiler {
                 continue;
             }
             if (this.context.dir.length > 0
-                && (attr === 'src' || attr === 'href')
+                && (attr.endsWith('href' || attr.endsWith('src')))
                 && urls.isRelURL(val)) {
                 val = urls.relURLToAbsURL(val, this.context.dir);
             }

@@ -18,10 +18,7 @@ export function fixURLInUnit(unit:STDNUnit,dir:string){
             fixURLInSTDN(val,dir)
         }else if(
             typeof val==='string'
-            &&(
-                key.endsWith('src')
-                ||key.endsWith('href')
-            )
+            &&(key.endsWith('href')||key.endsWith('src'))
             &&isRelURL(val)
         ){
             unit.options[key]=relURLToAbsURL(val,dir)
