@@ -236,7 +236,6 @@ export class Compiler {
         this.compile = compile;
         this.multiCompile = multiCompile;
         this.unitToCompiling = new Map();
-        this.unitToCompiled = new Map();
     }
     createErrorElement(err) {
         const element = document.createElement('span');
@@ -248,7 +247,6 @@ export class Compiler {
         if (this.unitToCompiling.get(unit) === true) {
             return this.createErrorElement('Loop');
         }
-        this.unitToCompiled.set(unit, true);
         if (unit.tag === 'global' || unit.options.global === true) {
             const element = document.createElement('div');
             element.classList.add('unit', 'global');

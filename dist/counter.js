@@ -55,6 +55,9 @@ export class Counter {
         return tmp;
     }
     countUnit(unit) {
+        if ((unit.options['no-count'] ?? extractLastGlobalOption('no-count', unit.tag, this.tagToGlobalOptions)) === true) {
+            return;
+        }
         if (this.title.length === 0 && unit.tag === 'title') {
             this.title = unitToInlinePlainString(unit);
         }
@@ -62,8 +65,7 @@ export class Counter {
             const baseId = stringToId(typeof unit.options.id === 'string' ? unit.options.id : unitToInlinePlainString(unit));
             const count = this.baseIdToCount[baseId] = (this.baseIdToCount[baseId] ?? 0) + 1;
             const id = count > 1 || baseId.length === 0 ? `${baseId}~${count}` : baseId;
-            let orbit = unit.options.orbit
-                ?? extractLastGlobalOption('orbit', unit.tag, this.tagToGlobalOptions);
+            let orbit = unit.options.orbit ?? extractLastGlobalOption('orbit', unit.tag, this.tagToGlobalOptions);
             if (typeof orbit !== 'string' || orbit.length === 0) {
                 orbit = unit.tag === 'h1'
                     || unit.tag === 'h2'
@@ -101,7 +103,7 @@ export class Counter {
                 index,
                 id,
                 orbit,
-                unit,
+                unit
             };
             this.indexInfoArray.push(indexInfo);
             this.idToIndexInfo[id] = indexInfo;

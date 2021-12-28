@@ -245,7 +245,6 @@ export class Compiler{
     readonly compile=compile
     readonly multiCompile=multiCompile
     readonly unitToCompiling=new Map<stdn.STDNUnit,boolean|undefined>()
-    readonly unitToCompiled=new Map<stdn.STDNUnit,true|undefined>()
     constructor(readonly context:extractor.Context){}
     createErrorElement(err:string){
         const element=document.createElement('span')
@@ -257,7 +256,6 @@ export class Compiler{
         if(this.unitToCompiling.get(unit)===true){
             return this.createErrorElement('Loop')
         }
-        this.unitToCompiled.set(unit,true)
         if(unit.tag==='global'||unit.options.global===true){
             const element=document.createElement('div')
             element.classList.add('unit','global')

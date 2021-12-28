@@ -24,7 +24,6 @@ export declare class Compiler {
     readonly compile: typeof compile;
     readonly multiCompile: typeof multiCompile;
     readonly unitToCompiling: Map<stdn.STDNUnit, boolean | undefined>;
-    readonly unitToCompiled: Map<stdn.STDNUnit, true | undefined>;
     constructor(context: extractor.Context);
     createErrorElement(err: string): HTMLSpanElement;
     compileUnit(unit: stdn.STDNUnit): Promise<HTMLElement | SVGElement>;
