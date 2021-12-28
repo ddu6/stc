@@ -66,55 +66,57 @@ export class Counter{
         return tmp
     }
     private countUnit(unit:STDNUnit){
-        if((unit.options['no-count']??extractLastGlobalOption('no-count',unit.tag,this.tagToGlobalOptions))===true){
+        if(
+            unit.tag==='global'
+            ||unit.options.global===true
+            ||(unit.options['no-count']??extractLastGlobalOption('no-count',unit.tag,this.tagToGlobalOptions))===true
+        ){
             return
         }
         if(this.title.length===0&&unit.tag==='title'){
             this.title=unitToInlinePlainString(unit)
         }
-        if(unit.tag!=='global'&&unit.options.global!==true){
-            const baseId=stringToId(typeof unit.options.id==='string'?unit.options.id:unitToInlinePlainString(unit))
-            const count=this.baseIdToCount[baseId]=(this.baseIdToCount[baseId]??0)+1
-            const id=count>1||baseId.length===0?`${baseId}~${count}`:baseId
-            let orbit=unit.options.orbit??extractLastGlobalOption('orbit',unit.tag,this.tagToGlobalOptions)
-            if(typeof orbit!=='string'||orbit.length===0){
-                orbit=unit.tag==='h1'
-                    ||unit.tag==='h2'
-                    ||unit.tag==='h3'
-                    ||unit.tag==='h4'
-                    ||unit.tag==='h5'
-                    ||unit.tag==='h6'
-                    ?'heading':unit.tag
-            }
-            let level=unit.options.level
-                ??extractLastGlobalOption('level',unit.tag,this.tagToGlobalOptions)
-                ??extractLastGlobalOption('level',orbit,this.tagToGlobalOptions)
-            if(typeof level!=='number'||level<=0||level%1!==0){
-                switch(unit.tag){
-                    case 'h2':level=2
-                    break
-                    case 'h3':level=3
-                    break
-                    case 'h4':level=4
-                    break
-                    case 'h5':level=5
-                    break
-                    case 'h6':level=6
-                    break
-                    default:level=1
-                }
-            }
-            const index=this.createIndex(orbit,level)
-            const indexInfo:IndexInfo={
-                index,
-                id,
-                orbit,
-                unit
-            }
-            this.indexInfoArray.push(indexInfo)
-            this.idToIndexInfo[id]=indexInfo
-            this.unitToId.set(unit,id)
+        const baseId=stringToId(typeof unit.options.id==='string'?unit.options.id:unitToInlinePlainString(unit))
+        const count=this.baseIdToCount[baseId]=(this.baseIdToCount[baseId]??0)+1
+        const id=count>1||baseId.length===0?`${baseId}~${count}`:baseId
+        let orbit=unit.options.orbit??extractLastGlobalOption('orbit',unit.tag,this.tagToGlobalOptions)
+        if(typeof orbit!=='string'||orbit.length===0){
+            orbit=unit.tag==='h1'
+                ||unit.tag==='h2'
+                ||unit.tag==='h3'
+                ||unit.tag==='h4'
+                ||unit.tag==='h5'
+                ||unit.tag==='h6'
+                ?'heading':unit.tag
         }
+        let level=unit.options.level
+            ??extractLastGlobalOption('level',unit.tag,this.tagToGlobalOptions)
+            ??extractLastGlobalOption('level',orbit,this.tagToGlobalOptions)
+        if(typeof level!=='number'||level<=0||level%1!==0){
+            switch(unit.tag){
+                case 'h2':level=2
+                break
+                case 'h3':level=3
+                break
+                case 'h4':level=4
+                break
+                case 'h5':level=5
+                break
+                case 'h6':level=6
+                break
+                default:level=1
+            }
+        }
+        const index=this.createIndex(orbit,level)
+        const indexInfo:IndexInfo={
+            index,
+            id,
+            orbit,
+            unit
+        }
+        this.indexInfoArray.push(indexInfo)
+        this.idToIndexInfo[id]=indexInfo
+        this.unitToId.set(unit,id)
         for(const key of Object.keys(unit.options)){
             const val=unit.options[key]
             if(Array.isArray(val)){
