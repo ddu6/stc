@@ -247,12 +247,14 @@ export class Compiler{
     readonly unitToCompiling=new Map<stdn.STDNUnit,boolean|undefined>()
     constructor(readonly context:extractor.Context){}
     createErrorElement(err:string){
+        const {document}=this.context.window
         const element=document.createElement('span')
         element.classList.add('unit','warn')
         element.textContent=err
         return element
     }
     async compileUnit(unit:stdn.STDNUnit){
+        const {document}=this.context.window
         if(this.unitToCompiling.get(unit)===true){
             return this.createErrorElement('Loop')
         }
@@ -373,6 +375,7 @@ export class Compiler{
         return df
     }
     async compileSTDN(stdn:stdn.STDN){
+        const {document}=this.context.window
         const df=new DocumentFragment()
         for(const line of stdn){
             const div=document.createElement('div')

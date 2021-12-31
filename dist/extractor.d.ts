@@ -22,6 +22,7 @@ export interface Context {
     title: Counter['title'];
     unitToId: Counter['unitToId'];
     root: Window | ShadowRoot;
+    window: Window;
 }
 export declare function extractGlobalOptionArray(option: string, tag: string, tagToGlobalOptions: TagToGlobalOptions): (string | number | boolean | STDN)[];
 export declare function extractLastGlobalOption(option: string, tag: string, tagToGlobalOptions: TagToGlobalOptions): string | number | boolean | STDN | undefined;
@@ -34,5 +35,6 @@ export interface ExtractContextOptions {
     headSTDN?: STDN;
     footSTDN?: STDN;
     root?: Window | ShadowRoot;
+    window?: Window;
 }
 export declare function extractContext(doc: STDN, dir: string, options?: ExtractContextOptions): Promise<Context>;

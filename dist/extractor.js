@@ -39,9 +39,6 @@ export async function extractGlobalURLs(option, tag, tagToGlobalOptions, dir) {
     return await urlsToAbsURLs(extractGlobalStrings(option, tag, tagToGlobalOptions), dir);
 }
 export async function extractContext(doc, dir, options = {}) {
-    if (dir.length === 0) {
-        dir = location.href;
-    }
     const tagToGlobalOptions = {};
     const tagToUnitCompiler = {};
     if (options.builtInTagToUnitCompiler !== undefined) {
@@ -158,6 +155,7 @@ export async function extractContext(doc, dir, options = {}) {
         tagToUnitCompiler,
         title: counter.title,
         unitToId: counter.unitToId,
-        root: options.root ?? window
+        root: options.root ?? window,
+        window: options.window ?? window
     };
 }

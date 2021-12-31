@@ -23,6 +23,7 @@ export interface Context{
     title:Counter['title']
     unitToId:Counter['unitToId']
     root:Window|ShadowRoot
+    window:Window
 }
 export function extractGlobalOptionArray(option:string,tag:string,tagToGlobalOptions:TagToGlobalOptions){
     const options=tagToGlobalOptions[tag]
@@ -68,15 +69,13 @@ export interface ExtractContextOptions{
     headSTDN?:STDN
     footSTDN?:STDN
     root?:Window|ShadowRoot
+    window?:Window
 }
 export async function extractContext(
     doc:STDN,
     dir:string,
     options:ExtractContextOptions={}
 ):Promise<Context>{
-    if(dir.length===0){
-        dir=location.href
-    }
     const tagToGlobalOptions:Context['tagToGlobalOptions']={}
     const tagToUnitCompiler:Context['tagToUnitCompiler']={}
     if(options.builtInTagToUnitCompiler!==undefined){
@@ -190,6 +189,7 @@ export async function extractContext(
         tagToUnitCompiler,
         title:counter.title,
         unitToId:counter.unitToId,
-        root:options.root??window
+        root:options.root??window,
+        window:options.window??window
     }
 }

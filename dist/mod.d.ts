@@ -6,7 +6,7 @@ export * from './urls';
 export * from './counter';
 export * from './extractor';
 export * from './compiler';
-export declare function compile(string: string, dir?: string, options?: ExtractContextOptions): Promise<{
+export declare function compile(string: string, dir: string, options?: ExtractContextOptions): Promise<{
     documentFragment: DocumentFragment;
     compiler: Compiler;
     doc: STDN;

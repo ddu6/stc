@@ -7,7 +7,7 @@ export * from './urls';
 export * from './counter';
 export * from './extractor';
 export * from './compiler';
-export async function compile(string, dir = '', options = {}) {
+export async function compile(string, dir, options = {}) {
     const doc = parse(string);
     if (doc === undefined) {
         return undefined;
