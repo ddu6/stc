@@ -33,7 +33,7 @@ export async function multiCompile(parts, options = {}) {
         doc.push(...stdn);
         partLengths.push(stdn.length);
     }
-    const context = await extractContext(doc, '', options);
+    const context = await extractContext(doc, 'a:b', options);
     const compiler = new Compiler(context);
     return {
         documentFragment: await compiler.compileSTDN(doc),

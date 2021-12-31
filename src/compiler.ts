@@ -340,7 +340,7 @@ export class Compiler{
                 &&(attr.endsWith('href'||attr.endsWith('src')))
                 &&urls.isRelURL(val)
             ){
-                val=urls.relURLToAbsURL(val,this.context.dir)
+                val=new URL(val,this.context.dir).href
             }
             try{
                 element.setAttribute(attr,val)
