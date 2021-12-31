@@ -36,7 +36,7 @@ export function fixURLInSTDN(stdn:STDN,dir:string){
     }
 }
 export async function urlsToAbsURLs(urls:string[],dir:string,ancestors:string[]=[]){
-    const out:string[]=[]
+    const out:(Promise<string[]>|string)[]=[]
     for(const urlStr of urls){
         try{
             const url=new URL(urlStr,dir)
@@ -47,16 +47,18 @@ export async function urlsToAbsURLs(urls:string[],dir:string,ancestors:string[]=
             if(ancestors.includes(url.href)){
                 continue
             }
-            const res=await fetch(url.href)
-            if(!res.ok){
-                continue
-            }
-            out.push(...(await urlsStrToAbsURLs(await res.text(),url.href,ancestors.concat(url.href))))
+            out.push((async ()=>{
+                const res=await fetch(url.href)
+                if(!res.ok){
+                    return []
+                }
+                return await urlsStrToAbsURLs(await res.text(),url.href,ancestors.concat(url.href))
+            })())
         }catch(err){
             console.log(err)
         }
     }
-    return out
+    return (await Promise.all(out)).flat()
 }
 export async function urlsStrToAbsURLs(string:string,dir:string,ancestors:string[]=[]){
     const array=parse('['+string+']')

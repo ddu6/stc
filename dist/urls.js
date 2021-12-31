@@ -46,17 +46,19 @@ export async function urlsToAbsURLs(urls, dir, ancestors = []) {
             if (ancestors.includes(url.href)) {
                 continue;
             }
-            const res = await fetch(url.href);
-            if (!res.ok) {
-                continue;
-            }
-            out.push(...(await urlsStrToAbsURLs(await res.text(), url.href, ancestors.concat(url.href))));
+            out.push((async () => {
+                const res = await fetch(url.href);
+                if (!res.ok) {
+                    return [];
+                }
+                return await urlsStrToAbsURLs(await res.text(), url.href, ancestors.concat(url.href));
+            })());
         }
         catch (err) {
             console.log(err);
         }
     }
-    return out;
+    return (await Promise.all(out)).flat();
 }
 export async function urlsStrToAbsURLs(string, dir, ancestors = []) {
     const array = parse('[' + string + ']');
