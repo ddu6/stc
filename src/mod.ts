@@ -1,47 +1,47 @@
-import {parse,STDN} from 'stdn'
+import {parse, STDN} from 'stdn'
 import {fixURLInSTDN} from './urls'
 import {Compiler} from './compiler'
-import {ExtractContextOptions,extractContext} from './extractor'
+import {ExtractContextOptions, extractContext} from './extractor'
 export * from './base'
 export * from './urls'
 export * from './counter'
 export * from './extractor'
 export * from './compiler'
-export async function compile(string:string,dir:string,options:ExtractContextOptions={}){
-    const doc=parse(string)
-    if(doc===undefined){
+export async function compile(string: string, dir: string, options: ExtractContextOptions = {}) {
+    const doc = parse(string)
+    if (doc === undefined) {
         return undefined
     }
-    const context=await extractContext(doc,dir,options)
-    const compiler=new Compiler(context)
+    const context = await extractContext(doc, dir, options)
+    const compiler = new Compiler(context)
     return {
         compiler,
         doc,
-        documentFragment:await compiler.compileSTDN(doc)
+        documentFragment: await compiler.compileSTDN(doc)
     }
 }
-export async function multiCompile(parts:{
-    string:string,
-    dir:string
-}[],options:ExtractContextOptions={}){
-    const doc:STDN=[]
-    const partLengths:number[]=[]
-    for(const {string,dir} of parts){
-        const stdn=parse(string)
-        if(stdn===undefined){
+export async function multiCompile(parts: {
+    string: string,
+    dir: string
+}[], options: ExtractContextOptions = {}) {
+    const doc: STDN = []
+    const partLengths: number[] = []
+    for (const {string, dir} of parts) {
+        const stdn = parse(string)
+        if (stdn === undefined) {
             partLengths.push(0)
             continue
         }
-        fixURLInSTDN(stdn,dir)
+        fixURLInSTDN(stdn, dir)
         doc.push(...stdn)
         partLengths.push(stdn.length)
     }
-    const context=await extractContext(doc,'a:b',options)
-    const compiler=new Compiler(context)
+    const context = await extractContext(doc, 'a:b', options)
+    const compiler = new Compiler(context)
     return {
         compiler,
         doc,
-        documentFragment:await compiler.compileSTDN(doc),
+        documentFragment: await compiler.compileSTDN(doc),
         partLengths
     }
 }

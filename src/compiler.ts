@@ -4,8 +4,8 @@ import * as base from './base'
 import * as urls from './urls'
 import * as counter from './counter'
 import * as extractor from './extractor'
-import {compile,multiCompile} from './mod'
-export const supportedHTMLTags=[
+import {compile, multiCompile} from './mod'
+export const supportedHTMLTags = [
     'address',
     'article',
     'aside',
@@ -88,7 +88,7 @@ export const supportedHTMLTags=[
     'thead',
     'tr',
 ]
-export const supportedHTMLTagsWithInlineChildren=[
+export const supportedHTMLTagsWithInlineChildren = [
     'a',
     'abbr',
     'b',
@@ -137,7 +137,7 @@ export const supportedHTMLTagsWithInlineChildren=[
     'thead',
     'tr',
 ]
-export const supportedSVGTags=[
+export const supportedSVGTags = [
     'animate',
     'animateMotion',
     'circle',
@@ -156,7 +156,7 @@ export const supportedSVGTags=[
     'tspan',
     'use',
 ]
-export const supportedHTMLAttributes=[
+export const supportedHTMLAttributes = [
     'accesskey',
     'align',
     'allow',
@@ -231,151 +231,151 @@ export const supportedHTMLAttributes=[
     'width',
     'height',
 ]
-export class Compiler{
-    readonly supportedHTMLTags=supportedHTMLTags
-    readonly supportedHTMLTagsWithInlineChildren=supportedHTMLTagsWithInlineChildren
-    readonly supportedSVGTags=supportedSVGTags
-    readonly supportedHTMLAttributes=supportedHTMLAttributes
-    readonly ston=ston
-    readonly stdn=stdn
-    readonly base=base
-    readonly urls=urls
-    readonly counter=counter
-    readonly extractor=extractor
-    readonly compile=compile
-    readonly multiCompile=multiCompile
-    readonly unitToCompiling=new Map<stdn.STDNUnit,boolean|undefined>()
-    constructor(readonly context:extractor.Context){}
-    createErrorElement(err:string){
-        const element=document.createElement('span')
-        element.classList.add('unit','warn')
-        element.textContent=err
+export class Compiler {
+    readonly supportedHTMLTags = supportedHTMLTags
+    readonly supportedHTMLTagsWithInlineChildren = supportedHTMLTagsWithInlineChildren
+    readonly supportedSVGTags = supportedSVGTags
+    readonly supportedHTMLAttributes = supportedHTMLAttributes
+    readonly ston = ston
+    readonly stdn = stdn
+    readonly base = base
+    readonly urls = urls
+    readonly counter = counter
+    readonly extractor = extractor
+    readonly compile = compile
+    readonly multiCompile = multiCompile
+    readonly unitToCompiling = new Map<stdn.STDNUnit, boolean | undefined>()
+    constructor(readonly context: extractor.Context) {}
+    createErrorElement(err: string) {
+        const element = document.createElement('span')
+        element.classList.add('unit', 'warn')
+        element.textContent = err
         return element
     }
-    async compileUnit(unit:stdn.STDNUnit){
-        if(this.unitToCompiling.get(unit)===true){
+    async compileUnit(unit: stdn.STDNUnit) {
+        if (this.unitToCompiling.get(unit) === true) {
             return this.createErrorElement('Loop')
         }
-        if(unit.tag==='global'||unit.options.global===true){
-            const element=document.createElement('div')
-            element.classList.add('unit','global')
+        if (unit.tag === 'global' || unit.options.global === true) {
+            const element = document.createElement('div')
+            element.classList.add('unit', 'global')
             return element
         }
-        this.unitToCompiling.set(unit,true)
-        let realTag=unit.options['compile-with']??extractor.extractLastGlobalOption('compile-with',unit.tag,this.context.tagToGlobalOptions)
-        if(typeof realTag!=='string'||realTag.length===0){
-            realTag=unit.tag
+        this.unitToCompiling.set(unit, true)
+        let realTag = unit.options['compile-with'] ?? extractor.extractLastGlobalOption('compile-with', unit.tag, this.context.tagToGlobalOptions)
+        if (typeof realTag !== 'string' || realTag.length === 0) {
+            realTag = unit.tag
         }
-        const unitCompiler=this.context.tagToUnitCompiler[realTag]
-        let element:HTMLElement|SVGElement
-        if(unitCompiler!==undefined){
-            try{
-                element=await unitCompiler(unit,this)
-            }catch(err){
+        const unitCompiler = this.context.tagToUnitCompiler[realTag]
+        let element: HTMLElement | SVGElement
+        if (unitCompiler !== undefined) {
+            try {
+                element = await unitCompiler(unit, this)
+            } catch (err) {
                 console.log(err)
-                element=this.createErrorElement('Broken')
+                element = this.createErrorElement('Broken')
             }
-            if(element.classList.contains('unit')&&element.classList.contains('warn')){
-                this.unitToCompiling.set(unit,false)
+            if (element.classList.contains('unit') && element.classList.contains('warn')) {
+                this.unitToCompiling.set(unit, false)
                 return element
             }
-        }else{
-            if(supportedHTMLTags.includes(realTag)){
-                element=document.createElement(realTag)
-                if(supportedHTMLTagsWithInlineChildren.includes(realTag)){
+        } else {
+            if (supportedHTMLTags.includes(realTag)) {
+                element = document.createElement(realTag)
+                if (supportedHTMLTagsWithInlineChildren.includes(realTag)) {
                     element.append(await this.compileInlineSTDN(unit.children))
-                }else{
+                } else {
                     element.append(await this.compileSTDN(unit.children))
                 }
-            }else if(supportedSVGTags.includes(realTag)){
-                element=document.createElementNS("http://www.w3.org/2000/svg",realTag)
+            } else if (supportedSVGTags.includes(realTag)) {
+                element = document.createElementNS("http://www.w3.org/2000/svg", realTag)
                 element.append(await this.compileInlineSTDN(unit.children))
-            }else{
-                element=document.createElement('div')
+            } else {
+                element = document.createElement('div')
                 element.append(await this.compileSTDN(unit.children))
             }
         }
         element.classList.add('unit')
-        try{
+        try {
             element.classList.add(realTag)
-            if(typeof unit.options.class==='string'){
+            if (typeof unit.options.class === 'string') {
                 element.classList.add(...unit.options.class.trim().split(/\s+/))
             }
-            for(const val of extractor.extractGlobalOptionArray('class',unit.tag,this.context.tagToGlobalOptions)){
-                if(typeof val==='string'){
+            for (const val of extractor.extractGlobalOptionArray('class', unit.tag, this.context.tagToGlobalOptions)) {
+                if (typeof val === 'string') {
                     element.classList.add(...val.trim().split(/\s+/))
                 }
             }
-        }catch(err){
+        } catch (err) {
             console.log(err)
         }
-        const id=this.context.unitToId.get(unit)
-        if(id!==undefined){
-            element.id=id
+        const id = this.context.unitToId.get(unit)
+        if (id !== undefined) {
+            element.id = id
         }
-        for(const key of Object.keys(unit.options)){
-            if(key==='id'||key==='class'){
+        for (const key of Object.keys(unit.options)) {
+            if (key === 'id' || key === 'class') {
                 continue
             }
-            let attr=key
-            if(!key.startsWith('data-')&&!supportedHTMLAttributes.includes(key)){
-                attr=`data-${key}`
+            let attr = key
+            if (!key.startsWith('data-') && !supportedHTMLAttributes.includes(key)) {
+                attr = `data-${key}`
             }
-            if(element.hasAttribute(attr)){
+            if (element.hasAttribute(attr)) {
                 continue
             }
-            let val=unit.options[key]
-            if(val===true){
-                val=''
-            }else if(typeof val==='number'){
-                val=val.toString()
+            let val = unit.options[key]
+            if (val === true) {
+                val = ''
+            } else if (typeof val === 'number') {
+                val = val.toString()
             }
-            if(typeof val!=='string'){
+            if (typeof val !== 'string') {
                 continue
             }
-            if(
-                this.context.dir.length>0
-                &&(attr.endsWith('href'||attr.endsWith('src')))
-                &&urls.isRelURL(val)
-            ){
-                val=new URL(val,this.context.dir).href
+            if (
+                this.context.dir.length > 0
+                && (attr.endsWith('href' || attr.endsWith('src')))
+                && urls.isRelURL(val)
+            ) {
+                val = new URL(val, this.context.dir).href
             }
-            try{
-                element.setAttribute(attr,val)
-            }catch(err){
+            try {
+                element.setAttribute(attr, val)
+            } catch (err) {
                 console.log(err)
             }
         }
-        this.unitToCompiling.set(unit,false)
+        this.unitToCompiling.set(unit, false)
         return element
     }
-    async compileInline(inline:stdn.STDNInline){
-        if(typeof inline!=='string'){
+    async compileInline(inline: stdn.STDNInline) {
+        if (typeof inline !== 'string') {
             return await this.compileUnit(inline)
         }
         return new Text(inline)
     }
-    async compileLine(line:stdn.STDNLine){
-        const df=new DocumentFragment()
-        for(const inline of line){
+    async compileLine(line: stdn.STDNLine) {
+        const df = new DocumentFragment()
+        for (const inline of line) {
             df.append(await this.compileInline(inline))
         }
         return df
     }
-    async compileInlineSTDN(stdn:stdn.STDN){
-        const df=new DocumentFragment()
-        for(let i=0;i<stdn.length;i++){
+    async compileInlineSTDN(stdn: stdn.STDN) {
+        const df = new DocumentFragment()
+        for (let i = 0; i < stdn.length; i++) {
             df.append(await this.compileLine(stdn[i]))
-            if(i!==stdn.length-1){
+            if (i !== stdn.length - 1) {
                 df.append(new Text('\n'))
             }
         }
         return df
     }
-    async compileSTDN(stdn:stdn.STDN){
-        const df=new DocumentFragment()
-        for(const line of stdn){
-            const div=document.createElement('div')
+    async compileSTDN(stdn: stdn.STDN) {
+        const df = new DocumentFragment()
+        for (const line of stdn) {
+            const div = document.createElement('div')
             div.classList.add('st-line')
             df.append(div)
             div.append(await this.compileLine(line))
