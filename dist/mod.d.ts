@@ -7,16 +7,16 @@ export * from './counter';
 export * from './extractor';
 export * from './compiler';
 export declare function compile(string: string, dir: string, options?: ExtractContextOptions): Promise<{
-    documentFragment: DocumentFragment;
     compiler: Compiler;
     doc: STDN;
+    documentFragment: DocumentFragment;
 } | undefined>;
 export declare function multiCompile(parts: {
     string: string;
     dir: string;
 }[], options?: ExtractContextOptions): Promise<{
-    documentFragment: DocumentFragment;
-    partLengths: number[];
     compiler: Compiler;
     doc: STDN;
+    documentFragment: DocumentFragment;
+    partLengths: number[];
 }>;

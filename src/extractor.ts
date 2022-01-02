@@ -68,7 +68,6 @@ export interface ExtractContextOptions{
     headSTDN?:STDN
     footSTDN?:STDN
     root?:Window|ShadowRoot
-    window?:Window
 }
 export async function extractContext(
     doc:STDN,

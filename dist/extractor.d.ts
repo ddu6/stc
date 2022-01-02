@@ -34,6 +34,5 @@ export interface ExtractContextOptions {
     headSTDN?: STDN;
     footSTDN?: STDN;
     root?: Window | ShadowRoot;
-    window?: Window;
 }
 export declare function extractContext(doc: STDN, dir: string, options?: ExtractContextOptions): Promise<Context>;

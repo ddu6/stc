@@ -15,9 +15,9 @@ export async function compile(string, dir, options = {}) {
     const context = await extractContext(doc, dir, options);
     const compiler = new Compiler(context);
     return {
-        documentFragment: await compiler.compileSTDN(doc),
         compiler,
         doc,
+        documentFragment: await compiler.compileSTDN(doc)
     };
 }
 export async function multiCompile(parts, options = {}) {
@@ -36,9 +36,9 @@ export async function multiCompile(parts, options = {}) {
     const context = await extractContext(doc, 'a:b', options);
     const compiler = new Compiler(context);
     return {
-        documentFragment: await compiler.compileSTDN(doc),
-        partLengths,
         compiler,
         doc,
+        documentFragment: await compiler.compileSTDN(doc),
+        partLengths
     };
 }
