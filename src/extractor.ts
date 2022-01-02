@@ -23,7 +23,6 @@ export interface Context{
     title:Counter['title']
     unitToId:Counter['unitToId']
     root:Window|ShadowRoot
-    window:Window
 }
 export function extractGlobalOptionArray(option:string,tag:string,tagToGlobalOptions:TagToGlobalOptions){
     const options=tagToGlobalOptions[tag]
@@ -189,7 +188,6 @@ export async function extractContext(
         tagToUnitCompiler,
         title:counter.title,
         unitToId:counter.unitToId,
-        root:options.root??window,
-        window:options.window??window
+        root:options.root??window
     }
 }

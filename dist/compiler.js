@@ -238,14 +238,12 @@ export class Compiler {
         this.unitToCompiling = new Map();
     }
     createErrorElement(err) {
-        const { document } = this.context.window;
         const element = document.createElement('span');
         element.classList.add('unit', 'warn');
         element.textContent = err;
         return element;
     }
     async compileUnit(unit) {
-        const { document } = this.context.window;
         if (this.unitToCompiling.get(unit) === true) {
             return this.createErrorElement('Loop');
         }
@@ -372,7 +370,6 @@ export class Compiler {
         return df;
     }
     async compileSTDN(stdn) {
-        const { document } = this.context.window;
         const df = new DocumentFragment();
         for (const line of stdn) {
             const div = document.createElement('div');

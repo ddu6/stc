@@ -155,7 +155,6 @@ export async function extractContext(doc, dir, options = {}) {
         tagToUnitCompiler,
         title: counter.title,
         unitToId: counter.unitToId,
-        root: options.root ?? window,
-        window: options.window ?? window
+        root: options.root ?? window
     };
 }
