@@ -70,6 +70,7 @@ export class Counter {
             unit.tag === 'global'
             || unit.options.global === true
             || (unit.options['no-count'] ?? extractLastGlobalOption('no-count', unit.tag, this.tagToGlobalOptions)) === true
+            || this.unitToId.get(unit) !== undefined
         ) {
             return
         }
@@ -79,6 +80,7 @@ export class Counter {
         const baseId = stringToId(typeof unit.options.id === 'string' ? unit.options.id : unitToInlinePlainString(unit))
         const count = this.baseIdToCount[baseId] = (this.baseIdToCount[baseId] ?? 0) + 1
         const id = count > 1 || baseId.length === 0 ? `${baseId}~${count}` : baseId
+        this.unitToId.set(unit, id)
         let orbit = unit.options.orbit ?? extractLastGlobalOption('orbit', unit.tag, this.tagToGlobalOptions)
         if (typeof orbit !== 'string' || orbit.length === 0) {
             orbit = unit.tag === 'h1'
@@ -116,7 +118,9 @@ export class Counter {
         }
         this.indexInfoArray.push(indexInfo)
         this.idToIndexInfo[id] = indexInfo
-        this.unitToId.set(unit, id)
+        if ((unit.options['no-count-inside'] ?? extractLastGlobalOption('no-count-inside', unit.tag, this.tagToGlobalOptions)) === true) {
+            return
+        }
         for (const key of Object.keys(unit.options)) {
             const val = unit.options[key]
             if (Array.isArray(val)) {
