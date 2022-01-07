@@ -35,4 +35,4 @@ export interface ExtractContextOptions {
     footSTDN?: STDN;
     root?: ShadowRoot;
 }
-export declare function extractContext(doc: STDN, dir: string, options?: ExtractContextOptions): Promise<Context>;
+export declare function extractContext(stdn: STDN, dir: string, options?: ExtractContextOptions): Promise<Context>;

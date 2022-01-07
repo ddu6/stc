@@ -8,37 +8,37 @@ export * from './counter';
 export * from './extractor';
 export * from './compiler';
 export async function compile(string, dir, options = {}) {
-    const doc = parse(string);
-    if (doc === undefined) {
+    const stdn = parse(string);
+    if (stdn === undefined) {
         return undefined;
     }
-    const context = await extractContext(doc, dir, options);
+    const context = await extractContext(stdn, dir, options);
     const compiler = new Compiler(context);
     return {
         compiler,
-        doc,
-        documentFragment: await compiler.compileSTDN(doc)
+        stdn,
+        documentFragment: await compiler.compileSTDN(stdn)
     };
 }
 export async function multiCompile(parts, options = {}) {
-    const doc = [];
+    const stdn = [];
     const partLengths = [];
     for (const { string, dir } of parts) {
-        const stdn = parse(string);
-        if (stdn === undefined) {
+        const result = parse(string);
+        if (result === undefined) {
             partLengths.push(0);
             continue;
         }
-        fixURLInSTDN(stdn, dir);
-        doc.push(...stdn);
-        partLengths.push(stdn.length);
+        fixURLInSTDN(result, dir);
+        stdn.push(...result);
+        partLengths.push(result.length);
     }
-    const context = await extractContext(doc, 'a:b', options);
+    const context = await extractContext(stdn, 'a:b', options);
     const compiler = new Compiler(context);
     return {
         compiler,
-        doc,
-        documentFragment: await compiler.compileSTDN(doc),
+        stdn,
+        documentFragment: await compiler.compileSTDN(stdn),
         partLengths
     };
 }

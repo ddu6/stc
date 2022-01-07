@@ -38,7 +38,7 @@ export function extractGlobalStrings(option, tag, tagToGlobalOptions) {
 export async function extractGlobalURLs(option, tag, tagToGlobalOptions, dir) {
     return await urlsToAbsURLs(extractGlobalStrings(option, tag, tagToGlobalOptions), dir);
 }
-export async function extractContext(doc, dir, options = {}) {
+export async function extractContext(stdn, dir, options = {}) {
     const tagToGlobalOptions = {};
     const tagToUnitCompiler = {};
     if (options.builtInTagToUnitCompiler !== undefined) {
@@ -46,7 +46,7 @@ export async function extractContext(doc, dir, options = {}) {
     }
     const cssURLs = [];
     const tagToUnitCompilerURLs = [];
-    const fullDoc = (options.headSTDN ?? []).concat(doc).concat(options.footSTDN ?? []);
+    const fullDoc = (options.headSTDN ?? []).concat(stdn).concat(options.footSTDN ?? []);
     for (const line of fullDoc) {
         if (line.length === 0) {
             continue;
@@ -145,7 +145,7 @@ export async function extractContext(doc, dir, options = {}) {
         }
     }
     const counter = new Counter(tagToGlobalOptions);
-    counter.countSTDN(doc);
+    counter.countSTDN(stdn);
     return {
         css,
         dir,

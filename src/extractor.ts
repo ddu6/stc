@@ -69,11 +69,7 @@ export interface ExtractContextOptions {
     footSTDN?: STDN
     root?: ShadowRoot
 }
-export async function extractContext(
-    doc: STDN,
-    dir: string,
-    options: ExtractContextOptions = {}
-): Promise<Context> {
+export async function extractContext(stdn: STDN, dir: string, options: ExtractContextOptions = {}): Promise<Context> {
     const tagToGlobalOptions: Context['tagToGlobalOptions'] = {}
     const tagToUnitCompiler: Context['tagToUnitCompiler'] = {}
     if (options.builtInTagToUnitCompiler !== undefined) {
@@ -81,7 +77,7 @@ export async function extractContext(
     }
     const cssURLs: string[] = []
     const tagToUnitCompilerURLs: string[] = []
-    const fullDoc = (options.headSTDN ?? []).concat(doc).concat(options.footSTDN ?? [])
+    const fullDoc = (options.headSTDN ?? []).concat(stdn).concat(options.footSTDN ?? [])
     for (const line of fullDoc) {
         if (line.length === 0) {
             continue
@@ -177,7 +173,7 @@ export async function extractContext(
         }
     }
     const counter = new Counter(tagToGlobalOptions)
-    counter.countSTDN(doc)
+    counter.countSTDN(stdn)
     return {
         css,
         dir,
