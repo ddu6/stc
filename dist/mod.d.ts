@@ -8,15 +8,16 @@ export * from './extractor';
 export * from './compiler';
 export declare function compile(string: string, dir: string, options?: ExtractContextOptions): Promise<{
     compiler: Compiler;
-    stdn: STDN;
     documentFragment: DocumentFragment;
+    stdn: STDN;
 } | undefined>;
-export declare function multiCompile(parts: {
+export interface STDNPart {
     string: string;
     dir: string;
-}[], options?: ExtractContextOptions): Promise<{
+}
+export declare function multiCompile(parts: STDNPart[], options?: ExtractContextOptions): Promise<{
     compiler: Compiler;
-    stdn: STDN;
     documentFragment: DocumentFragment;
     partLengths: number[];
+    stdn: STDN;
 }>;

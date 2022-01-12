@@ -16,11 +16,24 @@ export async function compile(string, dir, options = {}) {
     const compiler = new Compiler(context);
     return {
         compiler,
-        stdn,
-        documentFragment: await compiler.compileSTDN(stdn)
+        documentFragment: await compiler.compileSTDN(stdn),
+        stdn
     };
 }
 export async function multiCompile(parts, options = {}) {
+    if (parts.length === 1) {
+        const { string, dir } = parts[0];
+        const result = await compile(string, dir, options);
+        if (result !== undefined) {
+            const { compiler, documentFragment, stdn } = result;
+            return {
+                compiler,
+                documentFragment,
+                partLengths: [stdn.length],
+                stdn
+            };
+        }
+    }
     const stdn = [];
     const partLengths = [];
     for (const { string, dir } of parts) {
@@ -37,8 +50,8 @@ export async function multiCompile(parts, options = {}) {
     const compiler = new Compiler(context);
     return {
         compiler,
-        stdn,
         documentFragment: await compiler.compileSTDN(stdn),
-        partLengths
+        partLengths,
+        stdn
     };
 }

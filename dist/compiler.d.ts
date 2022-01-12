@@ -8,13 +8,13 @@ import { compile, multiCompile } from './mod';
 export declare const supportedHTMLTags: string[];
 export declare const supportedHTMLTagsWithInlineChildren: string[];
 export declare const supportedSVGTags: string[];
-export declare const supportedHTMLAttributes: string[];
+export declare const supportedAttributes: string[];
 export declare class Compiler {
     readonly context: extractor.Context;
     readonly supportedHTMLTags: string[];
     readonly supportedHTMLTagsWithInlineChildren: string[];
     readonly supportedSVGTags: string[];
-    readonly supportedHTMLAttributes: string[];
+    readonly supportedAttributes: string[];
     readonly ston: typeof ston;
     readonly stdn: typeof stdn;
     readonly base: typeof base;
