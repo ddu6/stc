@@ -143,7 +143,7 @@ export class Compiler {
                 continue;
             }
             if (this.context.dir.length > 0
-                && (attr.endsWith('href' || attr.endsWith('src')))
+                && (attr.endsWith('href') || attr.endsWith('src'))
                 && urls.isRelURL(val)) {
                 val = new URL(val, this.context.dir).href;
             }
