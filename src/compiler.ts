@@ -31,6 +31,12 @@ export const supportedAttributes = [
     'attributeName', 'additive', 'accumulate',
     'clipPathUnits', 'crossorigin', 'd', 'dx', 'dy', 'height', 'href', 'keyPoints', 'lengthAdjust', 'markerHeight', 'markerUnits', 'markerWidth', 'maskContentUnits', 'maskUnits', 'method', 'orient', 'path', 'pathLength', 'patternContentUnits', 'patternTransform', 'patternUnits', 'points', 'preserveAspectRatio', 'refX', 'refY', 'rotate', 'side', 'spacing', 'startOffset', 'textLength', 'type', 'viewBox', 'width', 'x', 'x1', 'x2', 'y', 'y1', 'y2'
 ]
+export function createErrorElement(err: string) {
+    const element = document.createElement('span')
+    element.classList.add('unit', 'warn')
+    element.textContent = err
+    return element
+}
 export class Compiler {
     readonly supportedHTMLTags = supportedHTMLTags
     readonly supportedHTMLTagsWithInlineChildren = supportedHTMLTagsWithInlineChildren
@@ -44,14 +50,9 @@ export class Compiler {
     readonly extractor = extractor
     readonly compile = compile
     readonly multiCompile = multiCompile
+    readonly createErrorElement = createErrorElement
     readonly unitToCompiling = new Map<stdn.STDNUnit, boolean | undefined>()
     constructor(readonly context: extractor.Context) {}
-    createErrorElement(err: string) {
-        const element = document.createElement('span')
-        element.classList.add('unit', 'warn')
-        element.textContent = err
-        return element
-    }
     async compileUnit(unit: stdn.STDNUnit) {
         if (this.unitToCompiling.get(unit) === true) {
             return this.createErrorElement('Loop')

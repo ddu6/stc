@@ -9,6 +9,7 @@ export declare const supportedHTMLTags: string[];
 export declare const supportedHTMLTagsWithInlineChildren: string[];
 export declare const supportedSVGTags: string[];
 export declare const supportedAttributes: string[];
+export declare function createErrorElement(err: string): HTMLSpanElement;
 export declare class Compiler {
     readonly context: extractor.Context;
     readonly supportedHTMLTags: string[];
@@ -23,9 +24,9 @@ export declare class Compiler {
     readonly extractor: typeof extractor;
     readonly compile: typeof compile;
     readonly multiCompile: typeof multiCompile;
+    readonly createErrorElement: typeof createErrorElement;
     readonly unitToCompiling: Map<stdn.STDNUnit, boolean | undefined>;
     constructor(context: extractor.Context);
-    createErrorElement(err: string): HTMLSpanElement;
     compileUnit(unit: stdn.STDNUnit): Promise<HTMLElement | SVGElement>;
     compileInline(inline: stdn.STDNInline): Promise<HTMLElement | Text | SVGElement>;
     compileLine(line: stdn.STDNLine): Promise<DocumentFragment>;

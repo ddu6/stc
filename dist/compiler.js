@@ -31,6 +31,12 @@ export const supportedAttributes = [
     'attributeName', 'additive', 'accumulate',
     'clipPathUnits', 'crossorigin', 'd', 'dx', 'dy', 'height', 'href', 'keyPoints', 'lengthAdjust', 'markerHeight', 'markerUnits', 'markerWidth', 'maskContentUnits', 'maskUnits', 'method', 'orient', 'path', 'pathLength', 'patternContentUnits', 'patternTransform', 'patternUnits', 'points', 'preserveAspectRatio', 'refX', 'refY', 'rotate', 'side', 'spacing', 'startOffset', 'textLength', 'type', 'viewBox', 'width', 'x', 'x1', 'x2', 'y', 'y1', 'y2'
 ];
+export function createErrorElement(err) {
+    const element = document.createElement('span');
+    element.classList.add('unit', 'warn');
+    element.textContent = err;
+    return element;
+}
 export class Compiler {
     constructor(context) {
         this.context = context;
@@ -46,13 +52,8 @@ export class Compiler {
         this.extractor = extractor;
         this.compile = compile;
         this.multiCompile = multiCompile;
+        this.createErrorElement = createErrorElement;
         this.unitToCompiling = new Map();
-    }
-    createErrorElement(err) {
-        const element = document.createElement('span');
-        element.classList.add('unit', 'warn');
-        element.textContent = err;
-        return element;
     }
     async compileUnit(unit) {
         if (this.unitToCompiling.get(unit) === true) {
