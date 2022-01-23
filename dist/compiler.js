@@ -118,12 +118,29 @@ export class Compiler {
         catch (err) {
             console.log(err);
         }
+        let style = element.getAttribute('style') ?? '';
+        if (typeof unit.options.style === 'string') {
+            style += `;${unit.options.style}`;
+        }
+        for (const val of extractor.extractGlobalOptionArray('style', unit.tag, this.context.tagToGlobalOptions)) {
+            if (typeof val === 'string') {
+                style += `;${val}`;
+            }
+        }
+        if (style.length > 0) {
+            try {
+                element.setAttribute('style', style);
+            }
+            catch (err) {
+                console.log(err);
+            }
+        }
         const id = this.context.unitToId.get(unit);
         if (id !== undefined) {
             element.id = id;
         }
         for (const key of Object.keys(unit.options)) {
-            if (key === 'id' || key === 'class') {
+            if (key === 'id' || key === 'class' || key === 'style') {
                 continue;
             }
             let attr = key;
@@ -143,8 +160,7 @@ export class Compiler {
             if (typeof val !== 'string') {
                 continue;
             }
-            if (this.context.dir.length > 0
-                && (attr.endsWith('href') || attr.endsWith('src'))
+            if ((attr.endsWith('href') || attr.endsWith('src'))
                 && urls.isRelURL(val)) {
                 val = new URL(val, this.context.dir).href;
             }
