@@ -1,23 +1,16 @@
-import { STDN } from 'stdn';
 import { Compiler } from './compiler';
-import { ExtractContextOptions } from './extractor';
+import { ExtractContextOptions, STDNPart } from './extractor';
 export * from './base';
 export * from './urls';
 export * from './counter';
 export * from './extractor';
 export * from './compiler';
-export declare function compile(string: string, dir: string, options?: ExtractContextOptions): Promise<{
-    compiler: Compiler;
-    documentFragment: DocumentFragment;
-    stdn: STDN;
-} | undefined>;
-export interface STDNPart {
-    string: string;
-    dir: string;
+export interface STDNSourcePart {
+    value: string;
+    url: string;
 }
-export declare function multiCompile(parts: STDNPart[], options?: ExtractContextOptions): Promise<{
+export declare function compile(sourceParts: STDNSourcePart[], options?: ExtractContextOptions): Promise<{
     compiler: Compiler;
     documentFragment: DocumentFragment;
-    partLengths: number[];
-    stdn: STDN;
+    parts: STDNPart[];
 }>;

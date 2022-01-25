@@ -4,7 +4,7 @@ import * as base from './base'
 import * as urls from './urls'
 import * as counter from './counter'
 import * as extractor from './extractor'
-import {compile, multiCompile} from './mod'
+import {compile} from './mod'
 export const supportedHTMLTags = [
     'address', 'article', 'aside', 'footer', 'header', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'main', 'nav', 'section',
     'blockquote', 'dd', 'div', 'dl', 'dt', 'figcaption', 'figure', 'hr', 'li', 'ol', 'p', 'pre', 'ul',
@@ -38,10 +38,6 @@ export function createErrorElement(err: string) {
     return element
 }
 export class Compiler {
-    readonly supportedHTMLTags = supportedHTMLTags
-    readonly supportedHTMLTagsWithInlineChildren = supportedHTMLTagsWithInlineChildren
-    readonly supportedSVGTags = supportedSVGTags
-    readonly supportedAttributes = supportedAttributes
     readonly ston = ston
     readonly stdn = stdn
     readonly base = base
@@ -49,17 +45,24 @@ export class Compiler {
     readonly counter = counter
     readonly extractor = extractor
     readonly compile = compile
-    readonly multiCompile = multiCompile
+    readonly supportedHTMLTags = supportedHTMLTags
+    readonly supportedHTMLTagsWithInlineChildren = supportedHTMLTagsWithInlineChildren
+    readonly supportedSVGTags = supportedSVGTags
+    readonly supportedAttributes = supportedAttributes
     readonly createErrorElement = createErrorElement
+    readonly elementToUnitOrLine = new Map<HTMLElement | SVGElement, stdn.STDNUnit | stdn.STDNLine>()
     readonly unitToCompiling = new Map<stdn.STDNUnit, boolean | undefined>()
     constructor(readonly context: extractor.Context) {}
     async compileUnit(unit: stdn.STDNUnit) {
         if (this.unitToCompiling.get(unit) === true) {
-            return this.createErrorElement('Loop')
+            const element = this.createErrorElement('Loop')
+            this.elementToUnitOrLine.set(element, unit)
+            return element
         }
         if (unit.tag === 'global' || unit.options.global === true) {
             const element = document.createElement('div')
             element.classList.add('unit', 'global')
+            this.elementToUnitOrLine.set(element, unit)
             return element
         }
         this.unitToCompiling.set(unit, true)
@@ -77,6 +80,7 @@ export class Compiler {
                 element = this.createErrorElement('Broken')
             }
             if (element.classList.contains('unit') && element.classList.contains('warn')) {
+                this.elementToUnitOrLine.set(element, unit)
                 this.unitToCompiling.set(unit, false)
                 return element
             }
@@ -102,26 +106,30 @@ export class Compiler {
             if (typeof unit.options.class === 'string') {
                 element.classList.add(...unit.options.class.trim().split(/\s+/))
             }
-            for (const val of extractor.extractGlobalOptionArray('class', unit.tag, this.context.tagToGlobalOptions)) {
-                if (typeof val === 'string') {
-                    element.classList.add(...val.trim().split(/\s+/))
+            for (const value of extractor.extractGlobalOptionArray('class', unit.tag, this.context.tagToGlobalOptions)) {
+                if (typeof value === 'string') {
+                    element.classList.add(...value.trim().split(/\s+/))
                 }
             }
         } catch (err) {
             console.log(err)
         }
-        let style = element.getAttribute('style') ?? ''
-        if (typeof unit.options.style === 'string') {
-            style += `;${unit.options.style}`
+        const styles: string[] = []
+        let style = element.getAttribute('style')
+        if (style !== null) {
+            styles.push(style)
         }
-        for (const val of extractor.extractGlobalOptionArray('style', unit.tag, this.context.tagToGlobalOptions)) {
-            if (typeof val === 'string') {
-                style += `;${val}`
+        if (typeof unit.options.style === 'string') {
+            styles.push(unit.options.style)
+        }
+        for (const value of extractor.extractGlobalOptionArray('style', unit.tag, this.context.tagToGlobalOptions)) {
+            if (typeof value === 'string') {
+                styles.push(value)
             }
         }
-        if (style.length > 0) {
+        if (styles.length > 0) {
             try {
-                element.setAttribute('style', style)
+                element.setAttribute('style', styles.join('; '))
             } catch (err) {
                 console.log(err)
             }
@@ -141,31 +149,32 @@ export class Compiler {
             if (element.hasAttribute(attr)) {
                 continue
             }
-            let val = unit.options[key]
-            if (val === true) {
-                val = ''
-            } else if (typeof val === 'number') {
-                val = val.toString()
+            let value = unit.options[key]
+            if (value === true) {
+                value = ''
+            } else if (typeof value === 'number') {
+                value = value.toString()
             }
-            if (typeof val !== 'string') {
+            if (typeof value !== 'string') {
                 continue
             }
             if (
                 (attr.endsWith('href') || attr.endsWith('src'))
-                && urls.isRelURL(val)
+                && urls.isRelURL(value)
             ) {
-                val = new URL(val, this.context.dir).href
+                value = this.context.urlToAbsURL(value, unit)
             }
             try {
-                element.setAttribute(attr, val)
+                element.setAttribute(attr, value)
             } catch (err) {
                 console.log(err)
             }
         }
+        this.elementToUnitOrLine.set(element, unit)
         this.unitToCompiling.set(unit, false)
         return element
     }
-    async compileInline(inline: stdn.STDNInline) {
+    async compileInline(inline: stdn.STDNUnit | string) {
         if (typeof inline !== 'string') {
             return await this.compileUnit(inline)
         }
@@ -195,6 +204,7 @@ export class Compiler {
             div.classList.add('st-line')
             df.append(div)
             div.append(await this.compileLine(line))
+            this.elementToUnitOrLine.set(div, line)
         }
         return df
     }

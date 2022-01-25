@@ -4,7 +4,7 @@ import * as base from './base';
 import * as urls from './urls';
 import * as counter from './counter';
 import * as extractor from './extractor';
-import { compile, multiCompile } from './mod';
+import { compile } from './mod';
 export const supportedHTMLTags = [
     'address', 'article', 'aside', 'footer', 'header', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'main', 'nav', 'section',
     'blockquote', 'dd', 'div', 'dl', 'dt', 'figcaption', 'figure', 'hr', 'li', 'ol', 'p', 'pre', 'ul',
@@ -40,10 +40,6 @@ export function createErrorElement(err) {
 export class Compiler {
     constructor(context) {
         this.context = context;
-        this.supportedHTMLTags = supportedHTMLTags;
-        this.supportedHTMLTagsWithInlineChildren = supportedHTMLTagsWithInlineChildren;
-        this.supportedSVGTags = supportedSVGTags;
-        this.supportedAttributes = supportedAttributes;
         this.ston = ston;
         this.stdn = stdn;
         this.base = base;
@@ -51,17 +47,24 @@ export class Compiler {
         this.counter = counter;
         this.extractor = extractor;
         this.compile = compile;
-        this.multiCompile = multiCompile;
+        this.supportedHTMLTags = supportedHTMLTags;
+        this.supportedHTMLTagsWithInlineChildren = supportedHTMLTagsWithInlineChildren;
+        this.supportedSVGTags = supportedSVGTags;
+        this.supportedAttributes = supportedAttributes;
         this.createErrorElement = createErrorElement;
+        this.elementToUnitOrLine = new Map();
         this.unitToCompiling = new Map();
     }
     async compileUnit(unit) {
         if (this.unitToCompiling.get(unit) === true) {
-            return this.createErrorElement('Loop');
+            const element = this.createErrorElement('Loop');
+            this.elementToUnitOrLine.set(element, unit);
+            return element;
         }
         if (unit.tag === 'global' || unit.options.global === true) {
             const element = document.createElement('div');
             element.classList.add('unit', 'global');
+            this.elementToUnitOrLine.set(element, unit);
             return element;
         }
         this.unitToCompiling.set(unit, true);
@@ -80,6 +83,7 @@ export class Compiler {
                 element = this.createErrorElement('Broken');
             }
             if (element.classList.contains('unit') && element.classList.contains('warn')) {
+                this.elementToUnitOrLine.set(element, unit);
                 this.unitToCompiling.set(unit, false);
                 return element;
             }
@@ -109,27 +113,31 @@ export class Compiler {
             if (typeof unit.options.class === 'string') {
                 element.classList.add(...unit.options.class.trim().split(/\s+/));
             }
-            for (const val of extractor.extractGlobalOptionArray('class', unit.tag, this.context.tagToGlobalOptions)) {
-                if (typeof val === 'string') {
-                    element.classList.add(...val.trim().split(/\s+/));
+            for (const value of extractor.extractGlobalOptionArray('class', unit.tag, this.context.tagToGlobalOptions)) {
+                if (typeof value === 'string') {
+                    element.classList.add(...value.trim().split(/\s+/));
                 }
             }
         }
         catch (err) {
             console.log(err);
         }
-        let style = element.getAttribute('style') ?? '';
-        if (typeof unit.options.style === 'string') {
-            style += `;${unit.options.style}`;
+        const styles = [];
+        let style = element.getAttribute('style');
+        if (style !== null) {
+            styles.push(style);
         }
-        for (const val of extractor.extractGlobalOptionArray('style', unit.tag, this.context.tagToGlobalOptions)) {
-            if (typeof val === 'string') {
-                style += `;${val}`;
+        if (typeof unit.options.style === 'string') {
+            styles.push(unit.options.style);
+        }
+        for (const value of extractor.extractGlobalOptionArray('style', unit.tag, this.context.tagToGlobalOptions)) {
+            if (typeof value === 'string') {
+                styles.push(value);
             }
         }
-        if (style.length > 0) {
+        if (styles.length > 0) {
             try {
-                element.setAttribute('style', style);
+                element.setAttribute('style', styles.join('; '));
             }
             catch (err) {
                 console.log(err);
@@ -150,27 +158,28 @@ export class Compiler {
             if (element.hasAttribute(attr)) {
                 continue;
             }
-            let val = unit.options[key];
-            if (val === true) {
-                val = '';
+            let value = unit.options[key];
+            if (value === true) {
+                value = '';
             }
-            else if (typeof val === 'number') {
-                val = val.toString();
+            else if (typeof value === 'number') {
+                value = value.toString();
             }
-            if (typeof val !== 'string') {
+            if (typeof value !== 'string') {
                 continue;
             }
             if ((attr.endsWith('href') || attr.endsWith('src'))
-                && urls.isRelURL(val)) {
-                val = new URL(val, this.context.dir).href;
+                && urls.isRelURL(value)) {
+                value = this.context.urlToAbsURL(value, unit);
             }
             try {
-                element.setAttribute(attr, val);
+                element.setAttribute(attr, value);
             }
             catch (err) {
                 console.log(err);
             }
         }
+        this.elementToUnitOrLine.set(element, unit);
         this.unitToCompiling.set(unit, false);
         return element;
     }
@@ -204,6 +213,7 @@ export class Compiler {
             div.classList.add('st-line');
             df.append(div);
             div.append(await this.compileLine(line));
+            this.elementToUnitOrLine.set(div, line);
         }
         return df;
     }

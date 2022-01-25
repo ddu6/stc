@@ -23,26 +23,26 @@ export class Counter {
                     this.currentHeadingIndex[i] = 0;
                 }
                 for (const key of Object.keys(this.orbitToCurrentIndex)) {
-                    const val = this.orbitToCurrentIndex[key];
-                    if (val === undefined || val.length < level) {
+                    const value = this.orbitToCurrentIndex[key];
+                    if (value === undefined || value.length < level) {
                         continue;
                     }
-                    for (let i = level; i < val.length; i++) {
-                        val[i] = 0;
+                    for (let i = level; i < value.length; i++) {
+                        value[i] = 0;
                     }
                 }
             }
             this.currentHeadingIndex[level - 1]++;
             return this.currentHeadingIndex.slice(0, level);
         }
-        let val = this.orbitToCurrentIndex[orbit];
-        if (val === undefined) {
-            val = [];
-            this.orbitToCurrentIndex[orbit] = val;
+        let value = this.orbitToCurrentIndex[orbit];
+        if (value === undefined) {
+            value = [];
+            this.orbitToCurrentIndex[orbit] = value;
         }
-        if (val.length < level) {
-            for (let i = val.length; i < level; i++) {
-                val.push(0);
+        if (value.length < level) {
+            for (let i = value.length; i < level; i++) {
+                value.push(0);
             }
         }
         if (this.currentHeadingIndex.length < level - 1) {
@@ -51,7 +51,7 @@ export class Counter {
             }
         }
         const tmp = this.currentHeadingIndex.slice(0, level - 1);
-        tmp.push(++val[level - 1]);
+        tmp.push(++value[level - 1]);
         return tmp;
     }
     countUnit(unit) {
@@ -114,9 +114,9 @@ export class Counter {
             return;
         }
         for (const key of Object.keys(unit.options)) {
-            const val = unit.options[key];
-            if (Array.isArray(val)) {
-                this.countSTDN(val);
+            const value = unit.options[key];
+            if (Array.isArray(value)) {
+                this.countSTDN(value);
             }
         }
         this.countSTDN(unit.children);

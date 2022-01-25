@@ -1,5 +1,5 @@
-import type {STDN, STDNUnit} from 'stdn'
-import {urlsToAbsURLs} from './urls'
+import type {STDN, STDNLine, STDNUnit} from 'stdn'
+import {isRelURL, urlsToAbsURLs} from './urls'
 import {Counter} from './counter'
 import type {Compiler} from './compiler'
 export type UnitCompiler = (unit: STDNUnit, compiler: Compiler) => Promise<HTMLElement | SVGElement>
@@ -13,16 +13,27 @@ export type STDNUnitGlobalOptions = {
 export type TagToGlobalOptions = {
     [key: string]: STDNUnitGlobalOptions | undefined
 }
+export type STDNPosition = (number | string)[]
+export type UnitOrLineToPosition = Map<STDNUnit | STDNLine, STDNPosition | undefined>
+export interface STDNPart {
+    value: STDN
+    url: string
+}
+export type UnitOrLineToPart = Map<STDNUnit | STDNLine, STDNPart | undefined>
 export interface Context {
-    css: string
-    dir: string
-    indexInfoArray: Counter['indexInfoArray']
-    idToIndexInfo: Counter['idToIndexInfo']
-    tagToGlobalOptions: TagToGlobalOptions
-    tagToUnitCompiler: TagToUnitCompiler
-    title: Counter['title']
-    unitToId: Counter['unitToId']
-    root: ShadowRoot | undefined
+    readonly css: string
+    readonly fullSTDN: STDN
+    readonly indexInfoArray: Counter['indexInfoArray']
+    readonly idToIndexInfo: Counter['idToIndexInfo']
+    readonly stdn: STDN
+    readonly tagToGlobalOptions: TagToGlobalOptions
+    readonly tagToUnitCompiler: TagToUnitCompiler
+    readonly title: Counter['title']
+    readonly unitToId: Counter['unitToId']
+    readonly unitOrLineToPart: UnitOrLineToPart
+    readonly unitOrLineToPosition: UnitOrLineToPosition
+    readonly urlToAbsURL: (url: string, unit: STDNUnit) => string
+    readonly root: ShadowRoot | undefined
 }
 export function extractGlobalOptionArray(option: string, tag: string, tagToGlobalOptions: TagToGlobalOptions) {
     const options = tagToGlobalOptions[tag]
@@ -52,15 +63,66 @@ export function extractGlobalChildren(tag: string, tagToGlobalOptions: TagToGlob
 export function extractGlobalStrings(option: string, tag: string, tagToGlobalOptions: TagToGlobalOptions) {
     const array = extractGlobalOptionArray(option, tag, tagToGlobalOptions)
     const strings: string[] = []
-    for (const val of array) {
-        if (typeof val === 'string') {
-            strings.push(val)
+    for (const value of array) {
+        if (typeof value === 'string') {
+            strings.push(value)
         }
     }
     return strings
 }
-export async function extractGlobalURLs(option: string, tag: string, tagToGlobalOptions: TagToGlobalOptions, dir: string) {
-    return await urlsToAbsURLs(extractGlobalStrings(option, tag, tagToGlobalOptions), dir)
+export function extractUnitOrLineToPosition(stdn: STDN) {
+    const out: UnitOrLineToPosition = new Map()
+    function extract(stdn: STDN, position: STDNPosition) {
+        for (let i = 0; i < stdn.length; i++) {
+            const line = stdn[i]
+            const linePosition = position.concat(i)
+            out.set(line, linePosition)
+            for (let j = 0; j < line.length; j++) {
+                const unit = line[j]
+                if (typeof unit === 'string') {
+                    continue
+                }
+                const unitPosition = linePosition.concat(j)
+                out.set(unit, unitPosition)
+                for (const key of Object.keys(unit.options)) {
+                    const value = unit.options[key]
+                    if (typeof value !== 'object') {
+                        continue
+                    }
+                    extract(value, unitPosition.concat(key))
+                }
+                extract(unit.children, unitPosition)
+            }
+        }
+    }
+    extract(stdn, [])
+    return out
+}
+export function extractUnitOrLineToPart(parts: STDNPart[]) {
+    const out: UnitOrLineToPart = new Map()
+    function set(stdn: STDN, part: STDNPart) {
+        for (const line of stdn) {
+            out.set(line, part)
+            for (const unit of line) {
+                if (typeof unit === 'string') {
+                    continue
+                }
+                out.set(unit, part)
+                for (const key of Object.keys(unit.options)) {
+                    const value = unit.options[key]
+                    if (typeof value !== 'object') {
+                        continue
+                    }
+                    set(value, part)
+                }
+                set(unit.children, part)
+            }
+        }
+    }
+    for (const part of parts) {
+        set(part.value, part)
+    }
+    return out
 }
 export interface ExtractContextOptions {
     builtInTagToUnitCompiler?: TagToUnitCompiler
@@ -69,7 +131,7 @@ export interface ExtractContextOptions {
     footSTDN?: STDN
     root?: ShadowRoot
 }
-export async function extractContext(stdn: STDN, dir: string, options: ExtractContextOptions = {}): Promise<Context> {
+export async function extractContext(parts: STDNPart[], options: ExtractContextOptions = {}): Promise<Context> {
     const tagToGlobalOptions: Context['tagToGlobalOptions'] = {}
     const tagToUnitCompiler: Context['tagToUnitCompiler'] = {}
     if (options.builtInTagToUnitCompiler !== undefined) {
@@ -77,8 +139,25 @@ export async function extractContext(stdn: STDN, dir: string, options: ExtractCo
     }
     const cssURLs: string[] = []
     const tagToUnitCompilerURLs: string[] = []
-    const fullDoc = (options.headSTDN ?? []).concat(stdn).concat(options.footSTDN ?? [])
-    for (const line of fullDoc) {
+    const unitOrLineToPart = extractUnitOrLineToPart(parts)
+    const stdn = parts.map(value => value.value).flat()
+    const fullSTDN = (options.headSTDN ?? []).concat(stdn).concat(options.footSTDN ?? [])
+    function urlToAbsURL(url: string, unit: STDNUnit) {
+        if (!isRelURL(url)) {
+            return url
+        }
+        const part = unitOrLineToPart.get(unit)
+        if (part === undefined) {
+            return url
+        }
+        try {
+            return new URL(url, part.url).href
+        } catch (err) {
+            console.log(err)
+            return url
+        }
+    }
+    for (const line of fullSTDN) {
         if (line.length === 0) {
             continue
         }
@@ -122,13 +201,13 @@ export async function extractContext(stdn: STDN, dir: string, options: ExtractCo
             {
                 const src = unit.options['css-src']
                 if (typeof src === 'string') {
-                    cssURLs.push(src)
+                    cssURLs.push(urlToAbsURL(src, unit))
                 }
             }
             {
                 const src = unit.options['ucs-src']
                 if (typeof src === 'string') {
-                    tagToUnitCompilerURLs.push(src)
+                    tagToUnitCompilerURLs.push(urlToAbsURL(src, unit))
                 }
             }
             continue
@@ -147,25 +226,32 @@ export async function extractContext(stdn: STDN, dir: string, options: ExtractCo
                 if (key === 'global' || key === '__') {
                     continue
                 }
-                const val = unit.options[key]
-                if (val === undefined) {
+                let value = unit.options[key]
+                if (value === undefined) {
                     continue
                 }
-                const vals = globalOptions[key]
-                if (vals === undefined) {
-                    globalOptions[key] = [val]
-                } else {
-                    vals.push(val)
+                if (
+                    typeof value === 'string'
+                    && (key.endsWith('href') || key.endsWith('src'))
+                    && isRelURL(value)
+                ) {
+                    value = urlToAbsURL(value, unit)
                 }
+                const values = globalOptions[key]
+                if (values === undefined) {
+                    globalOptions[key] = [value]
+                    continue
+                }
+                values.push(value)
             }
         }
     }
-    const css = (await urlsToAbsURLs(cssURLs, dir))
-        .map(val => `@import ${JSON.stringify(val)};`).join('')
+    const css = (await urlsToAbsURLs(cssURLs, location.href))
+        .map(value => `@import ${JSON.stringify(value)};`).join('')
     if (options.style !== undefined) {
         options.style.textContent = css
     }
-    for (const url of await urlsToAbsURLs(tagToUnitCompilerURLs, dir)) {
+    for (const url of await urlsToAbsURLs(tagToUnitCompilerURLs, location.href)) {
         try {
             Object.assign(tagToUnitCompiler, await (new Function(`return import(${JSON.stringify(url)})`)()))
         } catch (err) {
@@ -174,15 +260,20 @@ export async function extractContext(stdn: STDN, dir: string, options: ExtractCo
     }
     const counter = new Counter(tagToGlobalOptions)
     counter.countSTDN(stdn)
+    const unitOrLineToPosition = extractUnitOrLineToPosition(stdn)
     return {
         css,
-        dir,
+        fullSTDN,
         indexInfoArray: counter.indexInfoArray,
         idToIndexInfo: counter.idToIndexInfo,
+        stdn,
         tagToGlobalOptions,
         tagToUnitCompiler,
         title: counter.title,
         unitToId: counter.unitToId,
+        unitOrLineToPart,
+        unitOrLineToPosition,
+        urlToAbsURL,
         root: options.root
     }
 }
