@@ -1,4 +1,4 @@
-import { parse } from 'ston';
+import { parse } from 'ston/dist/parse';
 export function isRelURL(url) {
     return !url.startsWith('#') && !/^[a-z][a-z0-9+.-]*:/i.test(url);
 }

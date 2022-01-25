@@ -1,5 +1,5 @@
-import * as ston from 'ston';
-import * as stdn from 'stdn';
+import * as ston from 'ston/dist/parse';
+import * as stdn from 'stdn/dist/parse';
 import * as base from './base';
 import * as urls from './urls';
 import * as counter from './counter';
