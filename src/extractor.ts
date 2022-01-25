@@ -83,7 +83,7 @@ export function extractUnitOrLineToPart(parts: STDNPart[]) {
                     continue
                 }
                 out.set(unit, part)
-                for (const key of Object.keys(unit.options)) {
+                for (const key in unit.options) {
                     const value = unit.options[key]
                     if (typeof value !== 'object') {
                         continue
@@ -113,7 +113,7 @@ export function extractUnitOrLineToPosition(stdn: STDN) {
                 }
                 const unitPosition = linePosition.concat(j)
                 out.set(unit, unitPosition)
-                for (const key of Object.keys(unit.options)) {
+                for (const key in unit.options) {
                     const value = unit.options[key]
                     if (typeof value !== 'object') {
                         continue
@@ -225,7 +225,7 @@ export async function extractContext(parts: STDNPart[], options: ExtractContextO
             } else {
                 globalOptions.__.push(unit.children)
             }
-            for (const key of Object.keys(unit.options)) {
+            for (const key in unit.options) {
                 if (key === 'global' || key === '__') {
                     continue
                 }

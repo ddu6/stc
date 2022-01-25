@@ -156,7 +156,7 @@ export class Compiler {
         if (id !== undefined) {
             element.id = id;
         }
-        for (const key of Object.keys(unit.options)) {
+        for (const key in unit.options) {
             if (key === 'id' || key === 'class' || key === 'style') {
                 continue;
             }

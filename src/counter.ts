@@ -33,7 +33,7 @@ export class Counter {
                 for (let i = level; i < this.currentHeadingIndex.length; i++) {
                     this.currentHeadingIndex[i] = 0
                 }
-                for (const key of Object.keys(this.orbitToCurrentIndex)) {
+                for (const key in this.orbitToCurrentIndex) {
                     const value = this.orbitToCurrentIndex[key]
                     if (value === undefined || value.length < level) {
                         continue
@@ -121,7 +121,7 @@ export class Counter {
         if ((unit.options['no-count-inside'] ?? extractLastGlobalOption('no-count-inside', unit.tag, this.tagToGlobalOptions)) === true) {
             return
         }
-        for (const key of Object.keys(unit.options)) {
+        for (const key in unit.options) {
             const value = unit.options[key]
             if (Array.isArray(value)) {
                 this.countSTDN(value)
