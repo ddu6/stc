@@ -12,13 +12,13 @@ export declare type STDNUnitGlobalOptions = {
 export declare type TagToGlobalOptions = {
     [key: string]: STDNUnitGlobalOptions | undefined;
 };
-export declare type STDNPosition = (number | string)[];
-export declare type UnitOrLineToPosition = Map<STDNUnit | STDNLine, STDNPosition | undefined>;
 export interface STDNPart {
     value: STDN;
     url: string;
 }
 export declare type UnitOrLineToPart = Map<STDNUnit | STDNLine, STDNPart | undefined>;
+export declare type STDNPosition = (number | string)[];
+export declare type UnitOrLineToPosition = Map<STDNUnit | STDNLine, STDNPosition | undefined>;
 export interface Context {
     readonly css: string;
     readonly fullSTDN: STDN;
