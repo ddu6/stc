@@ -92,6 +92,15 @@ export function extractUnitOrLineToPosition(stdn) {
     extract(stdn, []);
     return out;
 }
+export function extractPartToOffset(parts) {
+    const out = new Map();
+    let offset = 0;
+    for (const part of parts) {
+        out.set(part, offset);
+        offset += part.value.length;
+    }
+    return out;
+}
 export async function extractContext(parts, { builtInTagToUnitCompiler, style, headSTDN, footSTDN, root } = {}) {
     const tagToGlobalOptions = {};
     const tagToUnitCompiler = {};
@@ -223,12 +232,14 @@ export async function extractContext(parts, { builtInTagToUnitCompiler, style, h
     const counter = new Counter(tagToGlobalOptions);
     counter.countSTDN(stdn);
     const unitOrLineToPosition = extractUnitOrLineToPosition(stdn);
+    const partToOffset = extractPartToOffset(parts);
     return {
         css,
         fullSTDN,
         indexInfoArray: counter.indexInfoArray,
         idToIndexInfo: counter.idToIndexInfo,
         parts,
+        partToOffset,
         stdn,
         tagToGlobalOptions,
         tagToUnitCompiler,

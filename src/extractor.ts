@@ -110,6 +110,15 @@ export function extractUnitOrLineToPosition(stdn: STDN) {
     extract(stdn, [])
     return out
 }
+export function extractPartToOffset(parts: STDNPart[]) {
+    const out = new Map<STDNPart, number | undefined>()
+    let offset = 0
+    for (const part of parts) {
+        out.set(part, offset)
+        offset += part.value.length
+    }
+    return out
+}
 export async function extractContext(parts: STDNPart[], {
     builtInTagToUnitCompiler,
     style,
@@ -252,12 +261,14 @@ export async function extractContext(parts: STDNPart[], {
     const counter = new Counter(tagToGlobalOptions)
     counter.countSTDN(stdn)
     const unitOrLineToPosition = extractUnitOrLineToPosition(stdn)
+    const partToOffset = extractPartToOffset(parts)
     return {
         css,
         fullSTDN,
         indexInfoArray: counter.indexInfoArray,
         idToIndexInfo: counter.idToIndexInfo,
         parts,
+        partToOffset,
         stdn,
         tagToGlobalOptions,
         tagToUnitCompiler,

@@ -23,6 +23,7 @@ export interface STDNPart {
 export declare function extractUnitOrLineToPart(parts: STDNPart[]): Map<STDNUnit | STDNLine, STDNPart | undefined>;
 export declare type STDNPosition = (number | string)[];
 export declare function extractUnitOrLineToPosition(stdn: STDN): Map<STDNUnit | STDNLine, STDNPosition | undefined>;
+export declare function extractPartToOffset(parts: STDNPart[]): Map<STDNPart, number | undefined>;
 export declare function extractContext(parts: STDNPart[], { builtInTagToUnitCompiler, style, headSTDN, footSTDN, root }?: {
     builtInTagToUnitCompiler?: TagToUnitCompiler;
     style?: HTMLStyleElement;
@@ -35,6 +36,7 @@ export declare function extractContext(parts: STDNPart[], { builtInTagToUnitComp
     indexInfoArray: import("./counter").IndexInfo[];
     idToIndexInfo: import("./counter").IdToIndexInfo;
     parts: STDNPart[];
+    partToOffset: Map<STDNPart, number | undefined>;
     stdn: STDNLine[];
     tagToGlobalOptions: TagToGlobalOptions;
     tagToUnitCompiler: TagToUnitCompiler;
