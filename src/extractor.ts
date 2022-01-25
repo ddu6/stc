@@ -13,28 +13,6 @@ export type STDNUnitGlobalOptions = {
 export type TagToGlobalOptions = {
     [key: string]: STDNUnitGlobalOptions | undefined
 }
-export interface STDNPart {
-    value: STDN
-    url: string
-}
-export type UnitOrLineToPart = Map<STDNUnit | STDNLine, STDNPart | undefined>
-export type STDNPosition = (number | string)[]
-export type UnitOrLineToPosition = Map<STDNUnit | STDNLine, STDNPosition | undefined>
-export interface Context {
-    readonly css: string
-    readonly fullSTDN: STDN
-    readonly indexInfoArray: Counter['indexInfoArray']
-    readonly idToIndexInfo: Counter['idToIndexInfo']
-    readonly stdn: STDN
-    readonly tagToGlobalOptions: TagToGlobalOptions
-    readonly tagToUnitCompiler: TagToUnitCompiler
-    readonly title: Counter['title']
-    readonly unitToId: Counter['unitToId']
-    readonly unitOrLineToPart: UnitOrLineToPart
-    readonly unitOrLineToPosition: UnitOrLineToPosition
-    readonly urlToAbsURL: (url: string, unit: STDNUnit) => string
-    readonly root: ShadowRoot | undefined
-}
 export function extractGlobalOptionArray(option: string, tag: string, tagToGlobalOptions: TagToGlobalOptions) {
     const options = tagToGlobalOptions[tag]
     if (options === undefined) {
@@ -73,8 +51,12 @@ export function extractGlobalStrings(option: string, tag: string, tagToGlobalOpt
 export async function extractGlobalURLs(option: string, tag: string, tagToGlobalOptions: TagToGlobalOptions) {
     return await urlsToAbsURLs(extractGlobalStrings(option, tag, tagToGlobalOptions), location.href)
 }
+export interface STDNPart {
+    value: STDN
+    url: string
+}
 export function extractUnitOrLineToPart(parts: STDNPart[]) {
-    const out: UnitOrLineToPart = new Map()
+    const out = new Map<STDNUnit | STDNLine, STDNPart | undefined>()
     function set(stdn: STDN, part: STDNPart) {
         for (const line of stdn) {
             out.set(line, part)
@@ -99,8 +81,9 @@ export function extractUnitOrLineToPart(parts: STDNPart[]) {
     }
     return out
 }
+export type STDNPosition = (number | string)[]
 export function extractUnitOrLineToPosition(stdn: STDN) {
-    const out: UnitOrLineToPosition = new Map()
+    const out = new Map<STDNUnit | STDNLine, STDNPosition | undefined>()
     function extract(stdn: STDN, position: STDNPosition) {
         for (let i = 0; i < stdn.length; i++) {
             const line = stdn[i]
@@ -127,24 +110,29 @@ export function extractUnitOrLineToPosition(stdn: STDN) {
     extract(stdn, [])
     return out
 }
-export interface ExtractContextOptions {
+export async function extractContext(parts: STDNPart[], {
+    builtInTagToUnitCompiler,
+    style,
+    headSTDN,
+    footSTDN,
+    root
+}: {
     builtInTagToUnitCompiler?: TagToUnitCompiler
     style?: HTMLStyleElement
     headSTDN?: STDN
     footSTDN?: STDN
     root?: ShadowRoot
-}
-export async function extractContext(parts: STDNPart[], options: ExtractContextOptions = {}): Promise<Context> {
-    const tagToGlobalOptions: Context['tagToGlobalOptions'] = {}
-    const tagToUnitCompiler: Context['tagToUnitCompiler'] = {}
-    if (options.builtInTagToUnitCompiler !== undefined) {
-        Object.assign(tagToUnitCompiler, options.builtInTagToUnitCompiler)
+} = {}) {
+    const tagToGlobalOptions: TagToGlobalOptions = {}
+    const tagToUnitCompiler: TagToUnitCompiler = {}
+    if (builtInTagToUnitCompiler !== undefined) {
+        Object.assign(tagToUnitCompiler, builtInTagToUnitCompiler)
     }
     const cssURLs: string[] = []
     const tagToUnitCompilerURLs: string[] = []
     const unitOrLineToPart = extractUnitOrLineToPart(parts)
     const stdn = parts.map(value => value.value).flat()
-    const fullSTDN = (options.headSTDN ?? []).concat(stdn).concat(options.footSTDN ?? [])
+    const fullSTDN = (headSTDN ?? []).concat(stdn).concat(footSTDN ?? [])
     function urlToAbsURL(url: string, unit: STDNUnit) {
         if (!isRelURL(url)) {
             return url
@@ -251,8 +239,8 @@ export async function extractContext(parts: STDNPart[], options: ExtractContextO
     }
     const css = (await urlsToAbsURLs(cssURLs, location.href))
         .map(value => `@import ${JSON.stringify(value)};`).join('')
-    if (options.style !== undefined) {
-        options.style.textContent = css
+    if (style !== undefined) {
+        style.textContent = css
     }
     for (const url of await urlsToAbsURLs(tagToUnitCompilerURLs, location.href)) {
         try {
@@ -269,6 +257,7 @@ export async function extractContext(parts: STDNPart[], options: ExtractContextO
         fullSTDN,
         indexInfoArray: counter.indexInfoArray,
         idToIndexInfo: counter.idToIndexInfo,
+        parts,
         stdn,
         tagToGlobalOptions,
         tagToUnitCompiler,
@@ -277,6 +266,7 @@ export async function extractContext(parts: STDNPart[], options: ExtractContextO
         unitOrLineToPart,
         unitOrLineToPosition,
         urlToAbsURL,
-        root: options.root
+        root
     }
 }
+export type Context = Awaited<ReturnType<typeof extractContext>>

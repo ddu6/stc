@@ -1,16 +1,15 @@
 import {parse} from 'stdn'
 import {Compiler} from './compiler'
-import {ExtractContextOptions, extractContext, STDNPart} from './extractor'
+import {extractContext, STDNPart} from './extractor'
 export * from './base'
 export * from './urls'
 export * from './counter'
 export * from './extractor'
 export * from './compiler'
-export interface STDNSourcePart {
+export async function compile(sourceParts: {
     value: string
     url: string
-}
-export async function compile(sourceParts: STDNSourcePart[], options: ExtractContextOptions = {}) {
+}[], options: Parameters<typeof extractContext>[1] = {}) {
     const parts: STDNPart[] = []
     for (const {value, url} of sourceParts) {
         const result = parse(value)
@@ -25,7 +24,6 @@ export async function compile(sourceParts: STDNSourcePart[], options: ExtractCon
     const compiler = new Compiler(context)
     return {
         compiler,
-        documentFragment: await compiler.compileSTDN(context.stdn),
-        parts
+        documentFragment: await compiler.compileSTDN(context.stdn)
     }
 }

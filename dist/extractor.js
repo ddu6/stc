@@ -92,17 +92,17 @@ export function extractUnitOrLineToPosition(stdn) {
     extract(stdn, []);
     return out;
 }
-export async function extractContext(parts, options = {}) {
+export async function extractContext(parts, { builtInTagToUnitCompiler, style, headSTDN, footSTDN, root } = {}) {
     const tagToGlobalOptions = {};
     const tagToUnitCompiler = {};
-    if (options.builtInTagToUnitCompiler !== undefined) {
-        Object.assign(tagToUnitCompiler, options.builtInTagToUnitCompiler);
+    if (builtInTagToUnitCompiler !== undefined) {
+        Object.assign(tagToUnitCompiler, builtInTagToUnitCompiler);
     }
     const cssURLs = [];
     const tagToUnitCompilerURLs = [];
     const unitOrLineToPart = extractUnitOrLineToPart(parts);
     const stdn = parts.map(value => value.value).flat();
-    const fullSTDN = (options.headSTDN ?? []).concat(stdn).concat(options.footSTDN ?? []);
+    const fullSTDN = (headSTDN ?? []).concat(stdn).concat(footSTDN ?? []);
     function urlToAbsURL(url, unit) {
         if (!isRelURL(url)) {
             return url;
@@ -209,8 +209,8 @@ export async function extractContext(parts, options = {}) {
     }
     const css = (await urlsToAbsURLs(cssURLs, location.href))
         .map(value => `@import ${JSON.stringify(value)};`).join('');
-    if (options.style !== undefined) {
-        options.style.textContent = css;
+    if (style !== undefined) {
+        style.textContent = css;
     }
     for (const url of await urlsToAbsURLs(tagToUnitCompilerURLs, location.href)) {
         try {
@@ -228,6 +228,7 @@ export async function extractContext(parts, options = {}) {
         fullSTDN,
         indexInfoArray: counter.indexInfoArray,
         idToIndexInfo: counter.idToIndexInfo,
+        parts,
         stdn,
         tagToGlobalOptions,
         tagToUnitCompiler,
@@ -236,6 +237,6 @@ export async function extractContext(parts, options = {}) {
         unitOrLineToPart,
         unitOrLineToPosition,
         urlToAbsURL,
-        root: options.root
+        root
     };
 }

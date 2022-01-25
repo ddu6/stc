@@ -21,7 +21,6 @@ export async function compile(sourceParts, options = {}) {
     const compiler = new Compiler(context);
     return {
         compiler,
-        documentFragment: await compiler.compileSTDN(context.stdn),
-        parts
+        documentFragment: await compiler.compileSTDN(context.stdn)
     };
 }
