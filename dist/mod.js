@@ -1,4 +1,4 @@
-import { parse } from 'stdn';
+import { parse } from 'stdn/dist/parse';
 import { urlsToAbsURLs } from './urls';
 import { Compiler } from './compiler';
 import { extractContext } from './extractor';
