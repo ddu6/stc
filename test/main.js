@@ -5,7 +5,10 @@ const example = `{id flt, style margin:1em 0, theorem [
 ]}
 ['The first successful proof of '{href #flt, a[theorem FLT]}' was released in 1994 by Andrew Wiles.']
 {style height:100vh}`
-const result = await compile(example, location.href)
+const result = await compile([{
+    value: example,
+    url: location.href
+}])
 if (result !== undefined) {
     document.body.append(result.documentFragment)
 }
