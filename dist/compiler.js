@@ -53,18 +53,27 @@ export class Compiler {
         this.supportedAttributes = supportedAttributes;
         this.createErrorElement = createErrorElement;
         this.elementToUnitOrLine = new Map();
+        this.unitOrLineToElements = new Map();
         this.unitToCompiling = new Map();
+    }
+    registerElement(element, unitOrLine) {
+        this.elementToUnitOrLine.set(element, unitOrLine);
+        let elements = this.unitOrLineToElements.get(unitOrLine);
+        if (elements === undefined) {
+            this.unitOrLineToElements.set(unitOrLine, elements = []);
+        }
+        elements.push(element);
     }
     async compileUnit(unit) {
         if (this.unitToCompiling.get(unit) === true) {
             const element = this.createErrorElement('Loop');
-            this.elementToUnitOrLine.set(element, unit);
+            this.registerElement(element, unit);
             return element;
         }
         if (unit.tag === 'global' || unit.options.global === true) {
             const element = document.createElement('div');
             element.classList.add('unit', 'global');
-            this.elementToUnitOrLine.set(element, unit);
+            this.registerElement(element, unit);
             return element;
         }
         this.unitToCompiling.set(unit, true);
@@ -83,7 +92,7 @@ export class Compiler {
                 element = this.createErrorElement('Broken');
             }
             if (element.classList.contains('unit') && element.classList.contains('warn')) {
-                this.elementToUnitOrLine.set(element, unit);
+                this.registerElement(element, unit);
                 this.unitToCompiling.set(unit, false);
                 return element;
             }
@@ -179,7 +188,7 @@ export class Compiler {
                 console.log(err);
             }
         }
-        this.elementToUnitOrLine.set(element, unit);
+        this.registerElement(element, unit);
         this.unitToCompiling.set(unit, false);
         return element;
     }
@@ -213,7 +222,7 @@ export class Compiler {
             div.classList.add('st-line');
             df.append(div);
             div.append(await this.compileLine(line));
-            this.elementToUnitOrLine.set(div, line);
+            this.registerElement(div, line);
         }
         return df;
     }

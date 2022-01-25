@@ -24,9 +24,11 @@ export declare class Compiler {
     readonly supportedSVGTags: string[];
     readonly supportedAttributes: string[];
     readonly createErrorElement: typeof createErrorElement;
-    readonly elementToUnitOrLine: Map<HTMLElement | SVGElement, stdn.STDNUnit | stdn.STDNLine>;
+    readonly elementToUnitOrLine: Map<HTMLElement | SVGElement, stdn.STDNUnit | stdn.STDNLine | undefined>;
+    readonly unitOrLineToElements: Map<stdn.STDNUnit | stdn.STDNLine, (HTMLElement | SVGElement)[] | undefined>;
     readonly unitToCompiling: Map<stdn.STDNUnit, boolean | undefined>;
     constructor(context: extractor.Context);
+    private registerElement;
     compileUnit(unit: stdn.STDNUnit): Promise<HTMLElement | SVGElement>;
     compileInline(inline: stdn.STDNUnit | string): Promise<HTMLElement | Text | SVGElement>;
     compileLine(line: stdn.STDNLine): Promise<DocumentFragment>;

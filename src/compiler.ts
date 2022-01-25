@@ -50,19 +50,28 @@ export class Compiler {
     readonly supportedSVGTags = supportedSVGTags
     readonly supportedAttributes = supportedAttributes
     readonly createErrorElement = createErrorElement
-    readonly elementToUnitOrLine = new Map<HTMLElement | SVGElement, stdn.STDNUnit | stdn.STDNLine>()
+    readonly elementToUnitOrLine = new Map<HTMLElement | SVGElement, stdn.STDNUnit | stdn.STDNLine | undefined>()
+    readonly unitOrLineToElements = new Map<stdn.STDNUnit | stdn.STDNLine, (HTMLElement | SVGElement)[] | undefined>()
     readonly unitToCompiling = new Map<stdn.STDNUnit, boolean | undefined>()
     constructor(readonly context: extractor.Context) {}
+    private registerElement(element: HTMLElement | SVGElement, unitOrLine: stdn.STDNUnit | stdn.STDNLine) {
+        this.elementToUnitOrLine.set(element, unitOrLine)
+        let elements = this.unitOrLineToElements.get(unitOrLine)
+        if (elements === undefined) {
+            this.unitOrLineToElements.set(unitOrLine, elements = [])
+        }
+        elements.push(element)
+    }
     async compileUnit(unit: stdn.STDNUnit) {
         if (this.unitToCompiling.get(unit) === true) {
             const element = this.createErrorElement('Loop')
-            this.elementToUnitOrLine.set(element, unit)
+            this.registerElement(element, unit)
             return element
         }
         if (unit.tag === 'global' || unit.options.global === true) {
             const element = document.createElement('div')
             element.classList.add('unit', 'global')
-            this.elementToUnitOrLine.set(element, unit)
+            this.registerElement(element, unit)
             return element
         }
         this.unitToCompiling.set(unit, true)
@@ -80,7 +89,7 @@ export class Compiler {
                 element = this.createErrorElement('Broken')
             }
             if (element.classList.contains('unit') && element.classList.contains('warn')) {
-                this.elementToUnitOrLine.set(element, unit)
+                this.registerElement(element, unit)
                 this.unitToCompiling.set(unit, false)
                 return element
             }
@@ -170,7 +179,7 @@ export class Compiler {
                 console.log(err)
             }
         }
-        this.elementToUnitOrLine.set(element, unit)
+        this.registerElement(element, unit)
         this.unitToCompiling.set(unit, false)
         return element
     }
@@ -204,7 +213,7 @@ export class Compiler {
             div.classList.add('st-line')
             df.append(div)
             div.append(await this.compileLine(line))
-            this.elementToUnitOrLine.set(div, line)
+            this.registerElement(div, line)
         }
         return df
     }

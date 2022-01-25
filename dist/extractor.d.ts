@@ -38,8 +38,9 @@ export declare function extractGlobalOptionArray(option: string, tag: string, ta
 export declare function extractLastGlobalOption(option: string, tag: string, tagToGlobalOptions: TagToGlobalOptions): string | number | boolean | STDN | undefined;
 export declare function extractGlobalChildren(tag: string, tagToGlobalOptions: TagToGlobalOptions): STDNLine[];
 export declare function extractGlobalStrings(option: string, tag: string, tagToGlobalOptions: TagToGlobalOptions): string[];
-export declare function extractUnitOrLineToPosition(stdn: STDN): UnitOrLineToPosition;
+export declare function extractGlobalURLs(option: string, tag: string, tagToGlobalOptions: TagToGlobalOptions): Promise<string[]>;
 export declare function extractUnitOrLineToPart(parts: STDNPart[]): UnitOrLineToPart;
+export declare function extractUnitOrLineToPosition(stdn: STDN): UnitOrLineToPosition;
 export interface ExtractContextOptions {
     builtInTagToUnitCompiler?: TagToUnitCompiler;
     style?: HTMLStyleElement;

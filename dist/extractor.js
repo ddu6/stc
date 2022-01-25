@@ -35,6 +35,35 @@ export function extractGlobalStrings(option, tag, tagToGlobalOptions) {
     }
     return strings;
 }
+export async function extractGlobalURLs(option, tag, tagToGlobalOptions) {
+    return await urlsToAbsURLs(extractGlobalStrings(option, tag, tagToGlobalOptions), location.href);
+}
+export function extractUnitOrLineToPart(parts) {
+    const out = new Map();
+    function set(stdn, part) {
+        for (const line of stdn) {
+            out.set(line, part);
+            for (const unit of line) {
+                if (typeof unit === 'string') {
+                    continue;
+                }
+                out.set(unit, part);
+                for (const key of Object.keys(unit.options)) {
+                    const value = unit.options[key];
+                    if (typeof value !== 'object') {
+                        continue;
+                    }
+                    set(value, part);
+                }
+                set(unit.children, part);
+            }
+        }
+    }
+    for (const part of parts) {
+        set(part.value, part);
+    }
+    return out;
+}
 export function extractUnitOrLineToPosition(stdn) {
     const out = new Map();
     function extract(stdn, position) {
@@ -61,32 +90,6 @@ export function extractUnitOrLineToPosition(stdn) {
         }
     }
     extract(stdn, []);
-    return out;
-}
-export function extractUnitOrLineToPart(parts) {
-    const out = new Map();
-    function set(stdn, part) {
-        for (const line of stdn) {
-            out.set(line, part);
-            for (const unit of line) {
-                if (typeof unit === 'string') {
-                    continue;
-                }
-                out.set(unit, part);
-                for (const key of Object.keys(unit.options)) {
-                    const value = unit.options[key];
-                    if (typeof value !== 'object') {
-                        continue;
-                    }
-                    set(value, part);
-                }
-                set(unit.children, part);
-            }
-        }
-    }
-    for (const part of parts) {
-        set(part.value, part);
-    }
     return out;
 }
 export async function extractContext(parts, options = {}) {

@@ -70,6 +70,35 @@ export function extractGlobalStrings(option: string, tag: string, tagToGlobalOpt
     }
     return strings
 }
+export async function extractGlobalURLs(option: string, tag: string, tagToGlobalOptions: TagToGlobalOptions) {
+    return await urlsToAbsURLs(extractGlobalStrings(option, tag, tagToGlobalOptions), location.href)
+}
+export function extractUnitOrLineToPart(parts: STDNPart[]) {
+    const out: UnitOrLineToPart = new Map()
+    function set(stdn: STDN, part: STDNPart) {
+        for (const line of stdn) {
+            out.set(line, part)
+            for (const unit of line) {
+                if (typeof unit === 'string') {
+                    continue
+                }
+                out.set(unit, part)
+                for (const key of Object.keys(unit.options)) {
+                    const value = unit.options[key]
+                    if (typeof value !== 'object') {
+                        continue
+                    }
+                    set(value, part)
+                }
+                set(unit.children, part)
+            }
+        }
+    }
+    for (const part of parts) {
+        set(part.value, part)
+    }
+    return out
+}
 export function extractUnitOrLineToPosition(stdn: STDN) {
     const out: UnitOrLineToPosition = new Map()
     function extract(stdn: STDN, position: STDNPosition) {
@@ -96,32 +125,6 @@ export function extractUnitOrLineToPosition(stdn: STDN) {
         }
     }
     extract(stdn, [])
-    return out
-}
-export function extractUnitOrLineToPart(parts: STDNPart[]) {
-    const out: UnitOrLineToPart = new Map()
-    function set(stdn: STDN, part: STDNPart) {
-        for (const line of stdn) {
-            out.set(line, part)
-            for (const unit of line) {
-                if (typeof unit === 'string') {
-                    continue
-                }
-                out.set(unit, part)
-                for (const key of Object.keys(unit.options)) {
-                    const value = unit.options[key]
-                    if (typeof value !== 'object') {
-                        continue
-                    }
-                    set(value, part)
-                }
-                set(unit.children, part)
-            }
-        }
-    }
-    for (const part of parts) {
-        set(part.value, part)
-    }
     return out
 }
 export interface ExtractContextOptions {
