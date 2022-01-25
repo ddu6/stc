@@ -1,4 +1,5 @@
 import { parse } from 'stdn';
+import { urlsToAbsURLs } from './urls';
 import { Compiler } from './compiler';
 import { extractContext } from './extractor';
 export * from './base';
@@ -23,4 +24,26 @@ export async function compile(sourceParts, options = {}) {
         compiler,
         documentFragment: await compiler.compileSTDN(context.stdn)
     };
+}
+export async function compileURLs(urls, options = {}) {
+    const partPromises = [];
+    for (const url of await urlsToAbsURLs(urls, location.href)) {
+        partPromises.push((async () => {
+            try {
+                const res = await fetch(url);
+                if (!res.ok) {
+                    return [];
+                }
+                return [{
+                        value: await res.text(),
+                        url
+                    }];
+            }
+            catch (err) {
+                console.log(err);
+                return [];
+            }
+        })());
+    }
+    return await compile((await Promise.all(partPromises)).flat(), options);
 }

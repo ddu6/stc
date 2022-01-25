@@ -5,10 +5,15 @@ export * from './urls';
 export * from './counter';
 export * from './extractor';
 export * from './compiler';
-export declare function compile(sourceParts: {
+export interface STDNSourcePart {
     value: string;
     url: string;
-}[], options?: Parameters<typeof extractContext>[1]): Promise<{
+}
+export declare function compile(sourceParts: STDNSourcePart[], options?: Parameters<typeof extractContext>[1]): Promise<{
+    compiler: Compiler;
+    documentFragment: DocumentFragment;
+}>;
+export declare function compileURLs(urls: string[], options?: Parameters<typeof compile>[1]): Promise<{
     compiler: Compiler;
     documentFragment: DocumentFragment;
 }>;
