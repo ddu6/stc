@@ -22,14 +22,8 @@ export const supportedHTMLTagsWithInlineChildren = [
     'col', 'colgroup', 'table', 'tbody', 'tfoot', 'thead', 'tr'
 ]
 export const supportedSVGTags = [
-    'animate', 'animateMotion', 'animateTransform', 'circle', 'clipPath', 'defs', 'desc', 'ellipse', 'g', 'image', 'line', 'marker', 'mask', 'mpath', 'path', 'pattern', 'polygon', 'polyline', 'rect', 'svg', 'symbol', 'text', 'textPath', 'tspan', 'use'
-]
-export const supportedAttributes = [
-    'accesskey', 'align', 'allow', 'alt', 'autoplay', 'cite', 'class', 'cols', 'colspan', 'controls', 'coords', 'crossorigin', 'datetime', 'decoding', 'default', 'dir', 'download', 'draggable', 'for', 'headers', 'href', 'hreflang', 'id', 'kind', 'label', 'lang', 'loop', 'muted', 'name', 'open', 'ping', 'poster', 'preload', 'referrerpolicy', 'rel', 'reversed', 'rows', 'rowspan', 'sandbox', 'scope', 'span', 'spellcheck', 'src', 'srcdoc', 'srclang', 'srcset', 'start', 'style', 'tabindex', 'target', 'title', 'translate', 'usemap', 'value',
-    'begin', 'dur', 'end', 'min', 'max', 'restart', 'repeatCount', 'repeatDur', 'fill',
-    'calcMode', 'values', 'keyTimes', 'keySplines', 'from', 'to', 'by',
-    'attributeName', 'additive', 'accumulate',
-    'clipPathUnits', 'crossorigin', 'd', 'dx', 'dy', 'height', 'href', 'keyPoints', 'lengthAdjust', 'markerHeight', 'markerUnits', 'markerWidth', 'maskContentUnits', 'maskUnits', 'method', 'orient', 'path', 'pathLength', 'patternContentUnits', 'patternTransform', 'patternUnits', 'points', 'preserveAspectRatio', 'refX', 'refY', 'rotate', 'side', 'spacing', 'startOffset', 'textLength', 'type', 'viewBox', 'width', 'x', 'x1', 'x2', 'y', 'y1', 'y2'
+    'feblend', 'fecolormatrix', 'fecomponenttransfer', 'fecomposite', 'feconvolvematrix', 'fediffuselighting', 'fedisplacementmap', 'feflood', 'fefunca', 'fefuncb', 'fefuncg', 'fefuncr', 'fegaussianblur', 'feimage', 'femerge', 'femergenode', 'femorphology', 'feoffset', 'fepointlight', 'fespecularlighting', 'fespotlight', 'fetile', 'feturbulence',
+    'animate', 'animateMotion', 'animateTransform', 'circle', 'clipPath', 'defs', 'desc', 'ellipse', 'g', 'image', 'line', 'linearGradient', 'marker', 'mask', 'mpath', 'path', 'pattern', 'polygon', 'polyline', 'radialGradient', 'rect', 'svg', 'symbol', 'text', 'textPath', 'tspan', 'use'
 ]
 export function createErrorElement(err: string) {
     const element = document.createElement('span')
@@ -48,7 +42,6 @@ export class Compiler {
     readonly supportedHTMLTags = supportedHTMLTags
     readonly supportedHTMLTagsWithInlineChildren = supportedHTMLTagsWithInlineChildren
     readonly supportedSVGTags = supportedSVGTags
-    readonly supportedAttributes = supportedAttributes
     readonly createErrorElement = createErrorElement
     readonly elementToUnitOrLine = new Map<HTMLElement | SVGElement, stdn.STDNUnit | stdn.STDNLine | undefined>()
     readonly unitOrLineToElements = new Map<stdn.STDNUnit | stdn.STDNLine, (HTMLElement | SVGElement)[] | undefined>()
@@ -151,11 +144,7 @@ export class Compiler {
             if (key === 'id' || key === 'class' || key === 'style') {
                 continue
             }
-            let attr = key
-            if (!key.startsWith('data-') && !supportedAttributes.includes(key)) {
-                attr = `data-${key}`
-            }
-            if (element.hasAttribute(attr)) {
+            if (element.hasAttribute(key)) {
                 continue
             }
             let value = unit.options[key]
@@ -168,13 +157,13 @@ export class Compiler {
                 continue
             }
             if (
-                (attr.endsWith('href') || attr.endsWith('src'))
+                (key.endsWith('href') || key.endsWith('src'))
                 && urls.isRelURL(value)
             ) {
                 value = this.context.urlToAbsURL(value, unit)
             }
             try {
-                element.setAttribute(attr, value)
+                element.setAttribute(key, value)
             } catch (err) {
                 console.log(err)
             }

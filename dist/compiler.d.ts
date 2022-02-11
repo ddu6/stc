@@ -8,7 +8,6 @@ import { compile } from './mod';
 export declare const supportedHTMLTags: string[];
 export declare const supportedHTMLTagsWithInlineChildren: string[];
 export declare const supportedSVGTags: string[];
-export declare const supportedAttributes: string[];
 export declare function createErrorElement(err: string): HTMLSpanElement;
 export declare class Compiler {
     readonly context: extractor.Context;
@@ -22,7 +21,6 @@ export declare class Compiler {
     readonly supportedHTMLTags: string[];
     readonly supportedHTMLTagsWithInlineChildren: string[];
     readonly supportedSVGTags: string[];
-    readonly supportedAttributes: string[];
     readonly createErrorElement: typeof createErrorElement;
     readonly elementToUnitOrLine: Map<HTMLElement | SVGElement, stdn.STDNUnit | stdn.STDNLine | undefined>;
     readonly unitOrLineToElements: Map<stdn.STDNUnit | stdn.STDNLine, (HTMLElement | SVGElement)[] | undefined>;
