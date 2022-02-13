@@ -13,20 +13,6 @@ export type STDNUnitGlobalOptions = {
 export type TagToGlobalOptions = {
     [key: string]: STDNUnitGlobalOptions | undefined
 }
-export function extractGlobalOptionArray(option: string, tag: string, tagToGlobalOptions: TagToGlobalOptions) {
-    const options = tagToGlobalOptions[tag]
-    if (options === undefined) {
-        return []
-    }
-    return options[option] ?? []
-}
-export function extractLastGlobalOption(option: string, tag: string, tagToGlobalOptions: TagToGlobalOptions) {
-    const array = extractGlobalOptionArray(option, tag, tagToGlobalOptions)
-    if (array.length === 0) {
-        return undefined
-    }
-    return array[array.length - 1]
-}
 export function extractGlobalChildren(tag: string, tagToGlobalOptions: TagToGlobalOptions) {
     const options = tagToGlobalOptions[tag]
     if (options === undefined) {
@@ -37,6 +23,13 @@ export function extractGlobalChildren(tag: string, tagToGlobalOptions: TagToGlob
         return []
     }
     return array.flat()
+}
+export function extractGlobalOptionArray(option: string, tag: string, tagToGlobalOptions: TagToGlobalOptions) {
+    const options = tagToGlobalOptions[tag]
+    if (options === undefined) {
+        return []
+    }
+    return options[option] ?? []
 }
 export function extractGlobalStrings(option: string, tag: string, tagToGlobalOptions: TagToGlobalOptions) {
     const array = extractGlobalOptionArray(option, tag, tagToGlobalOptions)
@@ -50,6 +43,13 @@ export function extractGlobalStrings(option: string, tag: string, tagToGlobalOpt
 }
 export async function extractGlobalURLs(option: string, tag: string, tagToGlobalOptions: TagToGlobalOptions) {
     return await urlsToAbsURLs(extractGlobalStrings(option, tag, tagToGlobalOptions), location.href)
+}
+export function extractLastGlobalOption(option: string, tag: string, tagToGlobalOptions: TagToGlobalOptions) {
+    const array = extractGlobalOptionArray(option, tag, tagToGlobalOptions)
+    if (array.length === 0) {
+        return undefined
+    }
+    return array[array.length - 1]
 }
 export interface STDNPart {
     value: STDN
@@ -78,6 +78,15 @@ export function extractUnitOrLineToPart(parts: STDNPart[]) {
     }
     for (const part of parts) {
         set(part.value, part)
+    }
+    return out
+}
+export function extractPartToOffset(parts: STDNPart[]) {
+    const out = new Map<STDNPart, number | undefined>()
+    let offset = 0
+    for (const part of parts) {
+        out.set(part, offset)
+        offset += part.value.length
     }
     return out
 }
@@ -110,14 +119,20 @@ export function extractUnitOrLineToPosition(stdn: STDN) {
     extract(stdn, [])
     return out
 }
-export function extractPartToOffset(parts: STDNPart[]) {
-    const out = new Map<STDNPart, number | undefined>()
-    let offset = 0
-    for (const part of parts) {
-        out.set(part, offset)
-        offset += part.value.length
+export function urlToAbsURL(url: string, unit: STDNUnit, unitOrLineToPart: ReturnType<typeof extractUnitOrLineToPart>) {
+    if (!isRelURL(url)) {
+        return url
     }
-    return out
+    const part = unitOrLineToPart.get(unit)
+    if (part === undefined) {
+        return url
+    }
+    try {
+        return new URL(url, part.url).href
+    } catch (err) {
+        console.log(err)
+        return url
+    }
 }
 export async function extractContext(parts: STDNPart[], {
     builtInTagToUnitCompiler,
@@ -142,21 +157,6 @@ export async function extractContext(parts: STDNPart[], {
     const unitOrLineToPart = extractUnitOrLineToPart(parts)
     const stdn = parts.map(value => value.value).flat()
     const fullSTDN = (headSTDN ?? []).concat(stdn).concat(footSTDN ?? [])
-    function urlToAbsURL(url: string, unit: STDNUnit) {
-        if (!isRelURL(url)) {
-            return url
-        }
-        const part = unitOrLineToPart.get(unit)
-        if (part === undefined) {
-            return url
-        }
-        try {
-            return new URL(url, part.url).href
-        } catch (err) {
-            console.log(err)
-            return url
-        }
-    }
     for (const line of fullSTDN) {
         if (line.length === 0) {
             continue
@@ -201,13 +201,13 @@ export async function extractContext(parts: STDNPart[], {
             {
                 const src = unit.options['css-src']
                 if (typeof src === 'string') {
-                    cssURLs.push(urlToAbsURL(src, unit))
+                    cssURLs.push(urlToAbsURL(src, unit, unitOrLineToPart))
                 }
             }
             {
                 const src = unit.options['ucs-src']
                 if (typeof src === 'string') {
-                    tagToUnitCompilerURLs.push(urlToAbsURL(src, unit))
+                    tagToUnitCompilerURLs.push(urlToAbsURL(src, unit, unitOrLineToPart))
                 }
             }
             continue
@@ -235,7 +235,7 @@ export async function extractContext(parts: STDNPart[], {
                     && (key.endsWith('href') || key.endsWith('src'))
                     && isRelURL(value)
                 ) {
-                    value = urlToAbsURL(value, unit)
+                    value = urlToAbsURL(value, unit, unitOrLineToPart)
                 }
                 const values = globalOptions[key]
                 if (values === undefined) {
@@ -276,8 +276,25 @@ export async function extractContext(parts: STDNPart[], {
         unitToId: counter.unitToId,
         unitOrLineToPart,
         unitOrLineToPosition,
-        urlToAbsURL,
-        root
+        root,
+        extractGlobalChildren: (tag: string) => {
+            return extractGlobalChildren(tag, tagToGlobalOptions)
+        },
+        extractGlobalOptionArray: (option: string, tag: string) => {
+            return extractGlobalOptionArray(option, tag, tagToGlobalOptions)
+        },
+        extractGlobalStrings: (option: string, tag: string) => {
+            return extractGlobalStrings(option, tag, tagToGlobalOptions)
+        },
+        extractGlobalURLs: (option: string, tag: string) => {
+            return extractGlobalURLs(option, tag, tagToGlobalOptions)
+        },
+        extractLastGlobalOption: (option: string, tag: string) => {
+            return extractLastGlobalOption(option, tag, tagToGlobalOptions)
+        },
+        urlToAbsURL: (url: string, unit: STDNUnit) => {
+            return urlToAbsURL(url, unit, unitOrLineToPart)
+        }
     }
 }
 export type Context = Awaited<ReturnType<typeof extractContext>>
