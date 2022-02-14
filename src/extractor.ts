@@ -8,8 +8,10 @@ export type TagToUnitCompiler = {
     [key: string]: UnitCompiler | undefined
 }
 export type STDNUnitGlobalOptions = {
-    __?: STDN[]
-    [key: string]: (STDN | string | number | boolean)[] | undefined
+    optionArrays: {
+        [key: string]: (STDNUnit | string | number | boolean)[] | undefined
+    }
+    childrenArray: STDN[]
 }
 export type TagToGlobalOptions = {
     [key: string]: STDNUnitGlobalOptions | undefined
@@ -19,18 +21,14 @@ export function extractGlobalChildren(tag: string, tagToGlobalOptions: TagToGlob
     if (options === undefined) {
         return []
     }
-    const array = options.__
-    if (array === undefined) {
-        return []
-    }
-    return array.flat()
+    return options.childrenArray.flat()
 }
 export function extractGlobalOptionArray(option: string, tag: string, tagToGlobalOptions: TagToGlobalOptions) {
     const options = tagToGlobalOptions[tag]
     if (options === undefined) {
         return []
     }
-    return options[option] ?? []
+    return options.optionArrays[option] ?? []
 }
 export function extractGlobalStrings(option: string, tag: string, tagToGlobalOptions: TagToGlobalOptions) {
     const array = extractGlobalOptionArray(option, tag, tagToGlobalOptions)
@@ -58,22 +56,23 @@ export interface STDNPart {
 }
 export function extractUnitOrLineToPart(parts: STDNPart[]) {
     const out = new Map<STDNUnit | STDNLine, STDNPart | undefined>()
+    function setUnit(unit: STDNUnit, part: STDNPart) {
+        out.set(unit, part)
+        for (const key in unit.options) {
+            const value = unit.options[key]
+            if (typeof value === 'object') {
+                setUnit(value, part)
+            }
+        }
+        set(unit.children, part)
+    }
     function set(stdn: STDN, part: STDNPart) {
         for (const line of stdn) {
             out.set(line, part)
             for (const unit of line) {
-                if (typeof unit === 'string') {
-                    continue
+                if (typeof unit !== 'string') {
+                    setUnit(unit, part)
                 }
-                out.set(unit, part)
-                for (const key in unit.options) {
-                    const value = unit.options[key]
-                    if (typeof value !== 'object') {
-                        continue
-                    }
-                    set(value, part)
-                }
-                set(unit.children, part)
             }
         }
     }
@@ -93,6 +92,16 @@ export function extractPartToOffset(parts: STDNPart[]) {
 }
 export function extractUnitOrLineToPosition(stdn: STDN) {
     const out = new Map<STDNUnit | STDNLine, STDNPosition | undefined>()
+    function extractFromUnit(unit: STDNUnit, position: STDNPosition) {
+        out.set(unit, position)
+        for (const key in unit.options) {
+            const value = unit.options[key]
+            if (typeof value === 'object') {
+                extractFromUnit(value, position.concat(key))
+            }
+        }
+        extract(unit.children, position)
+    }
     function extract(stdn: STDN, position: STDNPosition) {
         for (let i = 0; i < stdn.length; i++) {
             const line = stdn[i]
@@ -100,19 +109,9 @@ export function extractUnitOrLineToPosition(stdn: STDN) {
             out.set(line, linePosition)
             for (let j = 0; j < line.length; j++) {
                 const unit = line[j]
-                if (typeof unit === 'string') {
-                    continue
+                if (typeof unit !== 'string') {
+                    extractFromUnit(unit, linePosition.concat(j))
                 }
-                const unitPosition = linePosition.concat(j)
-                out.set(unit, unitPosition)
-                for (const key in unit.options) {
-                    const value = unit.options[key]
-                    if (typeof value !== 'object') {
-                        continue
-                    }
-                    extract(value, unitPosition.concat(key))
-                }
-                extract(unit.children, unitPosition)
             }
         }
     }
@@ -215,12 +214,10 @@ export async function extractContext(parts: STDNPart[], {
         if (unit.options.global === true) {
             let globalOptions = tagToGlobalOptions[unit.tag]
             if (globalOptions === undefined) {
-                tagToGlobalOptions[unit.tag] = globalOptions = {}
-            }
-            if (globalOptions.__ === undefined) {
-                globalOptions.__ = [unit.children]
-            } else {
-                globalOptions.__.push(unit.children)
+                tagToGlobalOptions[unit.tag] = globalOptions = {
+                    optionArrays: {},
+                    childrenArray: []
+                }
             }
             for (const key in unit.options) {
                 if (key === 'global' || key === '__') {
@@ -237,13 +234,14 @@ export async function extractContext(parts: STDNPart[], {
                 ) {
                     value = urlToAbsURL(value, unit, unitOrLineToPart)
                 }
-                const values = globalOptions[key]
+                const values = globalOptions.optionArrays[key]
                 if (values === undefined) {
-                    globalOptions[key] = [value]
+                    globalOptions.optionArrays[key] = [value]
                     continue
                 }
                 values.push(value)
             }
+            globalOptions.childrenArray.push(unit.children)
         }
     }
     const css = (await urlsToAbsURLs(cssURLs, location.href))

@@ -6,17 +6,19 @@ export declare type TagToUnitCompiler = {
     [key: string]: UnitCompiler | undefined;
 };
 export declare type STDNUnitGlobalOptions = {
-    __?: STDN[];
-    [key: string]: (STDN | string | number | boolean)[] | undefined;
+    optionArrays: {
+        [key: string]: (STDNUnit | string | number | boolean)[] | undefined;
+    };
+    childrenArray: STDN[];
 };
 export declare type TagToGlobalOptions = {
     [key: string]: STDNUnitGlobalOptions | undefined;
 };
 export declare function extractGlobalChildren(tag: string, tagToGlobalOptions: TagToGlobalOptions): STDNLine[];
-export declare function extractGlobalOptionArray(option: string, tag: string, tagToGlobalOptions: TagToGlobalOptions): (string | number | boolean | STDN)[];
+export declare function extractGlobalOptionArray(option: string, tag: string, tagToGlobalOptions: TagToGlobalOptions): (string | number | boolean | STDNUnit)[];
 export declare function extractGlobalStrings(option: string, tag: string, tagToGlobalOptions: TagToGlobalOptions): string[];
 export declare function extractGlobalURLs(option: string, tag: string, tagToGlobalOptions: TagToGlobalOptions): Promise<string[]>;
-export declare function extractLastGlobalOption(option: string, tag: string, tagToGlobalOptions: TagToGlobalOptions): string | number | boolean | STDN | undefined;
+export declare function extractLastGlobalOption(option: string, tag: string, tagToGlobalOptions: TagToGlobalOptions): string | number | boolean | STDNUnit | undefined;
 export interface STDNPart {
     value: STDN;
     url: string;
@@ -47,10 +49,10 @@ export declare function extractContext(parts: STDNPart[], { builtInTagToUnitComp
     unitOrLineToPosition: Map<STDNUnit | STDNLine, STDNPosition | undefined>;
     root: ShadowRoot | undefined;
     extractGlobalChildren: (tag: string) => STDNLine[];
-    extractGlobalOptionArray: (option: string, tag: string) => (string | number | boolean | STDN)[];
+    extractGlobalOptionArray: (option: string, tag: string) => (string | number | boolean | STDNUnit)[];
     extractGlobalStrings: (option: string, tag: string) => string[];
     extractGlobalURLs: (option: string, tag: string) => Promise<string[]>;
-    extractLastGlobalOption: (option: string, tag: string) => string | number | boolean | STDN | undefined;
+    extractLastGlobalOption: (option: string, tag: string) => string | number | boolean | STDNUnit | undefined;
     urlToAbsURL: (url: string, unit: STDNUnit) => string;
 }>;
 export declare type Context = Awaited<ReturnType<typeof extractContext>>;

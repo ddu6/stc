@@ -5,18 +5,14 @@ export function extractGlobalChildren(tag, tagToGlobalOptions) {
     if (options === undefined) {
         return [];
     }
-    const array = options.__;
-    if (array === undefined) {
-        return [];
-    }
-    return array.flat();
+    return options.childrenArray.flat();
 }
 export function extractGlobalOptionArray(option, tag, tagToGlobalOptions) {
     const options = tagToGlobalOptions[tag];
     if (options === undefined) {
         return [];
     }
-    return options[option] ?? [];
+    return options.optionArrays[option] ?? [];
 }
 export function extractGlobalStrings(option, tag, tagToGlobalOptions) {
     const array = extractGlobalOptionArray(option, tag, tagToGlobalOptions);
@@ -40,22 +36,23 @@ export function extractLastGlobalOption(option, tag, tagToGlobalOptions) {
 }
 export function extractUnitOrLineToPart(parts) {
     const out = new Map();
+    function setUnit(unit, part) {
+        out.set(unit, part);
+        for (const key in unit.options) {
+            const value = unit.options[key];
+            if (typeof value === 'object') {
+                setUnit(value, part);
+            }
+        }
+        set(unit.children, part);
+    }
     function set(stdn, part) {
         for (const line of stdn) {
             out.set(line, part);
             for (const unit of line) {
-                if (typeof unit === 'string') {
-                    continue;
+                if (typeof unit !== 'string') {
+                    setUnit(unit, part);
                 }
-                out.set(unit, part);
-                for (const key in unit.options) {
-                    const value = unit.options[key];
-                    if (typeof value !== 'object') {
-                        continue;
-                    }
-                    set(value, part);
-                }
-                set(unit.children, part);
             }
         }
     }
@@ -75,6 +72,16 @@ export function extractPartToOffset(parts) {
 }
 export function extractUnitOrLineToPosition(stdn) {
     const out = new Map();
+    function extractFromUnit(unit, position) {
+        out.set(unit, position);
+        for (const key in unit.options) {
+            const value = unit.options[key];
+            if (typeof value === 'object') {
+                extractFromUnit(value, position.concat(key));
+            }
+        }
+        extract(unit.children, position);
+    }
     function extract(stdn, position) {
         for (let i = 0; i < stdn.length; i++) {
             const line = stdn[i];
@@ -82,19 +89,9 @@ export function extractUnitOrLineToPosition(stdn) {
             out.set(line, linePosition);
             for (let j = 0; j < line.length; j++) {
                 const unit = line[j];
-                if (typeof unit === 'string') {
-                    continue;
+                if (typeof unit !== 'string') {
+                    extractFromUnit(unit, linePosition.concat(j));
                 }
-                const unitPosition = linePosition.concat(j);
-                out.set(unit, unitPosition);
-                for (const key in unit.options) {
-                    const value = unit.options[key];
-                    if (typeof value !== 'object') {
-                        continue;
-                    }
-                    extract(value, unitPosition.concat(key));
-                }
-                extract(unit.children, unitPosition);
             }
         }
     }
@@ -186,13 +183,10 @@ export async function extractContext(parts, { builtInTagToUnitCompiler, style, h
         if (unit.options.global === true) {
             let globalOptions = tagToGlobalOptions[unit.tag];
             if (globalOptions === undefined) {
-                tagToGlobalOptions[unit.tag] = globalOptions = {};
-            }
-            if (globalOptions.__ === undefined) {
-                globalOptions.__ = [unit.children];
-            }
-            else {
-                globalOptions.__.push(unit.children);
+                tagToGlobalOptions[unit.tag] = globalOptions = {
+                    optionArrays: {},
+                    childrenArray: []
+                };
             }
             for (const key in unit.options) {
                 if (key === 'global' || key === '__') {
@@ -207,13 +201,14 @@ export async function extractContext(parts, { builtInTagToUnitCompiler, style, h
                     && isRelURL(value)) {
                     value = urlToAbsURL(value, unit, unitOrLineToPart);
                 }
-                const values = globalOptions[key];
+                const values = globalOptions.optionArrays[key];
                 if (values === undefined) {
-                    globalOptions[key] = [value];
+                    globalOptions.optionArrays[key] = [value];
                     continue;
                 }
                 values.push(value);
             }
+            globalOptions.childrenArray.push(unit.children);
         }
     }
     const css = (await urlsToAbsURLs(cssURLs, location.href))
