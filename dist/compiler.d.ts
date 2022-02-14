@@ -1,4 +1,5 @@
 import * as ston from 'ston/dist/parse';
+import type { STDN, STDNLine, STDNUnit } from 'stdn';
 import * as stdn from 'stdn/dist/parse';
 import * as position from 'stdn/dist/position';
 import * as base from './base';
@@ -26,14 +27,14 @@ export declare class Compiler {
     readonly supportedHTMLTagsWithInlineChildren: string[];
     readonly supportedSVGTags: string[];
     readonly createErrorElement: typeof createErrorElement;
-    readonly elementToUnitOrLine: Map<HTMLElement | SVGElement, stdn.STDNUnit | stdn.STDNLine | undefined>;
-    readonly unitOrLineToElements: Map<stdn.STDNUnit | stdn.STDNLine, (HTMLElement | SVGElement)[] | undefined>;
-    readonly unitToCompiling: Map<stdn.STDNUnit, boolean | undefined>;
+    readonly elementToUnitOrLine: Map<HTMLElement | SVGElement, STDNUnit | STDNLine | undefined>;
+    readonly unitOrLineToElements: Map<STDNUnit | STDNLine, (HTMLElement | SVGElement)[] | undefined>;
+    readonly unitToCompiling: Map<STDNUnit, boolean | undefined>;
     constructor(context: extractor.Context);
     private registerElement;
-    compileUnit(unit: stdn.STDNUnit): Promise<HTMLElement | SVGElement>;
-    compileInline(inline: stdn.STDNUnit | string): Promise<HTMLElement | Text | SVGElement>;
-    compileLine(line: stdn.STDNLine): Promise<DocumentFragment>;
-    compileInlineSTDN(stdn: stdn.STDN): Promise<DocumentFragment>;
-    compileSTDN(stdn: stdn.STDN): Promise<DocumentFragment>;
+    compileUnit(unit: STDNUnit): Promise<HTMLElement | SVGElement>;
+    compileInline(inline: STDNUnit | string): Promise<HTMLElement | Text | SVGElement>;
+    compileLine(line: STDNLine): Promise<DocumentFragment>;
+    compileInlineSTDN(stdn: STDN): Promise<DocumentFragment>;
+    compileSTDN(stdn: STDN): Promise<DocumentFragment>;
 }

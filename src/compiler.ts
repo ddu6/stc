@@ -1,4 +1,5 @@
 import * as ston from 'ston/dist/parse'
+import type {STDN, STDNLine, STDNUnit} from 'stdn'
 import * as stdn from 'stdn/dist/parse'
 import * as position from 'stdn/dist/position'
 import * as base from './base'
@@ -47,11 +48,11 @@ export class Compiler {
     readonly supportedHTMLTagsWithInlineChildren = supportedHTMLTagsWithInlineChildren
     readonly supportedSVGTags = supportedSVGTags
     readonly createErrorElement = createErrorElement
-    readonly elementToUnitOrLine = new Map<HTMLElement | SVGElement, stdn.STDNUnit | stdn.STDNLine | undefined>()
-    readonly unitOrLineToElements = new Map<stdn.STDNUnit | stdn.STDNLine, (HTMLElement | SVGElement)[] | undefined>()
-    readonly unitToCompiling = new Map<stdn.STDNUnit, boolean | undefined>()
+    readonly elementToUnitOrLine = new Map<HTMLElement | SVGElement, STDNUnit | STDNLine | undefined>()
+    readonly unitOrLineToElements = new Map<STDNUnit | STDNLine, (HTMLElement | SVGElement)[] | undefined>()
+    readonly unitToCompiling = new Map<STDNUnit, boolean | undefined>()
     constructor(readonly context: extractor.Context) {}
-    private registerElement(element: HTMLElement | SVGElement, unitOrLine: stdn.STDNUnit | stdn.STDNLine) {
+    private registerElement(element: HTMLElement | SVGElement, unitOrLine: STDNUnit | STDNLine) {
         this.elementToUnitOrLine.set(element, unitOrLine)
         let elements = this.unitOrLineToElements.get(unitOrLine)
         if (elements === undefined) {
@@ -59,7 +60,7 @@ export class Compiler {
         }
         elements.push(element)
     }
-    async compileUnit(unit: stdn.STDNUnit) {
+    async compileUnit(unit: STDNUnit) {
         if (this.unitToCompiling.get(unit) === true) {
             const element = this.createErrorElement('Loop')
             this.registerElement(element, unit)
@@ -176,20 +177,20 @@ export class Compiler {
         this.unitToCompiling.set(unit, false)
         return element
     }
-    async compileInline(inline: stdn.STDNUnit | string) {
+    async compileInline(inline: STDNUnit | string) {
         if (typeof inline !== 'string') {
             return await this.compileUnit(inline)
         }
         return new Text(inline)
     }
-    async compileLine(line: stdn.STDNLine) {
+    async compileLine(line: STDNLine) {
         const df = new DocumentFragment()
         for (const inline of line) {
             df.append(await this.compileInline(inline))
         }
         return df
     }
-    async compileInlineSTDN(stdn: stdn.STDN) {
+    async compileInlineSTDN(stdn: STDN) {
         const df = new DocumentFragment()
         for (let i = 0; i < stdn.length; i++) {
             df.append(await this.compileLine(stdn[i]))
@@ -199,7 +200,7 @@ export class Compiler {
         }
         return df
     }
-    async compileSTDN(stdn: stdn.STDN) {
+    async compileSTDN(stdn: STDN) {
         const df = new DocumentFragment()
         for (const line of stdn) {
             const div = document.createElement('div')
