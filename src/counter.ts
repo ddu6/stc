@@ -18,8 +18,8 @@ export class Counter {
     private readonly baseIdToCount: {
         [key: string]: number | undefined
     } = {}
-    readonly indexInfoArray: IndexInfo[] = []
     readonly idToIndexInfo: IdToIndexInfo = {}
+    readonly indexInfoArray: IndexInfo[] = []
     readonly unitToId = new Map<STDNUnit, string | undefined>()
     title = ''
     constructor(readonly tagToGlobalOptions: TagToGlobalOptions) {}
@@ -116,8 +116,8 @@ export class Counter {
             orbit,
             unit
         }
-        this.indexInfoArray.push(indexInfo)
         this.idToIndexInfo[id] = indexInfo
+        this.indexInfoArray.push(indexInfo)
         if ((unit.options['no-count-inside'] ?? extractLastGlobalOption('no-count-inside', unit.tag, this.tagToGlobalOptions)) === true) {
             return
         }

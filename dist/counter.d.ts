@@ -14,8 +14,8 @@ export declare class Counter {
     private readonly currentHeadingIndex;
     private readonly orbitToCurrentIndex;
     private readonly baseIdToCount;
-    readonly indexInfoArray: IndexInfo[];
     readonly idToIndexInfo: IdToIndexInfo;
+    readonly indexInfoArray: IndexInfo[];
     readonly unitToId: Map<STDNUnit, string | undefined>;
     title: string;
     constructor(tagToGlobalOptions: TagToGlobalOptions);

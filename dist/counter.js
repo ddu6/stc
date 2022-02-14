@@ -6,8 +6,8 @@ export class Counter {
         this.currentHeadingIndex = [];
         this.orbitToCurrentIndex = {};
         this.baseIdToCount = {};
-        this.indexInfoArray = [];
         this.idToIndexInfo = {};
+        this.indexInfoArray = [];
         this.unitToId = new Map();
         this.title = '';
     }
@@ -108,8 +108,8 @@ export class Counter {
             orbit,
             unit
         };
-        this.indexInfoArray.push(indexInfo);
         this.idToIndexInfo[id] = indexInfo;
+        this.indexInfoArray.push(indexInfo);
         if ((unit.options['no-count-inside'] ?? extractLastGlobalOption('no-count-inside', unit.tag, this.tagToGlobalOptions)) === true) {
             return;
         }
