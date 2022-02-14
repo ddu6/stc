@@ -7,7 +7,6 @@ export class Counter {
         this.orbitToCurrentIndex = {};
         this.baseIdToCount = {};
         this.headings = [];
-        this.headingAndTitles = [];
         this.idToIndexInfo = {};
         this.indexInfoArray = [];
         this.unitToId = new Map();
@@ -111,14 +110,10 @@ export class Counter {
         this.indexInfoArray.push(indexInfo);
         if (orbit === 'heading') {
             this.headings.push(indexInfo);
-            this.headingAndTitles.push(indexInfo);
         }
-        else if (unit.tag === 'title') {
-            this.headingAndTitles.push(indexInfo);
-            if (this.title.length === 0) {
-                this.title = unitToInlinePlainString(unit);
-                this.titleInfo = indexInfo;
-            }
+        if (this.title.length === 0 && unit.tag === 'title') {
+            this.title = unitToInlinePlainString(unit);
+            this.titleInfo = indexInfo;
         }
         if ((unit.options['no-count-inside'] ?? extractLastGlobalOption('no-count-inside', unit.tag, this.tagToGlobalOptions)) === true) {
             return;

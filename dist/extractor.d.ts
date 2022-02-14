@@ -38,7 +38,6 @@ export declare function extractContext(parts: STDNPart[], { builtInTagToUnitComp
     css: string;
     fullSTDN: STDNLine[];
     headings: IndexInfo[];
-    headingAndTitles: IndexInfo[];
     indexInfoArray: IndexInfo[];
     idToIndexInfo: import("./counter").IdToIndexInfo;
     parts: STDNPart[];
