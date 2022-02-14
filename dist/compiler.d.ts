@@ -2,6 +2,7 @@ import * as ston from 'ston/dist/parse';
 import * as stdn from 'stdn/dist/parse';
 import * as base from './base';
 import * as urls from './urls';
+import * as position from './position';
 import * as counter from './counter';
 import * as extractor from './extractor';
 import { compile } from './mod';
@@ -15,6 +16,7 @@ export declare class Compiler {
     readonly stdn: typeof stdn;
     readonly base: typeof base;
     readonly urls: typeof urls;
+    readonly position: typeof position;
     readonly counter: typeof counter;
     readonly extractor: typeof extractor;
     readonly compile: typeof compile;

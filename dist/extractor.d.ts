@@ -1,4 +1,5 @@
 import type { STDN, STDNLine, STDNUnit } from 'stdn';
+import type { STDNPosition } from './position';
 import type { Compiler } from './compiler';
 export declare type UnitCompiler = (unit: STDNUnit, compiler: Compiler) => Promise<HTMLElement | SVGElement>;
 export declare type TagToUnitCompiler = {
@@ -22,7 +23,6 @@ export interface STDNPart {
 }
 export declare function extractUnitOrLineToPart(parts: STDNPart[]): Map<STDNUnit | STDNLine, STDNPart | undefined>;
 export declare function extractPartToOffset(parts: STDNPart[]): Map<STDNPart, number | undefined>;
-export declare type STDNPosition = (number | string)[];
 export declare function extractUnitOrLineToPosition(stdn: STDN): Map<STDNUnit | STDNLine, STDNPosition | undefined>;
 export declare function urlToAbsURL(url: string, unit: STDNUnit, unitOrLineToPart: ReturnType<typeof extractUnitOrLineToPart>): string;
 export declare function extractContext(parts: STDNPart[], { builtInTagToUnitCompiler, style, headSTDN, footSTDN, root }?: {

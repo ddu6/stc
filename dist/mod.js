@@ -4,6 +4,7 @@ import { Compiler } from './compiler';
 import { extractContext } from './extractor';
 export * from './base';
 export * from './urls';
+export * from './position';
 export * from './counter';
 export * from './extractor';
 export * from './compiler';

@@ -2,6 +2,7 @@ import * as ston from 'ston/dist/parse'
 import * as stdn from 'stdn/dist/parse'
 import * as base from './base'
 import * as urls from './urls'
+import * as position from './position'
 import * as counter from './counter'
 import * as extractor from './extractor'
 import {compile} from './mod'
@@ -36,6 +37,7 @@ export class Compiler {
     readonly stdn = stdn
     readonly base = base
     readonly urls = urls
+    readonly position = position
     readonly counter = counter
     readonly extractor = extractor
     readonly compile = compile

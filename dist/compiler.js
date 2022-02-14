@@ -2,6 +2,7 @@ import * as ston from 'ston/dist/parse';
 import * as stdn from 'stdn/dist/parse';
 import * as base from './base';
 import * as urls from './urls';
+import * as position from './position';
 import * as counter from './counter';
 import * as extractor from './extractor';
 import { compile } from './mod';
@@ -38,6 +39,7 @@ export class Compiler {
         this.stdn = stdn;
         this.base = base;
         this.urls = urls;
+        this.position = position;
         this.counter = counter;
         this.extractor = extractor;
         this.compile = compile;
