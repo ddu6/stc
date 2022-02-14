@@ -7,5 +7,3 @@ export declare function lineToInlinePlainString(line: STDNLine): string;
 export declare function stdnToInlinePlainString(stdn: STDN): string;
 export declare function stdnToInlinePlainStringLine(stdn: STDN): STDNLine;
 export declare function stringToId(string: string): string;
-export declare function removeBefore(node: Node, parent: Node): void;
-export declare function removeAfter(node: Node, parent: Node): void;

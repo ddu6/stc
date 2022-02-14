@@ -1,8 +1,9 @@
 import * as ston from 'ston/dist/parse'
 import * as stdn from 'stdn/dist/parse'
+import * as position from 'stdn/dist/position'
 import * as base from './base'
 import * as urls from './urls'
-import * as position from './position'
+import * as dom from './dom'
 import * as counter from './counter'
 import * as extractor from './extractor'
 import {compile} from './mod'
@@ -35,9 +36,10 @@ export function createErrorElement(err: string) {
 export class Compiler {
     readonly ston = ston
     readonly stdn = stdn
+    readonly position = position
     readonly base = base
     readonly urls = urls
-    readonly position = position
+    readonly dom = dom
     readonly counter = counter
     readonly extractor = extractor
     readonly compile = compile

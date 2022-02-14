@@ -1,5 +1,4 @@
-import type { STDN, STDNLine, STDNUnit } from 'stdn';
-import type { STDNPosition } from './position';
+import type { STDN, STDNLine, STDNPosition, STDNUnit } from 'stdn';
 import type { Compiler } from './compiler';
 export declare type UnitCompiler = (unit: STDNUnit, compiler: Compiler) => Promise<HTMLElement | SVGElement>;
 export declare type TagToUnitCompiler = {

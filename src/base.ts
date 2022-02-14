@@ -55,31 +55,3 @@ export function stdnToInlinePlainStringLine(stdn: STDN) {
 export function stringToId(string: string) {
     return Array.from(string.slice(0, 100).matchAll(/[a-zA-Z0-9]+/g)).join('-').toLowerCase()
 }
-export function removeBefore(node: Node, parent: Node) {
-    while (true) {
-        while (true) {
-            if (node.previousSibling === null) {
-                break
-            }
-            node.previousSibling.remove()
-        }
-        if (node.parentNode === null || node.parentNode === parent) {
-            break
-        }
-        node = node.parentNode
-    }
-}
-export function removeAfter(node: Node, parent: Node) {
-    while (true) {
-        while (true) {
-            if (node.nextSibling === null) {
-                break
-            }
-            node.nextSibling.remove()
-        }
-        if (node.parentNode === null || node.parentNode === parent) {
-            break
-        }
-        node = node.parentNode
-    }
-}

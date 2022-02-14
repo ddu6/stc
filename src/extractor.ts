@@ -1,6 +1,5 @@
-import type {STDN, STDNLine, STDNUnit} from 'stdn'
+import type {STDN, STDNLine, STDNPosition, STDNUnit} from 'stdn'
 import {isRelURL, urlsToAbsURLs} from './urls'
-import type {STDNPosition} from './position'
 import {Counter} from './counter'
 import type {Compiler} from './compiler'
 export type UnitCompiler = (unit: STDNUnit, compiler: Compiler) => Promise<HTMLElement | SVGElement>
