@@ -38,6 +38,7 @@ export declare function extractContext(parts: STDNPart[], { builtInTagToUnitComp
     css: string;
     fullSTDN: STDNLine[];
     headings: IndexInfo[];
+    headingAndTitles: IndexInfo[];
     indexInfoArray: IndexInfo[];
     idToIndexInfo: import("./counter").IdToIndexInfo;
     parts: STDNPart[];
@@ -46,6 +47,7 @@ export declare function extractContext(parts: STDNPart[], { builtInTagToUnitComp
     tagToGlobalOptions: TagToGlobalOptions;
     tagToUnitCompiler: TagToUnitCompiler;
     title: string;
+    titleInfo: IndexInfo | undefined;
     unitToId: Map<STDNUnit, string | undefined>;
     unitOrLineToHeading: Map<STDNUnit | STDNLine, IndexInfo | undefined>;
     unitOrLineToPart: Map<STDNUnit | STDNLine, STDNPart | undefined>;

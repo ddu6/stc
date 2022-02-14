@@ -261,8 +261,7 @@ export async function extractContext(parts, { builtInTagToUnitCompiler, style, h
     }
     const counter = new Counter(tagToGlobalOptions);
     counter.countSTDN(stdn);
-    const { indexInfoArray } = counter;
-    const headings = indexInfoArray.filter(value => value.orbit === 'heading');
+    const { headings, headingAndTitles, idToIndexInfo, indexInfoArray, title, titleInfo, unitToId } = counter;
     const partToOffset = extractPartToOffset(parts);
     const unitOrLineToHeading = extractUnitOrLineToHeading(stdn, headings);
     const unitOrLineToPosition = extractUnitOrLineToPosition(stdn);
@@ -270,15 +269,17 @@ export async function extractContext(parts, { builtInTagToUnitCompiler, style, h
         css,
         fullSTDN,
         headings,
+        headingAndTitles,
         indexInfoArray,
-        idToIndexInfo: counter.idToIndexInfo,
+        idToIndexInfo,
         parts,
         partToOffset,
         stdn,
         tagToGlobalOptions,
         tagToUnitCompiler,
-        title: counter.title,
-        unitToId: counter.unitToId,
+        title,
+        titleInfo,
+        unitToId,
         unitOrLineToHeading,
         unitOrLineToPart,
         unitOrLineToPosition,

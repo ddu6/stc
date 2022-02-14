@@ -14,10 +14,13 @@ export declare class Counter {
     private readonly currentHeadingIndex;
     private readonly orbitToCurrentIndex;
     private readonly baseIdToCount;
+    readonly headings: IndexInfo[];
+    readonly headingAndTitles: IndexInfo[];
     readonly idToIndexInfo: IdToIndexInfo;
     readonly indexInfoArray: IndexInfo[];
     readonly unitToId: Map<STDNUnit, string | undefined>;
     title: string;
+    titleInfo: IndexInfo | undefined;
     constructor(tagToGlobalOptions: TagToGlobalOptions);
     private createIndex;
     private countUnit;

@@ -6,6 +6,8 @@ export class Counter {
         this.currentHeadingIndex = [];
         this.orbitToCurrentIndex = {};
         this.baseIdToCount = {};
+        this.headings = [];
+        this.headingAndTitles = [];
         this.idToIndexInfo = {};
         this.indexInfoArray = [];
         this.unitToId = new Map();
@@ -61,9 +63,6 @@ export class Counter {
             || this.unitToId.get(unit) !== undefined) {
             return;
         }
-        if (this.title.length === 0 && unit.tag === 'title') {
-            this.title = unitToInlinePlainString(unit);
-        }
         const baseId = stringToId(typeof unit.options.id === 'string' ? unit.options.id : unitToInlinePlainString(unit));
         const count = this.baseIdToCount[baseId] = (this.baseIdToCount[baseId] ?? 0) + 1;
         const id = count > 1 || baseId.length === 0 ? `${baseId}~${count}` : baseId;
@@ -110,6 +109,17 @@ export class Counter {
         };
         this.idToIndexInfo[id] = indexInfo;
         this.indexInfoArray.push(indexInfo);
+        if (orbit === 'heading') {
+            this.headings.push(indexInfo);
+            this.headingAndTitles.push(indexInfo);
+        }
+        else if (unit.tag === 'title') {
+            this.headingAndTitles.push(indexInfo);
+            if (this.title.length === 0) {
+                this.title = unitToInlinePlainString(unit);
+                this.titleInfo = indexInfo;
+            }
+        }
         if ((unit.options['no-count-inside'] ?? extractLastGlobalOption('no-count-inside', unit.tag, this.tagToGlobalOptions)) === true) {
             return;
         }

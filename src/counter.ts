@@ -18,10 +18,13 @@ export class Counter {
     private readonly baseIdToCount: {
         [key: string]: number | undefined
     } = {}
+    readonly headings: IndexInfo[] = []
+    readonly headingAndTitles: IndexInfo[] = []
     readonly idToIndexInfo: IdToIndexInfo = {}
     readonly indexInfoArray: IndexInfo[] = []
     readonly unitToId = new Map<STDNUnit, string | undefined>()
     title = ''
+    titleInfo: IndexInfo | undefined
     constructor(readonly tagToGlobalOptions: TagToGlobalOptions) {}
     private createIndex(orbit: string, level: number) {
         if (orbit === 'heading') {
@@ -74,9 +77,6 @@ export class Counter {
         ) {
             return
         }
-        if (this.title.length === 0 && unit.tag === 'title') {
-            this.title = unitToInlinePlainString(unit)
-        }
         const baseId = stringToId(typeof unit.options.id === 'string' ? unit.options.id : unitToInlinePlainString(unit))
         const count = this.baseIdToCount[baseId] = (this.baseIdToCount[baseId] ?? 0) + 1
         const id = count > 1 || baseId.length === 0 ? `${baseId}~${count}` : baseId
@@ -118,12 +118,22 @@ export class Counter {
         }
         this.idToIndexInfo[id] = indexInfo
         this.indexInfoArray.push(indexInfo)
+        if (orbit === 'heading') {
+            this.headings.push(indexInfo)
+            this.headingAndTitles.push(indexInfo)
+        } else if (unit.tag === 'title') {
+            this.headingAndTitles.push(indexInfo)
+            if (this.title.length === 0) {
+                this.title = unitToInlinePlainString(unit)
+                this.titleInfo = indexInfo
+            }
+        }
         if ((unit.options['no-count-inside'] ?? extractLastGlobalOption('no-count-inside', unit.tag, this.tagToGlobalOptions)) === true) {
             return
         }
         for (const key in unit.options) {
             const value = unit.options[key]
-            if(typeof value==='object'){
+            if (typeof value === 'object') {
                 this.countUnit(value)
             }
         }
