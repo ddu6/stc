@@ -1,4 +1,5 @@
 import type { STDN, STDNLine, STDNPosition, STDNUnit } from 'stdn';
+import { IndexInfo } from './counter';
 import type { Compiler } from './compiler';
 export declare type UnitCompiler = (unit: STDNUnit, compiler: Compiler) => Promise<HTMLElement | SVGElement>;
 export declare type TagToUnitCompiler = {
@@ -25,6 +26,7 @@ export interface STDNPart {
 export declare function extractUnitOrLineToPart(parts: STDNPart[]): Map<STDNUnit | STDNLine, STDNPart | undefined>;
 export declare function extractPartToOffset(parts: STDNPart[]): Map<STDNPart, number | undefined>;
 export declare function extractUnitOrLineToPosition(stdn: STDN): Map<STDNUnit | STDNLine, STDNPosition | undefined>;
+export declare function extractUnitOrLineToHeading(stdn: STDN, headings: IndexInfo[]): Map<STDNUnit | STDNLine, IndexInfo | undefined>;
 export declare function urlToAbsURL(url: string, unit: STDNUnit, unitOrLineToPart: ReturnType<typeof extractUnitOrLineToPart>): string;
 export declare function extractContext(parts: STDNPart[], { builtInTagToUnitCompiler, style, headSTDN, footSTDN, root }?: {
     builtInTagToUnitCompiler?: TagToUnitCompiler;
@@ -35,7 +37,8 @@ export declare function extractContext(parts: STDNPart[], { builtInTagToUnitComp
 }): Promise<{
     css: string;
     fullSTDN: STDNLine[];
-    indexInfoArray: import("./counter").IndexInfo[];
+    headings: IndexInfo[];
+    indexInfoArray: IndexInfo[];
     idToIndexInfo: import("./counter").IdToIndexInfo;
     parts: STDNPart[];
     partToOffset: Map<STDNPart, number | undefined>;
@@ -44,6 +47,7 @@ export declare function extractContext(parts: STDNPart[], { builtInTagToUnitComp
     tagToUnitCompiler: TagToUnitCompiler;
     title: string;
     unitToId: Map<STDNUnit, string | undefined>;
+    unitOrLineToHeading: Map<STDNUnit | STDNLine, IndexInfo | undefined>;
     unitOrLineToPart: Map<STDNUnit | STDNLine, STDNPart | undefined>;
     unitOrLineToPosition: Map<STDNUnit | STDNLine, STDNPosition | undefined>;
     root: ShadowRoot | undefined;

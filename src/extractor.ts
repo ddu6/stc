@@ -1,6 +1,6 @@
 import type {STDN, STDNLine, STDNPosition, STDNUnit} from 'stdn'
 import {isRelURL, urlsToAbsURLs} from './urls'
-import {Counter} from './counter'
+import {Counter, IndexInfo} from './counter'
 import type {Compiler} from './compiler'
 export type UnitCompiler = (unit: STDNUnit, compiler: Compiler) => Promise<HTMLElement | SVGElement>
 export type TagToUnitCompiler = {
@@ -115,6 +115,41 @@ export function extractUnitOrLineToPosition(stdn: STDN) {
         }
     }
     extract(stdn, [])
+    return out
+}
+export function extractUnitOrLineToHeading(stdn: STDN, headings: IndexInfo[]) {
+    const out = new Map<STDNUnit | STDNLine, IndexInfo | undefined>()
+    if (headings.length === 0) {
+        return out
+    }
+    let i = 0
+    let nextHeading = headings[0]
+    let heading: IndexInfo | undefined
+    function extractFromUnit(unit: STDNUnit) {
+        out.set(unit, heading)
+        if (i < headings.length && unit === nextHeading.unit) {
+            heading = nextHeading
+            nextHeading = headings[++i]
+        }
+        for (const key in unit.options) {
+            const value = unit.options[key]
+            if (typeof value === 'object') {
+                extractFromUnit(value)
+            }
+        }
+        extract(unit.children)
+    }
+    function extract(stdn: STDN) {
+        for (const line of stdn) {
+            out.set(line, heading)
+            for (const unit of line) {
+                if (typeof unit !== 'string') {
+                    extractFromUnit(unit)
+                }
+            }
+        }
+    }
+    extract(stdn)
     return out
 }
 export function urlToAbsURL(url: string, unit: STDNUnit, unitOrLineToPart: ReturnType<typeof extractUnitOrLineToPart>) {
@@ -257,12 +292,16 @@ export async function extractContext(parts: STDNPart[], {
     }
     const counter = new Counter(tagToGlobalOptions)
     counter.countSTDN(stdn)
-    const unitOrLineToPosition = extractUnitOrLineToPosition(stdn)
+    const {indexInfoArray} = counter
+    const headings = indexInfoArray.filter(value => value.orbit === 'heading')
     const partToOffset = extractPartToOffset(parts)
+    const unitOrLineToHeading = extractUnitOrLineToHeading(stdn, headings)
+    const unitOrLineToPosition = extractUnitOrLineToPosition(stdn)
     return {
         css,
         fullSTDN,
-        indexInfoArray: counter.indexInfoArray,
+        headings,
+        indexInfoArray,
         idToIndexInfo: counter.idToIndexInfo,
         parts,
         partToOffset,
@@ -271,6 +310,7 @@ export async function extractContext(parts: STDNPart[], {
         tagToUnitCompiler,
         title: counter.title,
         unitToId: counter.unitToId,
+        unitOrLineToHeading,
         unitOrLineToPart,
         unitOrLineToPosition,
         root,

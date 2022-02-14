@@ -1,8 +1,8 @@
 import type { STDN, STDNUnit } from 'stdn';
 import { TagToGlobalOptions } from './extractor';
 export interface IndexInfo {
-    index: number[];
     id: string;
+    index: number[];
     orbit: string;
     unit: STDNUnit;
 }

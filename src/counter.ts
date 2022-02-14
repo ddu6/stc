@@ -2,8 +2,8 @@ import type {STDN, STDNUnit} from 'stdn'
 import {stringToId, unitToInlinePlainString} from './base'
 import {extractLastGlobalOption, TagToGlobalOptions} from './extractor'
 export interface IndexInfo {
-    index: number[]
     id: string
+    index: number[]
     orbit: string
     unit: STDNUnit
 }

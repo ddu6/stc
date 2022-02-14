@@ -98,6 +98,41 @@ export function extractUnitOrLineToPosition(stdn) {
     extract(stdn, []);
     return out;
 }
+export function extractUnitOrLineToHeading(stdn, headings) {
+    const out = new Map();
+    if (headings.length === 0) {
+        return out;
+    }
+    let i = 0;
+    let nextHeading = headings[0];
+    let heading;
+    function extractFromUnit(unit) {
+        out.set(unit, heading);
+        if (i < headings.length && unit === nextHeading.unit) {
+            heading = nextHeading;
+            nextHeading = headings[++i];
+        }
+        for (const key in unit.options) {
+            const value = unit.options[key];
+            if (typeof value === 'object') {
+                extractFromUnit(value);
+            }
+        }
+        extract(unit.children);
+    }
+    function extract(stdn) {
+        for (const line of stdn) {
+            out.set(line, heading);
+            for (const unit of line) {
+                if (typeof unit !== 'string') {
+                    extractFromUnit(unit);
+                }
+            }
+        }
+    }
+    extract(stdn);
+    return out;
+}
 export function urlToAbsURL(url, unit, unitOrLineToPart) {
     if (!isRelURL(url)) {
         return url;
@@ -226,12 +261,16 @@ export async function extractContext(parts, { builtInTagToUnitCompiler, style, h
     }
     const counter = new Counter(tagToGlobalOptions);
     counter.countSTDN(stdn);
-    const unitOrLineToPosition = extractUnitOrLineToPosition(stdn);
+    const { indexInfoArray } = counter;
+    const headings = indexInfoArray.filter(value => value.orbit === 'heading');
     const partToOffset = extractPartToOffset(parts);
+    const unitOrLineToHeading = extractUnitOrLineToHeading(stdn, headings);
+    const unitOrLineToPosition = extractUnitOrLineToPosition(stdn);
     return {
         css,
         fullSTDN,
-        indexInfoArray: counter.indexInfoArray,
+        headings,
+        indexInfoArray,
         idToIndexInfo: counter.idToIndexInfo,
         parts,
         partToOffset,
@@ -240,6 +279,7 @@ export async function extractContext(parts, { builtInTagToUnitCompiler, style, h
         tagToUnitCompiler,
         title: counter.title,
         unitToId: counter.unitToId,
+        unitOrLineToHeading,
         unitOrLineToPart,
         unitOrLineToPosition,
         root,
