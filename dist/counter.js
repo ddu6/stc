@@ -115,8 +115,8 @@ export class Counter {
         }
         for (const key in unit.options) {
             const value = unit.options[key];
-            if (Array.isArray(value)) {
-                this.countSTDN(value);
+            if (typeof value === 'object') {
+                this.countUnit(value);
             }
         }
         this.countSTDN(unit.children);
