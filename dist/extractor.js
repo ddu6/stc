@@ -172,7 +172,7 @@ export async function extractContext(parts, { builtInTagToUnitCompiler, style, h
         if (unit.tag === 'global') {
             const { registry, mod, css, ucs } = unit.options;
             if (typeof registry === 'string') {
-                base = new URL(registry, 'https://cdn.jsdelivr.net/gh/st-mod/').href;
+                base = urlToAbsURL(registry, unit, unitOrLineToPart);
             }
             if (typeof mod === 'string') {
                 cssURLs.push(`${base}/${mod}/main.css`);
