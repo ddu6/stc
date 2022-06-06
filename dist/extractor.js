@@ -160,6 +160,7 @@ export async function extractContext(parts, { builtInTagToUnitCompiler, style, h
     const unitOrLineToPart = extractUnitOrLineToPart(parts);
     const stdn = parts.map(value => value.value).flat();
     const fullSTDN = (headSTDN ?? []).concat(stdn).concat(footSTDN ?? []);
+    let base = 'https://cdn.jsdelivr.net/gh/st-mod';
     for (const line of fullSTDN) {
         if (line.length === 0) {
             continue;
@@ -169,18 +170,19 @@ export async function extractContext(parts, { builtInTagToUnitCompiler, style, h
             continue;
         }
         if (unit.tag === 'global') {
-            const mod = unit.options['mod'];
+            const { registry, mod, css, ucs } = unit.options;
+            if (typeof registry === 'string') {
+                base = new URL(registry, 'https://cdn.jsdelivr.net/gh/st-mod/').href;
+            }
             if (typeof mod === 'string') {
-                cssURLs.push(`https://cdn.jsdelivr.net/gh/st-mod/${mod}/main.css`);
-                tagToUnitCompilerURLs.push(`https://cdn.jsdelivr.net/gh/st-mod/${mod}/ucs.js`);
+                cssURLs.push(`${base}/${mod}/main.css`);
+                tagToUnitCompilerURLs.push(`${base}/${mod}/ucs.js`);
             }
-            const css = unit.options['css'];
             if (typeof css === 'string') {
-                cssURLs.push(`https://cdn.jsdelivr.net/gh/st-mod/${css}/main.css`);
+                cssURLs.push(`${base}/${css}/main.css`);
             }
-            const ucs = unit.options['ucs'];
             if (typeof ucs === 'string') {
-                tagToUnitCompilerURLs.push(`https://cdn.jsdelivr.net/gh/st-mod/${ucs}/ucs.js`);
+                tagToUnitCompilerURLs.push(`${base}/${ucs}/ucs.js`);
             }
             {
                 const gh = unit.options['mod-gh'];
