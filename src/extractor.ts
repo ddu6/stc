@@ -190,7 +190,6 @@ export async function extractContext(parts: STDNPart[], {
     const unitOrLineToPart = extractUnitOrLineToPart(parts)
     const stdn = parts.map(value => value.value).flat()
     const fullSTDN = (headSTDN ?? []).concat(stdn).concat(footSTDN ?? [])
-    let base = 'https://cdn.jsdelivr.net/gh/st-mod'
     for (const line of fullSTDN) {
         if (line.length === 0) {
             continue
@@ -201,6 +200,7 @@ export async function extractContext(parts: STDNPart[], {
         }
         if (unit.tag === 'global') {
             const {registry, mod, css, ucs} = unit.options
+            let base = 'https://cdn.jsdelivr.net/gh/st-mod'
             if (typeof registry === 'string') {
                 base = urlToAbsURL(registry, unit, unitOrLineToPart)
             }
