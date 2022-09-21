@@ -35,6 +35,7 @@ export function createErrorElement(err: string) {
     return element
 }
 export class Compiler {
+    stop = false
     readonly ston = ston
     readonly stdn = stdn
     readonly position = position
@@ -186,6 +187,9 @@ export class Compiler {
     async compileLine(line: STDNLine) {
         const df = new DocumentFragment()
         for (const inline of line) {
+            if (this.stop) {
+                return df
+            }
             df.append(await this.compileInline(inline))
         }
         return df
@@ -193,6 +197,9 @@ export class Compiler {
     async compileInlineSTDN(stdn: STDN) {
         const df = new DocumentFragment()
         for (let i = 0; i < stdn.length; i++) {
+            if (this.stop) {
+                return df
+            }
             df.append(await this.compileLine(stdn[i]))
             if (i !== stdn.length - 1) {
                 df.append(new Text('\n'))
@@ -203,6 +210,9 @@ export class Compiler {
     async compileSTDN(stdn: STDN) {
         const df = new DocumentFragment()
         for (const line of stdn) {
+            if (this.stop) {
+                return df
+            }
             const div = document.createElement('div')
             div.classList.add('st-line')
             df.append(div)

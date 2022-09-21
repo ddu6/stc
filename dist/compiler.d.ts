@@ -14,6 +14,7 @@ export declare const supportedSVGTags: string[];
 export declare function createErrorElement(err: string): HTMLSpanElement;
 export declare class Compiler {
     readonly context: extractor.Context;
+    stop: boolean;
     readonly ston: typeof ston;
     readonly stdn: typeof stdn;
     readonly position: typeof position;
