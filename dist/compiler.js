@@ -1,3 +1,12 @@
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
 import * as ston from 'ston/dist/parse';
 import * as stdn from 'stdn/dist/parse';
 import * as position from 'stdn/dist/position';
@@ -62,171 +71,182 @@ export class Compiler {
         }
         elements.push(element);
     }
-    async compileUnit(unit) {
-        if (this.unitToCompiling.get(unit) === true) {
-            const element = this.createErrorElement('Loop');
-            this.registerElement(element, unit);
-            return element;
-        }
-        if (unit.tag === 'global' || unit.options.global === true) {
-            const element = document.createElement('div');
-            element.classList.add('unit', 'global');
-            this.registerElement(element, unit);
-            return element;
-        }
-        this.unitToCompiling.set(unit, true);
-        let realTag = unit.options['compile-with'] ?? extractor.extractLastGlobalOption('compile-with', unit.tag, this.context.tagToGlobalOptions);
-        if (typeof realTag !== 'string' || realTag.length === 0) {
-            realTag = unit.tag;
-        }
-        const unitCompiler = this.context.tagToUnitCompiler[realTag];
-        let element;
-        if (unitCompiler !== undefined) {
-            try {
-                element = await unitCompiler(unit, this);
-            }
-            catch (err) {
-                console.log(err);
-                element = this.createErrorElement('Broken');
-            }
-            if (element.classList.contains('unit') && element.classList.contains('warn')) {
+    compileUnit(unit) {
+        var _a;
+        return __awaiter(this, void 0, void 0, function* () {
+            if (this.unitToCompiling.get(unit) === true) {
+                const element = this.createErrorElement('Loop');
                 this.registerElement(element, unit);
-                this.unitToCompiling.set(unit, false);
                 return element;
             }
-        }
-        else {
-            if (supportedHTMLTags.includes(realTag)) {
-                element = document.createElement(realTag);
-                if (supportedHTMLTagsWithInlineChildren.includes(realTag)) {
-                    element.append(await this.compileInlineSTDN(unit.children));
-                }
-                else {
-                    element.append(await this.compileSTDN(unit.children));
-                }
+            if (unit.tag === 'global' || unit.options.global === true) {
+                const element = document.createElement('div');
+                element.classList.add('unit', 'global');
+                this.registerElement(element, unit);
+                return element;
             }
-            else if (supportedSVGTags.includes(realTag)) {
-                element = document.createElementNS("http://www.w3.org/2000/svg", realTag);
-                element.append(await this.compileInlineSTDN(unit.children));
+            this.unitToCompiling.set(unit, true);
+            let realTag = (_a = unit.options['compile-with']) !== null && _a !== void 0 ? _a : extractor.extractLastGlobalOption('compile-with', unit.tag, this.context.tagToGlobalOptions);
+            if (typeof realTag !== 'string' || realTag.length === 0) {
+                realTag = unit.tag;
+            }
+            const unitCompiler = this.context.tagToUnitCompiler[realTag];
+            let element;
+            if (unitCompiler !== undefined) {
+                try {
+                    element = yield unitCompiler(unit, this);
+                }
+                catch (err) {
+                    console.log(err);
+                    element = this.createErrorElement('Broken');
+                }
+                if (element.classList.contains('unit') && element.classList.contains('warn')) {
+                    this.registerElement(element, unit);
+                    this.unitToCompiling.set(unit, false);
+                    return element;
+                }
             }
             else {
-                element = document.createElement('div');
-                element.append(await this.compileSTDN(unit.children));
-            }
-        }
-        element.classList.add('unit');
-        try {
-            element.classList.add(realTag);
-            if (typeof unit.options.class === 'string') {
-                element.classList.add(...unit.options.class.trim().split(/\s+/));
-            }
-            for (const value of extractor.extractGlobalOptionArray('class', unit.tag, this.context.tagToGlobalOptions)) {
-                if (typeof value === 'string') {
-                    element.classList.add(...value.trim().split(/\s+/));
+                if (supportedHTMLTags.includes(realTag)) {
+                    element = document.createElement(realTag);
+                    if (supportedHTMLTagsWithInlineChildren.includes(realTag)) {
+                        element.append(yield this.compileInlineSTDN(unit.children));
+                    }
+                    else {
+                        element.append(yield this.compileSTDN(unit.children));
+                    }
+                }
+                else if (supportedSVGTags.includes(realTag)) {
+                    element = document.createElementNS("http://www.w3.org/2000/svg", realTag);
+                    element.append(yield this.compileInlineSTDN(unit.children));
+                }
+                else {
+                    element = document.createElement('div');
+                    element.append(yield this.compileSTDN(unit.children));
                 }
             }
-        }
-        catch (err) {
-            console.log(err);
-        }
-        const styles = [];
-        let style = element.getAttribute('style');
-        if (style !== null) {
-            styles.push(style);
-        }
-        if (typeof unit.options.style === 'string') {
-            styles.push(unit.options.style);
-        }
-        for (const value of extractor.extractGlobalOptionArray('style', unit.tag, this.context.tagToGlobalOptions)) {
-            if (typeof value === 'string') {
-                styles.push(value);
-            }
-        }
-        if (styles.length > 0) {
+            element.classList.add('unit');
             try {
-                element.setAttribute('style', styles.join('; '));
+                element.classList.add(realTag);
+                if (typeof unit.options.class === 'string') {
+                    element.classList.add(...unit.options.class.trim().split(/\s+/));
+                }
+                for (const value of extractor.extractGlobalOptionArray('class', unit.tag, this.context.tagToGlobalOptions)) {
+                    if (typeof value === 'string') {
+                        element.classList.add(...value.trim().split(/\s+/));
+                    }
+                }
             }
             catch (err) {
                 console.log(err);
             }
-        }
-        const id = this.context.unitToId.get(unit);
-        if (id !== undefined) {
-            element.id = id;
-        }
-        for (const key in unit.options) {
-            if (key === 'id' || key === 'class' || key === 'style') {
-                continue;
+            const styles = [];
+            let style = element.getAttribute('style');
+            if (style !== null) {
+                styles.push(style);
             }
-            if (element.hasAttribute(key)) {
-                continue;
+            if (typeof unit.options.style === 'string') {
+                styles.push(unit.options.style);
             }
-            let value = unit.options[key];
-            if (value === true) {
-                value = '';
+            for (const value of extractor.extractGlobalOptionArray('style', unit.tag, this.context.tagToGlobalOptions)) {
+                if (typeof value === 'string') {
+                    styles.push(value);
+                }
             }
-            else if (typeof value === 'number') {
-                value = value.toString();
+            if (styles.length > 0) {
+                try {
+                    element.setAttribute('style', styles.join('; '));
+                }
+                catch (err) {
+                    console.log(err);
+                }
             }
-            if (typeof value !== 'string') {
-                continue;
+            const id = this.context.unitToId.get(unit);
+            if (id !== undefined) {
+                element.id = id;
             }
-            if ((key.endsWith('href') || key.endsWith('src'))
-                && urls.isRelURL(value)) {
-                value = this.context.urlToAbsURL(value, unit);
+            for (const key in unit.options) {
+                if (key === 'id' || key === 'class' || key === 'style') {
+                    continue;
+                }
+                if (element.hasAttribute(key)) {
+                    continue;
+                }
+                let value = unit.options[key];
+                if (value === true) {
+                    value = '';
+                }
+                else if (typeof value === 'number') {
+                    value = value.toString();
+                }
+                if (typeof value !== 'string') {
+                    continue;
+                }
+                if ((key.endsWith('href') || key.endsWith('src'))
+                    && urls.isRelURL(value)) {
+                    value = this.context.urlToAbsURL(value, unit);
+                }
+                try {
+                    element.setAttribute(key, value);
+                }
+                catch (err) {
+                    console.log(err);
+                }
             }
-            try {
-                element.setAttribute(key, value);
-            }
-            catch (err) {
-                console.log(err);
-            }
-        }
-        this.registerElement(element, unit);
-        this.unitToCompiling.set(unit, false);
-        return element;
+            this.registerElement(element, unit);
+            this.unitToCompiling.set(unit, false);
+            return element;
+        });
     }
-    async compileInline(inline) {
-        if (typeof inline !== 'string') {
-            return await this.compileUnit(inline);
-        }
-        return new Text(inline);
+    compileInline(inline) {
+        return __awaiter(this, void 0, void 0, function* () {
+            if (typeof inline !== 'string') {
+                return yield this.compileUnit(inline);
+            }
+            return new Text(inline);
+        });
     }
-    async compileLine(line) {
-        const df = new DocumentFragment();
-        for (const inline of line) {
-            if (this.stop) {
-                return df;
+    compileLine(line) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const df = new DocumentFragment();
+            for (const inline of line) {
+                if (this.stop) {
+                    return df;
+                }
+                df.append(yield this.compileInline(inline));
             }
-            df.append(await this.compileInline(inline));
-        }
-        return df;
+            return df;
+        });
     }
-    async compileInlineSTDN(stdn) {
-        const df = new DocumentFragment();
-        for (let i = 0; i < stdn.length; i++) {
-            if (this.stop) {
-                return df;
+    compileInlineSTDN(stdn) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const df = new DocumentFragment();
+            for (let i = 0; i < stdn.length; i++) {
+                if (this.stop) {
+                    return df;
+                }
+                df.append(yield this.compileLine(stdn[i]));
+                if (i !== stdn.length - 1) {
+                    df.append(new Text('\n'));
+                }
             }
-            df.append(await this.compileLine(stdn[i]));
-            if (i !== stdn.length - 1) {
-                df.append(new Text('\n'));
-            }
-        }
-        return df;
+            return df;
+        });
     }
-    async compileSTDN(stdn) {
-        const df = new DocumentFragment();
-        for (const line of stdn) {
-            if (this.stop) {
-                return df;
+    compileSTDN(stdn) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const df = new DocumentFragment();
+            for (const line of stdn) {
+                if (this.stop) {
+                    return df;
+                }
+                const div = document.createElement('div');
+                div.classList.add('st-line');
+                df.append(div);
+                div.append(yield this.compileLine(line));
+                this.registerElement(div, line);
             }
-            const div = document.createElement('div');
-            div.classList.add('st-line');
-            df.append(div);
-            div.append(await this.compileLine(line));
-            this.registerElement(div, line);
-        }
-        return df;
+            return df;
+        });
     }
 }

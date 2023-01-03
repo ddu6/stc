@@ -1,17 +1,17 @@
 import type { STDN, STDNLine, STDNPosition, STDNUnit } from 'stdn';
 import { IndexInfo } from './counter';
 import type { Compiler } from './compiler';
-export declare type UnitCompiler = (unit: STDNUnit, compiler: Compiler) => Promise<HTMLElement | SVGElement>;
-export declare type TagToUnitCompiler = {
+export type UnitCompiler = (unit: STDNUnit, compiler: Compiler) => Promise<HTMLElement | SVGElement>;
+export type TagToUnitCompiler = {
     [key: string]: UnitCompiler | undefined;
 };
-export declare type STDNUnitGlobalOptions = {
+export type STDNUnitGlobalOptions = {
     optionArrays: {
         [key: string]: (STDNUnit | string | number | boolean)[] | undefined;
     };
     childrenArray: STDN[];
 };
-export declare type TagToGlobalOptions = {
+export type TagToGlobalOptions = {
     [key: string]: STDNUnitGlobalOptions | undefined;
 };
 export declare function extractGlobalChildren(tag: string, tagToGlobalOptions: TagToGlobalOptions): STDNLine[];
@@ -59,4 +59,4 @@ export declare function extractContext(parts: STDNPart[], { builtInTagToUnitComp
     extractLastGlobalOption: (option: string, tag: string) => string | number | boolean | STDNUnit | undefined;
     urlToAbsURL: (url: string, unit: STDNUnit) => string;
 }>;
-export declare type Context = Awaited<ReturnType<typeof extractContext>>;
+export type Context = Awaited<ReturnType<typeof extractContext>>;

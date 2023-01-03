@@ -56,17 +56,18 @@ export class Counter {
         return tmp;
     }
     countUnit(unit) {
+        var _a, _b, _c, _d, _e, _f;
         if (unit.tag === 'global'
             || unit.options.global === true
-            || (unit.options['no-count'] ?? extractLastGlobalOption('no-count', unit.tag, this.tagToGlobalOptions)) === true
+            || ((_a = unit.options['no-count']) !== null && _a !== void 0 ? _a : extractLastGlobalOption('no-count', unit.tag, this.tagToGlobalOptions)) === true
             || this.unitToId.get(unit) !== undefined) {
             return;
         }
         const baseId = stringToId(typeof unit.options.id === 'string' ? unit.options.id : unitToInlinePlainString(unit));
-        const count = this.baseIdToCount[baseId] = (this.baseIdToCount[baseId] ?? 0) + 1;
+        const count = this.baseIdToCount[baseId] = ((_b = this.baseIdToCount[baseId]) !== null && _b !== void 0 ? _b : 0) + 1;
         const id = count > 1 || baseId.length === 0 ? `${baseId}~${count}` : baseId;
         this.unitToId.set(unit, id);
-        let orbit = unit.options.orbit ?? extractLastGlobalOption('orbit', unit.tag, this.tagToGlobalOptions);
+        let orbit = (_c = unit.options.orbit) !== null && _c !== void 0 ? _c : extractLastGlobalOption('orbit', unit.tag, this.tagToGlobalOptions);
         if (typeof orbit !== 'string' || orbit.length === 0) {
             orbit = unit.tag === 'h1'
                 || unit.tag === 'h2'
@@ -76,9 +77,7 @@ export class Counter {
                 || unit.tag === 'h6'
                 ? 'heading' : unit.tag;
         }
-        let level = unit.options.level
-            ?? extractLastGlobalOption('level', unit.tag, this.tagToGlobalOptions)
-            ?? extractLastGlobalOption('level', orbit, this.tagToGlobalOptions);
+        let level = (_e = (_d = unit.options.level) !== null && _d !== void 0 ? _d : extractLastGlobalOption('level', unit.tag, this.tagToGlobalOptions)) !== null && _e !== void 0 ? _e : extractLastGlobalOption('level', orbit, this.tagToGlobalOptions);
         if (typeof level !== 'number' || level <= 0 || level % 1 !== 0) {
             switch (unit.tag) {
                 case 'h2':
@@ -115,7 +114,7 @@ export class Counter {
             this.title = unitToInlinePlainString(unit);
             this.titleInfo = indexInfo;
         }
-        if ((unit.options['no-count-inside'] ?? extractLastGlobalOption('no-count-inside', unit.tag, this.tagToGlobalOptions)) === true) {
+        if (((_f = unit.options['no-count-inside']) !== null && _f !== void 0 ? _f : extractLastGlobalOption('no-count-inside', unit.tag, this.tagToGlobalOptions)) === true) {
             return;
         }
         for (const key in unit.options) {

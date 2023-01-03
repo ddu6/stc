@@ -6,7 +6,7 @@ export interface IndexInfo {
     orbit: string;
     unit: STDNUnit;
 }
-export declare type IdToIndexInfo = {
+export type IdToIndexInfo = {
     [key: string]: IndexInfo | undefined;
 };
 export declare class Counter {
